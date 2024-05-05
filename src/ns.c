@@ -144,14 +144,14 @@ char *NSGetFilename2(int type, uint32_t lid, char *path, char *subdir) {
     if (use_cd)
       sprintf(ns_filename, "\\S%X\\S%07X.NSD", lid >> 4, lid);
     else
-      sprintf(ns_filename, "%s%ss%07x.nsd", NS_PATH, NS_SUBPATH, lid);
+      sprintf(ns_filename, "%s%sS%07X.NSD", NS_PATH, NS_SUBPATH, lid);
     return ns_filename;
   }
   else if (type == 1) { /* type 1? (NSF) */
     if (use_cd)
       sprintf(ns_filename, "\\S%X\\S%07X.NSF", lid >> 4, lid);
     else
-      sprintf(ns_filename, "%s%ss%07x.nsf", NS_PATH, NS_SUBPATH, lid);
+      sprintf(ns_filename, "%s%sS%07X.NSF", NS_PATH, NS_SUBPATH, lid);
     return ns_filename;
   }
   return (char*)ERROR; /* invalid type */

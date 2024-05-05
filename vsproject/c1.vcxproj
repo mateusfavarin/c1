@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{1804c6e9-f2b9-4b0a-8021-80cabaaf09d3}</ProjectGuid>
+    <RootNamespace>c1</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>ClangCL</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)/;$(SolutionDir)../3rd_party/GLEW/lib/Release/Win32/;$(SolutionDir)../3rd_party/SDL/lib/x86/;$(SolutionDir)../3rd_party/fluidsynth/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cimgui.lib;glew32s.lib;opengl32.lib;SDL2.lib;fluidsynth.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
+      <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)/;$(SolutionDir)../3rd_party/GLEW/lib/Release/Win32/;$(SolutionDir)../3rd_party/SDL/lib/x86/;$(SolutionDir)../3rd_party/fluidsynth/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cimgui.lib;glew32s.lib;opengl32.lib;SDL2.lib;fluidsynth.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\audio.c" />
+    <ClCompile Include="..\src\cam.c" />
+    <ClCompile Include="..\src\ext\disgool.c" />
+    <ClCompile Include="..\src\ext\gui.c" />
+    <ClCompile Include="..\src\ext\lib\gui.c" />
+    <ClCompile Include="..\src\ext\lib\refl.c" />
+    <ClCompile Include="..\src\ext\refl.c" />
+    <ClCompile Include="..\src\gfx.c" />
+    <ClCompile Include="..\src\gool.c" />
+    <ClCompile Include="..\src\level.c" />
+    <ClCompile Include="..\src\main.c" />
+    <ClCompile Include="..\src\math.c" />
+    <ClCompile Include="..\src\midi.c" />
+    <ClCompile Include="..\src\misc.c" />
+    <ClCompile Include="..\src\ns.c" />
+    <ClCompile Include="..\src\pad.c" />
+    <ClCompile Include="..\src\pbak.c" />
+    <ClCompile Include="..\src\pc\gfx\gl.c" />
+    <ClCompile Include="..\src\pc\gfx\soft.c" />
+    <ClCompile Include="..\src\pc\gfx\tex.c" />
+    <ClCompile Include="..\src\pc\init.c" />
+    <ClCompile Include="..\src\pc\math.c" />
+    <ClCompile Include="..\src\pc\pad.c" />
+    <ClCompile Include="..\src\pc\sound\audio.c" />
+    <ClCompile Include="..\src\pc\sound\midi.c" />
+    <ClCompile Include="..\src\pc\sound\util.c" />
+    <ClCompile Include="..\src\pc\time.c" />
+    <ClCompile Include="..\src\slst.c" />
+    <ClCompile Include="..\src\solid.c" />
+    <ClCompile Include="..\src\title.c" />
+    <ClCompile Include="..\src\util\list.c" />
+    <ClCompile Include="..\src\util\tree.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\audio.h" />
+    <ClInclude Include="..\src\cam.h" />
+    <ClInclude Include="..\src\common.h" />
+    <ClInclude Include="..\src\ext\disgool.h" />
+    <ClInclude Include="..\src\ext\gui.h" />
+    <ClInclude Include="..\src\ext\lib\gui.h" />
+    <ClInclude Include="..\src\ext\lib\refl.h" />
+    <ClInclude Include="..\src\ext\refl.h" />
+    <ClInclude Include="..\src\formats\cvtx.h" />
+    <ClInclude Include="..\src\formats\gool.h" />
+    <ClInclude Include="..\src\formats\imag.h" />
+    <ClInclude Include="..\src\formats\inst.h" />
+    <ClInclude Include="..\src\formats\ipal.h" />
+    <ClInclude Include="..\src\formats\mdat.h" />
+    <ClInclude Include="..\src\formats\midi.h" />
+    <ClInclude Include="..\src\formats\pbak.h" />
+    <ClInclude Include="..\src\formats\slst.h" />
+    <ClInclude Include="..\src\formats\svtx.h" />
+    <ClInclude Include="..\src\formats\tgeo.h" />
+    <ClInclude Include="..\src\formats\wgeo.h" />
+    <ClInclude Include="..\src\formats\zdat.h" />
+    <ClInclude Include="..\src\geom.h" />
+    <ClInclude Include="..\src\gfx.h" />
+    <ClInclude Include="..\src\globals.h" />
+    <ClInclude Include="..\src\gool.h" />
+    <ClInclude Include="..\src\level.h" />
+    <ClInclude Include="..\src\math.h" />
+    <ClInclude Include="..\src\midi.h" />
+    <ClInclude Include="..\src\misc.h" />
+    <ClInclude Include="..\src\ns.h" />
+    <ClInclude Include="..\src\pad.h" />
+    <ClInclude Include="..\src\pbak.h" />
+    <ClInclude Include="..\src\pc\gfx\gl.h" />
+    <ClInclude Include="..\src\pc\gfx\pcgfx.h" />
+    <ClInclude Include="..\src\pc\gfx\soft.h" />
+    <ClInclude Include="..\src\pc\gfx\tex.h" />
+    <ClInclude Include="..\src\pc\init.h" />
+    <ClInclude Include="..\src\pc\math.h" />
+    <ClInclude Include="..\src\pc\pad.h" />
+    <ClInclude Include="..\src\pc\sound\audio.h" />
+    <ClInclude Include="..\src\pc\sound\formats\psx.h" />
+    <ClInclude Include="..\src\pc\sound\formats\sf2.h" />
+    <ClInclude Include="..\src\pc\sound\formats\smf.h" />
+    <ClInclude Include="..\src\pc\sound\midi.h" />
+    <ClInclude Include="..\src\pc\sound\util.h" />
+    <ClInclude Include="..\src\pc\time.h" />
+    <ClInclude Include="..\src\slst.h" />
+    <ClInclude Include="..\src\solid.h" />
+    <ClInclude Include="..\src\title.h" />
+    <ClInclude Include="..\src\util\list.h" />
+    <ClInclude Include="..\src\util\tree.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

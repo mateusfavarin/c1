@@ -1098,17 +1098,17 @@ gool_objnode ZoneFindNearestObjectNode(gool_object *obj, vec *v) {
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
     if (!(bound->obj->status_b & 0x20000)) { continue; }
-    if (bound->p1.x - 20000 <= va.x && va.x <= bound->p2.x + 20000 /* bound box padding! */
-      && bound->p1.z - 20000 <= va.z && va.z <= bound->p2.z + 20000) {
-      if (bound->p1.y <= va.y && va.y <= bound->p2.y) { /* collides with va? */
-        v->y = bound->p2.y; /* replace with top (bottom?) bound y location */
+    if (bound->bound.p1.x - 20000 <= va.x && va.x <= bound->bound.p2.x + 20000 /* bound box padding! */
+      && bound->bound.p1.z - 20000 <= va.z && va.z <= bound->bound.p2.z + 20000) {
+      if (bound->bound.p1.y <= va.y && va.y <= bound->bound.p2.y) { /* collides with va? */
+        v->y = bound->bound.p2.y; /* replace with top (bottom?) bound y location */
         res.obj = bound->obj;
         return res; /* return the obj */
       }
-      else if (bound->p2.y > y_max && va.y >= bound->p2.y) {
+      else if (bound->bound.p2.y > y_max && va.y >= bound->bound.p2.y) {
         /* keep track of highest object below va */
         found_max = bound->obj;
-        y_max = bound->p2.y;
+        y_max = bound->bound.p2.y;
       }
     }
   }
@@ -1168,18 +1168,18 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
     if (!((bound->obj->status_b & 0x40020000) == 0x20000)) { continue; }
-    if (va.x >= bound->p1.x - 35000 && va.x <= bound->p2.x + 35000
-      && va.z >= bound->p1.z - 35000 && va.z <= bound->p2.z + 35000) {
-      if (va.y >= bound->p1.y && va.y <= bound->p2.y) {
+    if (va.x >= bound->bound.p1.x - 35000 && va.x <= bound->bound.p2.x + 35000
+      && va.z >= bound->bound.p1.z - 35000 && va.z <= bound->bound.p2.z + 35000) {
+      if (va.y >= bound->bound.p1.y && va.y <= bound->bound.p2.y) {
         res.obj = bound->obj;
-        va.y = bound->p1.y;
+        va.y = bound->bound.p1.y;
         found = 1;
         break;
       }
-      else if (bound->p2.y > y_max && vb.y >= bound->p2.y) {
+      else if (bound->bound.p2.y > y_max && vb.y >= bound->bound.p2.y) {
         /* keep track of highest object below va */
         found_max = bound->obj;
-        y_max = bound->p2.y;
+        y_max = bound->bound.p2.y;
       }
     }
   }
@@ -1254,34 +1254,34 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
     if (bound->obj == obj || bound->obj->node == 0xFFFF)
       continue;
     if (flags & 1) {
-      if (va.x >= bound->p1.x && va.x <= bound->p2.x
-        && va.z >= bound->p1.z && va.z <= bound->p2.z) {
-        if (va.y >= bound->p1.y && va.y <= bound->p2.y) {
+      if (va.x >= bound->bound.p1.x && va.x <= bound->bound.p2.x
+        && va.z >= bound->bound.p1.z && va.z <= bound->bound.p2.z) {
+        if (va.y >= bound->bound.p1.y && va.y <= bound->bound.p2.y) {
           res.obj = bound->obj;
-          va.y = bound->p1.y;
+          va.y = bound->bound.p1.y;
           found = 1;
           break;
         }
-        else if (bound->p2.y > yz_max && vb.y >= bound->p2.y) {
+        else if (bound->bound.p2.y > yz_max && vb.y >= bound->bound.p2.y) {
           /* keep track of highest object below va */
           found_max = bound->obj;
-          yz_max = bound->p2.y;
+          yz_max = bound->bound.p2.y;
         }
       }
     }
     else if (flags & 2) {
-      if (va.x >= bound->p1.x && va.x <= bound->p2.x
-        && va.y >= bound->p1.y && va.y <= bound->p2.y) {
-        if (va.z >= bound->p1.z && va.z < bound->p2.z) {
+      if (va.x >= bound->bound.p1.x && va.x <= bound->bound.p2.x
+        && va.y >= bound->bound.p1.y && va.y <= bound->bound.p2.y) {
+        if (va.z >= bound->bound.p1.z && va.z < bound->bound.p2.z) {
           res.obj = bound->obj;
-          va.z = bound->p1.z;
+          va.z = bound->bound.p1.z;
           found = 1;
           break;
         }
-        if (bound->p2.z > yz_max && va.z >= bound->p2.z) {
+        if (bound->bound.p2.z > yz_max && va.z >= bound->bound.p2.z) {
           /* keep track of nearest z-wise object behind va */
           found_max = bound->obj;
-          yz_max = bound->p2.z;
+          yz_max = bound->bound.p2.z;
         }
       }
     }

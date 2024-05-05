@@ -1665,53 +1665,53 @@ int GoolObjectBound(gool_object *obj) {
         &trans);
     }
     if ((uint32_t)(rot_x-0x200) > 0xC00) { /* between 0 and 0x200 or 0xE00 and 0xFFF */
-      bound->p1.x = trans.x + obj->bound.p1.x; /* i.e. 0 and 45 or 315 and 360 */
-      bound->p1.y = trans.y + obj->bound.p1.y;
-      bound->p1.z = trans.z + obj->bound.p1.z;
-      bound->p2.x = trans.x + obj->bound.p2.x;
-      bound->p2.y = trans.y + obj->bound.p2.y;
-      bound->p2.z = trans.z + obj->bound.p2.z;
+      bound->bound.p1.x = trans.x + obj->bound.p1.x; /* i.e. 0 and 45 or 315 and 360 */
+      bound->bound.p1.y = trans.y + obj->bound.p1.y;
+      bound->bound.p1.z = trans.z + obj->bound.p1.z;
+      bound->bound.p2.x = trans.x + obj->bound.p2.x;
+      bound->bound.p2.y = trans.y + obj->bound.p2.y;
+      bound->bound.p2.z = trans.z + obj->bound.p2.z;
     }
     else if (rot_x < 0x600) { /* between 0x200 and 0x600 */
-      bound->p1.x = trans.x + obj->bound.p1.z; /* i.e. 45 and 135 */
-      bound->p1.y = trans.y + obj->bound.p1.y;
-      bound->p1.z = trans.z - obj->bound.p2.x;
-      bound->p2.x = trans.x + obj->bound.p2.z;
-      bound->p2.y = trans.y + obj->bound.p2.y;
-      bound->p2.z = trans.z - obj->bound.p1.x;
+      bound->bound.p1.x = trans.x + obj->bound.p1.z; /* i.e. 45 and 135 */
+      bound->bound.p1.y = trans.y + obj->bound.p1.y;
+      bound->bound.p1.z = trans.z - obj->bound.p2.x;
+      bound->bound.p2.x = trans.x + obj->bound.p2.z;
+      bound->bound.p2.y = trans.y + obj->bound.p2.y;
+      bound->bound.p2.z = trans.z - obj->bound.p1.x;
     }
     else if (rot_x < 0xA00) { /* between 0xA00 and 0xE00 */
-      bound->p1.x = trans.x + obj->bound.p1.x; /* i.e. 225 and 315 */
-      bound->p1.y = trans.y + obj->bound.p1.y;
-      bound->p1.z = trans.z - obj->bound.p2.z;
-      bound->p2.x = trans.x + obj->bound.p2.x;
-      bound->p2.y = trans.y + obj->bound.p2.y;
-      bound->p2.z = trans.z - obj->bound.p1.z;
+      bound->bound.p1.x = trans.x + obj->bound.p1.x; /* i.e. 225 and 315 */
+      bound->bound.p1.y = trans.y + obj->bound.p1.y;
+      bound->bound.p1.z = trans.z - obj->bound.p2.z;
+      bound->bound.p2.x = trans.x + obj->bound.p2.x;
+      bound->bound.p2.y = trans.y + obj->bound.p2.y;
+      bound->bound.p2.z = trans.z - obj->bound.p1.z;
     }
     else { /* between 0x600 and 0xA00 */
-      bound->p1.x = trans.x - obj->bound.p2.z; /* i.e. 135 and 225 */
-      bound->p1.y = trans.y + obj->bound.p1.y;
-      bound->p1.z = trans.z + obj->bound.p1.x;
-      bound->p2.x = trans.x - obj->bound.p1.z;
-      bound->p2.y = trans.y + obj->bound.p2.y;
-      bound->p2.z = trans.z + obj->bound.p2.x;
+      bound->bound.p1.x = trans.x - obj->bound.p2.z; /* i.e. 135 and 225 */
+      bound->bound.p1.y = trans.y + obj->bound.p1.y;
+      bound->bound.p1.z = trans.z + obj->bound.p1.x;
+      bound->bound.p2.x = trans.x - obj->bound.p1.z;
+      bound->bound.p2.y = trans.y + obj->bound.p2.y;
+      bound->bound.p2.z = trans.z + obj->bound.p2.x;
     }
   }
   else {
-    bound->p1.x = obj->trans.x + obj->bound.p1.x;
-    bound->p1.y = obj->trans.y + obj->bound.p1.y;
-    bound->p1.z = obj->trans.z + obj->bound.p1.z;
-    bound->p2.x = obj->trans.x + obj->bound.p2.x;
-    bound->p2.y = obj->trans.y + obj->bound.p2.y;
-    bound->p2.z = obj->trans.z + obj->bound.p2.z;
+    bound->bound.p1.x = obj->trans.x + obj->bound.p1.x;
+    bound->bound.p1.y = obj->trans.y + obj->bound.p1.y;
+    bound->bound.p1.z = obj->trans.z + obj->bound.p1.z;
+    bound->bound.p2.x = obj->trans.x + obj->bound.p2.x;
+    bound->bound.p2.y = obj->trans.y + obj->bound.p2.y;
+    bound->bound.p2.z = obj->trans.z + obj->bound.p2.z;
   }
   if (obj->anim_stamp == crash->anim_stamp) { /* rendered during same frame as crash? */
-    crash_bound.p1.x = crash->trans.x + crash->bound.p1.x;
-    crash_bound.p1.y = crash->trans.y + crash->bound.p1.y;
-    crash_bound.p1.z = crash->trans.z + crash->bound.p1.z;
-    crash_bound.p2.x = crash->trans.x + crash->bound.p2.x;
-    crash_bound.p2.y = crash->trans.y + crash->bound.p2.y;
-    crash_bound.p2.z = crash->trans.z + crash->bound.p2.z;
+    crash_bound.bound.p1.x = crash->trans.x + crash->bound.p1.x;
+    crash_bound.bound.p1.y = crash->trans.y + crash->bound.p1.y;
+    crash_bound.bound.p1.z = crash->trans.z + crash->bound.p1.z;
+    crash_bound.bound.p2.x = crash->trans.x + crash->bound.p2.x;
+    crash_bound.bound.p2.y = crash->trans.y + crash->bound.p2.y;
+    crash_bound.bound.p2.z = crash->trans.z + crash->bound.p2.z;
     if (TestBoundIntersection(&crash_bound, &bound->bound)) /* collision with crash? */
       GoolCollide(obj, &bound->bound, crash, &crash_bound); /* handle it (i.e. signal objs) */
     else

@@ -296,8 +296,8 @@ static int StopAtHighestObjectBelow(gool_object *obj, vec *trans, vec *next_tran
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
     colliding = 0;
-    if ((test_y >= bound->p2.y || (bound->obj->status_b & 0x400000))
-      && max_y < bound->p2.y
+    if ((test_y >= bound->bound.p2.y || (bound->obj->status_b & 0x400000))
+      && max_y < bound->bound.p2.y
       && TestBoundIntersection(&query->collider_bound, &bound->bound)) {
       found = bound;
       query->i += 4096;
@@ -310,7 +310,7 @@ static int StopAtHighestObjectBelow(gool_object *obj, vec *trans, vec *next_tran
        && obj->invincibility_state != 5)
        || header->category != 0x300
        || ((bound->obj->status_c & 0x1012) && !(bound->obj->state_flags & 10020)))
-        max_y = bound->p2.y + 1;
+        max_y = bound->bound.p2.y + 1;
     }
   }
   if (found)
@@ -425,8 +425,8 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
     if (!(bound->obj->status_b & GOOL_FLAG_SOLID_BOTTOM)) { continue; } /* skip objects which are not solid at the bottom */
     if (TestBoundIntersection(&query->collider_bound, &bound->bound)) {
       found = bound;
-      if (min_y == -999999999 || bound->p1.y <= min_y)
-        min_y = bound->p1.y;
+      if (min_y == -999999999 || bound->bound.p1.y <= min_y)
+        min_y = bound->bound.p1.y;
     }
   }
   GoolCalcBound(&test_bound_ceil, next_trans, &query->collider_bound);
@@ -689,21 +689,21 @@ static void PlotObjWalls(vec *next_trans, gool_object *obj, zone_query *query, i
   test_bound.p2.z = obj_bound.p2.z + (100<<8);
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (flag && bound->obj == obj->collider && test_bound.p1.y >= bound->p2.y) { continue; }
+    if (flag && bound->obj == obj->collider && test_bound.p1.y >= bound->bound.p2.y) { continue; }
     if (!TestBoundIntersection(&test_bound, &bound->bound)) { continue; }
-    node_bound.p1.x = bound->p1.x + bound->obj->hotspot_size;
-    node_bound.p1.y = bound->p1.y;
-    node_bound.p1.z = bound->p1.z + bound->obj->hotspot_size;
-    node_bound.p2.x = bound->p2.x - bound->obj->hotspot_size;
-    node_bound.p2.y = bound->p2.y;
-    node_bound.p2.z = bound->p2.z - bound->obj->hotspot_size;
+    node_bound.p1.x = bound->bound.p1.x + bound->obj->hotspot_size;
+    node_bound.p1.y = bound->bound.p1.y;
+    node_bound.p1.z = bound->bound.p1.z + bound->obj->hotspot_size;
+    node_bound.p2.x = bound->bound.p2.x - bound->obj->hotspot_size;
+    node_bound.p2.y = bound->bound.p2.y;
+    node_bound.p2.z = bound->bound.p2.z - bound->obj->hotspot_size;
     exec = bound->obj->global;
     g_header = (gool_header*)exec->items[0];
     if (zone_has_walls && (bound->obj->status_b & 0x10000)
       && ((!(obj->state_flags & 0x10) && obj->invincibility_state != 5)
         || g_header->category != 0x300
         || ((bound->obj->status_c & 0x1012) && !(bound->obj->state_flags & 0x10020)))) {
-      if (bound->p2.y < test_bound.p1.y || test_bound.p2.y <= bound->p1.y) { continue; }
+      if (bound->bound.p2.y < test_bound.p1.y || test_bound.p2.y <= bound->bound.p1.y) { continue; }
       if (g_header->type == 11) { /* PoPIC? */
         delta.x = (next_trans->x - bound->obj->trans.x) >> 8;
         delta.z = (next_trans->z - bound->obj->trans.z) >> 8;

@@ -77,7 +77,7 @@ static int GuiUnparseObjPtr(void *data, char *str) {
     return 1;
   }
   if (!(((int)data >= (int)objects &&
-         (int)data <= (int)(objects+(GOOL_OBJECT_COUNT-1))) 
+         (int)data <= (int)(objects+(GOOL_OBJECT_COUNT-1)))
       ||((int)data == (int)player)
       ||((int)data >= (int)&handles[0] &&
          (int)data <= (int)&handles[7])
@@ -94,7 +94,7 @@ static int GuiUnparseObjPtr(void *data, char *str) {
     return 1;
   }
   entity = obj->entity;
-  if ((int)entity >= (int)ns.pagemem 
+  if ((int)entity >= (int)ns.pagemem
    && (int)entity <= (int)(ns.pagemem+ns.physical_page_count)) {
     id = entity->id;
     type = entity->type;
@@ -132,11 +132,13 @@ static int GuiObjCodeUnparse(void *data, char *str) {
     sprintf(str, "non-handle object selected");
     return 1;
   }
+#ifndef _WIN32
   stream = open_memstream(&code, &size);
   GoolObjectPrintDebug(obj, stream);
   fclose(stream);
   memcpy(str, code, size);
   str[size] = 0;
+#endif // _WIN32
   return 1;
 }
 #endif

@@ -301,7 +301,7 @@ typedef struct {
 
 /* misc structure definitions */
 typedef struct {
-  bound;
+  bound bound;
   gool_object *obj;
 } gool_bound;
 

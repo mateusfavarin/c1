@@ -6,3 +6,7 @@ c1
 streams/*
 imgui.ini
 !README.MD
+
+.vs
+Debug/*
+Release/*

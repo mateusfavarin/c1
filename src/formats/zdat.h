@@ -40,7 +40,7 @@ typedef struct {
   wgeo_polygon *polygons;
   wgeo_vertex *vertices;
   wgeo_texinfo *texinfos;
-  entry *tpages[8];
+  struct _entry *tpages[8];
 } zone_world;
 
 typedef struct {

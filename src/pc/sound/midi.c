@@ -57,7 +57,7 @@ static void *mem_open(const char *filename) {
   stream->p = buf->data;
   return (void*)stream;
 }
-static int mem_read(void *buf, int count, void *handle) {
+static int mem_read(void *buf, long long count, void *handle) {
   mstream_t *stream;
 
   stream = (mstream_t*)handle;
@@ -65,7 +65,7 @@ static int mem_read(void *buf, int count, void *handle) {
   stream->p += count;
   return FLUID_OK;
 }
-static int mem_seek(void *handle, long offset, int origin) {
+static int mem_seek(void *handle, long long offset, int origin) {
   mstream_t *stream;
 
   stream = (mstream_t*)handle;
@@ -84,7 +84,7 @@ static int mem_close(void *handle) {
   free(stream);
   return FLUID_OK;
 }
-static long mem_tell(void *handle) {
+static long long mem_tell(void *handle) {
   mstream_t *stream;
   long offset;
 
@@ -131,7 +131,7 @@ void SwMidiProcess(int ch, float amp[2], float freq, int len, int16_t *data) {
       fade_rate = context->fade_rate;
       ticks = GetTicksElapsed() / 34;
       ticks -= fade_start;
-      vol[0] = fade_vol[0] + ((float)ticks*fade_rate); 
+      vol[0] = fade_vol[0] + ((float)ticks*fade_rate);
       vol[1] = fade_vol[1] + ((float)ticks*fade_rate);
       if (ticks > fade_len)
         context->fading = 0;
@@ -241,7 +241,7 @@ int16_t SwSepOpen(uint8_t *sep, int vab_id, int count) {
     midi_sizes[i] = mid_size;
     mid += mid_size;
     seq += seq_size;
-  } 
+  }
   mid = midi_data;
   for (i=0;i<count;i++) {
     mid_size = midi_sizes[i];
@@ -265,8 +265,8 @@ void SwSepClose(int san) {
   fluid_synth_t *synth;
   fluid_player_t *player;
   int i, sfid;
-  
-  for (i=0;i<2;i++) { 
+
+  for (i=0;i<2;i++) {
     context = &midi_contexts[i];
     synth = context->synth;
     sfid = context->sfid;

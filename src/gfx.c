@@ -715,17 +715,17 @@ int TgeoOnLoad(entry *tgeo) {
   if (cur_lid != LID_TITLE && cur_lid != LID_INTRO) {
     for (i=0;i<header->texinfo_count;i++) {
       info = (tgeo_texinfo*)info_p;
-      if (info->type == 1 && (info->tpage & 1))
+      if (info->colinfo.type == 1 && (info->tpage & 1))
         info->tpage = (uint32_t)NSProbe(info->tpage); /* TODO: union? */
-      info_p += info->type == 1 ? sizeof(tgeo_texinfo) : sizeof(tgeo_colinfo);
+      info_p += info->colinfo.type == 1 ? sizeof(tgeo_texinfo) : sizeof(tgeo_colinfo);
     }
   }
   else {
     for (i=0;i<header->texinfo_count;i++) {
       info = (tgeo_texinfo*)info_p;
-      if (info->type == 1 && (info->tpage & 1))
+      if (info->colinfo.type == 1 && (info->tpage & 1))
         NSOpen(&info->tpage, 0, 1); /* TODO: union? */
-      info_p += info->type == 1 ? sizeof(tgeo_texinfo) : sizeof(tgeo_colinfo);
+      info_p += info->colinfo.type == 1 ? sizeof(tgeo_texinfo) : sizeof(tgeo_colinfo);
     }
   }
   return SUCCESS;
@@ -1395,11 +1395,11 @@ void GfxTransformFragment(gool_frag *frag, int32_t z, eid_t tpag,
   for (i=0;i<4;i++) {
     prim->verts[i]=r_verts[i];
     /*prim->colors[i]=info->rgb;*/
-    prim->colors[i]=Rgb8ToA32(info.rgb);
+    prim->colors[i]=Rgb8ToA32(info.colinfo.rgb);
     prim->uvs[i]=uvs[i];
   }
   prim->texid=texid;
-  prim->flags=info.semi_trans;
+  prim->flags=info.colinfo.semi_trans;
   z_sum=prim->verts[0].z+prim->verts[1].z+prim->verts[2].z;
   z_dist=z+(0x800-screen_proj/2); /* far??? */
   z_idx=z_dist-(z_sum/32);
@@ -1446,19 +1446,19 @@ void GfxTransformFontChar(gool_object *obj, gool_glyph *glyph, int32_t z,
   for (i=0;i<4;i++) {
     prim->verts[i]=r_verts[i];
     if (gouraud) {
-      rgb.r = (info.r*obj->vert_colors[i].r)>>8;
-      rgb.g = (info.g*obj->vert_colors[i].g)>>8;
-      rgb.b = (info.b*obj->vert_colors[i].b)>>8;
+      rgb.r = (info.colinfo.r*obj->vert_colors[i].r)>>8;
+      rgb.g = (info.colinfo.g*obj->vert_colors[i].g)>>8;
+      rgb.b = (info.colinfo.b*obj->vert_colors[i].b)>>8;
       prim->colors[i]=Rgb8ToA32(rgb);
     }
     else {
       // prim->colors[i]=info.rgb;
-      prim->colors[i]=Rgb8ToA32(info.rgb);
+      prim->colors[i]=Rgb8ToA32(info.colinfo.rgb);
     }
     prim->uvs[i]=uvs[i];
   }
   prim->texid=texid;
-  prim->flags=info.semi_trans;
+  prim->flags=info.colinfo.semi_trans;
   z_sum=prim->verts[0].z+prim->verts[1].z+prim->verts[2].z;
   z_dist=z+(0x800-screen_proj/2); /* far??? */
   z_idx=z_dist-(z_sum/32);
@@ -1855,10 +1855,10 @@ void GfxAnimMapPaths(uint32_t flags_a, uint32_t flags_b) {
       poly = &polys[poly_idx];
       bit_idx = poly_idx2 % 32;
       mask = (1 << bit_idx);
-      if ((poly_idx2 < 32 && (flags_a & mask)) 
+      if ((poly_idx2 < 32 && (flags_a & mask))
        || (poly_idx2 >= 32 && (flags_b & mask)))
         poly->anim_mask = 7;
-      else 
+      else
         poly->anim_mask = 0;
     }
   }

@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\formats">
+      <UniqueIdentifier>{efe18388-2aee-4c2d-899c-073306d5a4e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc">
+      <UniqueIdentifier>{d2837d4a-0441-4f9d-9e04-74e86a8138fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc\gfx">
+      <UniqueIdentifier>{fb7975ba-9351-40f6-b101-ad50d9db62af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc\sound">
+      <UniqueIdentifier>{d6902ab0-b209-43ac-910d-0f5e62158208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pc\sound\formats">
+      <UniqueIdentifier>{f62b9bfb-0073-43d0-89e8-364972b8d8c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{2f6d100c-8c2a-4dff-918f-4a7954609175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ext">
+      <UniqueIdentifier>{7fe155ba-1875-45cf-8fc7-c7025ba236ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ext\lib">
+      <UniqueIdentifier>{d48c54b8-0c93-4ec7-9d04-4d3b908f380c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc">
+      <UniqueIdentifier>{85e1eee7-0fbd-4faf-bed1-c1b2b2c6bbd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc\gfx">
+      <UniqueIdentifier>{a6f8af39-9b43-47c4-b384-b19a11958a1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pc\sound">
+      <UniqueIdentifier>{92af45ca-6ff1-441a-8324-e66e98baebc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{2b3d1571-eb0b-4334-99d5-b21294d79b8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ext">
+      <UniqueIdentifier>{011a1b3b-6173-4028-8e86-ae4f8edd2450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ext\lib">
+      <UniqueIdentifier>{180170bd-60c1-465b-8c82-d0c457fef28f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\audio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cam.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gfx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\level.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\math.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\midi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\misc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ns.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbak.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\slst.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\solid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\title.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\init.c">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\math.c">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\pad.c">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\gfx\gl.c">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\gfx\soft.c">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\gfx\tex.c">
+      <Filter>Source Files\pc\gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\sound\audio.c">
+      <Filter>Source Files\pc\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\sound\midi.c">
+      <Filter>Source Files\pc\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\sound\util.c">
+      <Filter>Source Files\pc\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\list.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\tree.c">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ext\disgool.c">
+      <Filter>Source Files\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ext\gui.c">
+      <Filter>Source Files\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ext\refl.c">
+      <Filter>Source Files\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ext\lib\gui.c">
+      <Filter>Source Files\ext\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ext\lib\refl.c">
+      <Filter>Source Files\ext\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pc\time.c">
+      <Filter>Source Files\pc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\geom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\midi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ns.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\slst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\solid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\title.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\cvtx.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\gool.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\imag.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\inst.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\ipal.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\mdat.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\midi.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\pbak.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\slst.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\svtx.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\tgeo.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\wgeo.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\formats\zdat.h">
+      <Filter>Header Files\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\init.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\math.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\pad.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\time.h">
+      <Filter>Header Files\pc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\gl.h">
+      <Filter>Header Files\pc\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\pcgfx.h">
+      <Filter>Header Files\pc\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\soft.h">
+      <Filter>Header Files\pc\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\gfx\tex.h">
+      <Filter>Header Files\pc\gfx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\audio.h">
+      <Filter>Header Files\pc\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\midi.h">
+      <Filter>Header Files\pc\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\util.h">
+      <Filter>Header Files\pc\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\formats\psx.h">
+      <Filter>Header Files\pc\sound\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\formats\sf2.h">
+      <Filter>Header Files\pc\sound\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pc\sound\formats\smf.h">
+      <Filter>Header Files\pc\sound\formats</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\list.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\tree.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ext\disgool.h">
+      <Filter>Header Files\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ext\gui.h">
+      <Filter>Header Files\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ext\refl.h">
+      <Filter>Header Files\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ext\lib\gui.h">
+      <Filter>Header Files\ext\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ext\lib\refl.h">
+      <Filter>Header Files\ext\lib</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1035,11 +1035,11 @@ CIMGUI_API bool igMenuItem_BoolPtr(const char* label,const char* shortcut,bool* 
 }
 CIMGUI_API void igBeginTooltip()
 {
-    return ImGui::BeginTooltip();
+    ImGui::BeginTooltip();
 }
 CIMGUI_API void igEndTooltip()
 {
-    return ImGui::EndTooltip();
+    ImGui::EndTooltip();
 }
 CIMGUI_API void igSetTooltip(const char* fmt,...)
 {

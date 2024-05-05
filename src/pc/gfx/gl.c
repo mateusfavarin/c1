@@ -1,7 +1,13 @@
 /*
  * opengl pc gfx backend
  */
+#ifdef _WIN32
+#include <Windows.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
+#else
 #include <GL/gl.h>
+#endif
 #include "gl.h"
 #include "pcgfx.h"
 #include "globals.h"
@@ -79,6 +85,9 @@ int GLInit(gl_callbacks *_callbacks) {
   int i;
 
   callbacks = *_callbacks;
+#ifdef _WIN32
+  glewInit();
+#endif
 #ifdef CFLAGS_GUI
   GLInitGui();
 #endif
