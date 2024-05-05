@@ -3,10 +3,10 @@
 c1
 
 # user files
-streams/*
+streams/
 imgui.ini
 !README.MD
 
 .vs
-Debug/*
-Release/*
+Debug/
+Release/

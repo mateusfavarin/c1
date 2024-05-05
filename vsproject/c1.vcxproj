@@ -58,6 +58,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)/;$(SolutionDir)../3rd_party/GLEW/lib/Release/Win32/;$(SolutionDir)../3rd_party/SDL/lib/x86/;$(SolutionDir)../3rd_party/fluidsynth/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>cimgui.lib;glew32s.lib;opengl32.lib;SDL2.lib;fluidsynth.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)..\3rd_party\SDL\lib\x86\*.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\3rd_party\fluidsynth\tools\fluidsynth\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,6 +82,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)/;$(SolutionDir)../3rd_party/GLEW/lib/Release/Win32/;$(SolutionDir)../3rd_party/SDL/lib/x86/;$(SolutionDir)../3rd_party/fluidsynth/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>cimgui.lib;glew32s.lib;opengl32.lib;SDL2.lib;fluidsynth.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)..\3rd_party\SDL\lib\x86\*.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\3rd_party\fluidsynth\tools\fluidsynth\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\audio.c" />
