@@ -229,7 +229,7 @@ int16_t SwSepOpen(uint8_t *sep, int vab_id, int count) {
   for (i=0;i<count;i++) {
     context = &midi_contexts[i];
     synth = context->synth;
-    sfid = fluid_synth_sfload(synth, (const char*)&buf, 0);
+    sfid = fluid_synth_sfload(synth, buf.dummy, 0);
     context->sfid = sfid;
   }
   midi_data = (uint8_t*)malloc(0x80000);

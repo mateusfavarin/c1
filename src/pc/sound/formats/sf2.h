@@ -128,6 +128,8 @@ typedef struct {
   SFCtrlType_t type:6;
 } __attribute__((packed)) SFModulator;
 
+typedef uint16_t SFModulator_t;
+
 #define setsfm(m,i,c,d,p,t) \
 m.index = i; \
 m.cc = c; \
@@ -144,10 +146,10 @@ typedef enum {
 typedef uint16_t SFTransform_t;
 
 typedef struct {
-  SFModulator sfModSrcOper;
+  SFModulator_t sfModSrcOper;
   SFGenerator_t sfModDestOper;
   uint16_t modAmount;
-  SFModulator sfModAmtSrcOper;
+  SFModulator_t sfModAmtSrcOper;
   SFTransform_t sfModTransOper;
 } __attribute__((packed)) sfModList;
 
@@ -163,7 +165,7 @@ typedef union {
 } genAmountType;
 
 typedef struct {
-  SFGenerator sfGenOper;
+  SFGenerator_t sfGenOper;
   genAmountType genAmount;
 } sfGenList;
 
