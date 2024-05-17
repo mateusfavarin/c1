@@ -10,9 +10,9 @@
 #endif
 
 /* compilation settings */
-#define LID_BOOTLEVEL             LID_TITLE
+#define LID_BOOTLEVEL             LID_NSANITYBEACH
 #ifndef PSX                       /* non-PSX target options */
-#define GFX_SW_PERSP
+#define CFLAGS_GFX_SW_PERSP
 #endif
 
 /* codes */
@@ -33,7 +33,7 @@
 
 #define ISERRORCODE(v)   ((int)(v) < 0 && (int)(v) > SUCCESS)
 /* can be used to check pointer status, which will have the most significant bit set and also be smaller than -255 */
-#define ISSUCCESSCODE(v) ((int)(v) <= SUCCESS) 
+#define ISSUCCESSCODE(v) ((int)(v) <= SUCCESS)
 #define ISCODE(v)        ((int)(v) < 0 && (int)(v) >= -255)
 
 /* aliases */

@@ -57,7 +57,7 @@ size_t ADPCMToPCM16(uint8_t *adpcm, size_t size, uint8_t *pcm, int *loop) {
   if (loop) { *loop = -1; }
   for (i=0;i<size/sizeof(VagLine);i++) {
     Next(adpcm, VagLine, line);
-    if ((line->flags & 4) && (i>1) && loop) { 
+    if ((line->flags & 4) && (i>1) && loop) {
       *loop = (int)(pcm - start);
     }
     for (j=0;j<14;j++) {
@@ -99,7 +99,7 @@ size_t SeqToMid(uint8_t *seq, uint8_t *mid, size_t *seq_size) {
   MMed m;
   size_t size;
   int type, length, i;
- 
+
   type = 7;
   SeqNext(seq, SThd, sthd);
   MidNext(mid, MThd, mthd);
@@ -126,7 +126,7 @@ size_t SeqToMid(uint8_t *seq, uint8_t *mid, size_t *seq_size) {
   m.tsg->cpt = 24;
   m.tsg->npc = 8;
   length = 0;
-  while (1) { 
+  while (1) {
     if (seq[0]==0 && seq[1]==0 && seq[2]==0xFF && seq[3]==0x2F) {
       *(mid++) = 0;
       seq++;
@@ -174,7 +174,7 @@ size_t SeqToMid(uint8_t *seq, uint8_t *mid, size_t *seq_size) {
     for (i=0;i<length;i++)
       *(mid++) = *(seq++);
   }
-  
+
   length = mid - mtrk->data;
   mtrk->length = SwapEndian(length, mtrk->length);
   size = mid - (uint8_t*)mthd;
@@ -189,7 +189,6 @@ size_t SeqToMid(uint8_t *seq, uint8_t *mid, size_t *seq_size) {
 Sf2Next(s,CK,c); \
 set4c(c->ckID,t); \
 set4c(c->fccType,n); \
-s += sizeof(char)*4; 
 
 #define Sf2NextCk(s,c,n) \
 Sf2Next(s,CK,c); \
@@ -237,7 +236,7 @@ size_t VabToSf2(uint8_t *vab, uint8_t *sf2) {
     wave_offs += vb->wave_sizes[i] << 3;
   }
   prog_count = 0;
-  for (i=0;i<128;i++) { 
+  for (i=0;i<128;i++) {
     prog = &progs[i];
     prog->atr = &va->atrs[i];
     if (prog->atr->tones == 0) { continue; }
@@ -320,8 +319,8 @@ size_t VabToSf2(uint8_t *vab, uint8_t *sf2) {
   }
   tpbag->wModNdx = 0;
   tpbag->wGenNdx = ((sf2 - (uint8_t*)ck2) - 8) / sizeof(sfGenList);
-  Sf2Next(sf2, sfGenList, hrc.pgen);  
-  *((uint16_t*)hrc.pgen) = 0; 
+  Sf2Next(sf2, sfGenList, hrc.pgen);
+  *((uint16_t*)hrc.pgen) = 0;
   ck2->ckSize = (sf2 - (uint8_t*)ck2) - 8;
   Sf2NextCk(sf2, ck2, "inst");
   prog_count = 0;
@@ -433,7 +432,7 @@ size_t VabToSf2(uint8_t *vab, uint8_t *sf2) {
     hrc.shdr->achSampleName[7] = '0'+((i/10)%10);
     hrc.shdr->achSampleName[8] = '0'+(i%10);
     hrc.shdr->dwStart = (waves[i] - waves[0]) / sizeof(int16_t);
-    hrc.shdr->dwEnd = (wave_ends[i] - waves[0]) / sizeof(int16_t); 
+    hrc.shdr->dwEnd = (wave_ends[i] - waves[0]) / sizeof(int16_t);
     hrc.shdr->dwStartloop = hrc.shdr->dwStart;
     hrc.shdr->dwEndloop = hrc.shdr->dwStart;
     hrc.shdr->dwSampleRate = 44100;
@@ -447,6 +446,6 @@ size_t VabToSf2(uint8_t *vab, uint8_t *sf2) {
   ck2->ckSize = (sf2 - (uint8_t*)ck2) - 8;
   ck1->ckSize = (sf2 - (uint8_t*)ck1) - 8;
   ck0->ckSize = (sf2 - (uint8_t*)ck0) - 8;
-  size = ck0->ckSize + 8;  
+  size = ck0->ckSize + 8;
   return size;
 }

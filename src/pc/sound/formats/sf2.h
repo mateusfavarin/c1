@@ -96,6 +96,8 @@ typedef enum {
   sfgForce16Bit               = 65535
 } __attribute__((packed)) SFGenerator;
 
+typedef uint16_t SFGenerator_t;
+
 typedef enum {
   noController   = 0,
   noteOnVel      = 1,
@@ -107,6 +109,8 @@ typedef enum {
   link           = 127
 } __attribute__((packed)) SFCtrlPalette;
 
+typedef uint8_t SFCtrlPalette_t;
+
 typedef enum {
   linear         = 0,
   concave        = 1,
@@ -114,12 +118,14 @@ typedef enum {
   _switch        = 3
 } __attribute__((packed)) SFCtrlType;
 
+typedef uint8_t SFCtrlType_t;
+
 typedef struct {
-  SFCtrlPalette index:7;
+  SFCtrlPalette_t index:7;
   uint16_t cc:1;
   uint16_t direction:1;
   uint16_t polarity:1;
-  SFCtrlType type:6;
+  SFCtrlType_t type:6;
 } __attribute__((packed)) SFModulator;
 
 #define setsfm(m,i,c,d,p,t) \
@@ -135,12 +141,14 @@ typedef enum {
   sfctForce16Bit = 65535
 } __attribute__((packed)) SFTransform;
 
+typedef uint16_t SFTransform_t;
+
 typedef struct {
   SFModulator sfModSrcOper;
-  SFGenerator sfModDestOper;
+  SFGenerator_t sfModDestOper;
   uint16_t modAmount;
   SFModulator sfModAmtSrcOper;
-  SFTransform sfModTransOper;
+  SFTransform_t sfModTransOper;
 } __attribute__((packed)) sfModList;
 
 typedef struct {
@@ -183,6 +191,8 @@ typedef enum {
   RomLinkedSample = 0x8008
 } __attribute__((packed)) SFSampleLink;
 
+typedef uint16_t SFSampleLink_t;
+
 typedef struct {
   char achSampleName[20];
   uint32_t dwStart;
@@ -193,8 +203,8 @@ typedef struct {
   uint8_t byOriginalKey;
   char chCorrection;
   uint16_t wSampleLink;
-  SFSampleLink sfSampleType;
-} __attribute__((packed)) sfSample; 
+  SFSampleLink_t sfSampleType;
+} __attribute__((packed)) sfSample;
 
 typedef union { /* info sub-record */
   sfVersionTag *ifil;
