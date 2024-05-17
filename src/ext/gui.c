@@ -287,7 +287,7 @@ static void FloatsToRgb(float in[3], void *out) {
 }
 
 static gui_item *GuiReflRgb8(gui_item **children) {
-  gui_item *item, *it, *content;
+  gui_item *item, *content;
   void *data;
   int i;
 
@@ -301,7 +301,7 @@ static gui_item *GuiReflRgb8(gui_item **children) {
 }
 
 static gui_item *GuiReflRgb16(gui_item **children) {
-  gui_item *item, *it, *content;
+  gui_item *item, *content;
   void *data;
   int i;
 
@@ -315,7 +315,7 @@ static gui_item *GuiReflRgb16(gui_item **children) {
 }
 
 static gui_item *GuiReflRgb(gui_item **children) {
-  gui_item *item, *it, *content;
+  gui_item *item, *content;
   void *data;
   int i;
 

@@ -338,7 +338,6 @@ gui_item *GuiNodeMap(void *data, void **c_mapped) {
 }
 
 gui_item *GuiTreeNode(gui_item *tree, void *data) {
-  gui_item *item;
   gui_tree *tr;
   gui_tree_sync *sync;
   tree_node_t *n;
