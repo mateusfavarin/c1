@@ -510,7 +510,7 @@ static void TitleCalcUvs(uvinfo *uvinfos) {
 void TitleCalcTiles(title_struct *ts, int x_offs, int y_offs) {
   tileinfo *tileinfo;
   uvinfo *uvinfo;
-  int i, ii, idx;
+  int i, ii;
 
   TitleCalcUvs(ts->uvinfos);
 #ifdef PSX
@@ -530,7 +530,7 @@ void TitleCalcTiles(title_struct *ts, int x_offs, int y_offs) {
   SetDrawMode(&ts->dr_modes[3], 1, 1, ts->tpage_ids[3], &tw);
 #endif
   for (i=0;i<16;i++) {
-    for (ii=0;ii<33;ii++,idx++) {
+    for (ii=0;ii<33;ii++) {
       tileinfo = &ts->tileinfos[i+(ii*16)];
       uvinfo = &ts->uvinfos[i+(ii*16)];
       tileinfo->x_idx = ii + (x_offs >> 4);
@@ -564,7 +564,7 @@ void TitleLoadImages(timginfo *info, int x_offs, int y_offs) {
   uvinfo *uvinfo;
   rect216 rect;
   int x_idx, y_idx, w_idx, h_idx;
-  int i, ii, idx;
+  int i, ii;
 #ifdef PSX
   DrawSync(0);
 #else
@@ -573,7 +573,7 @@ void TitleLoadImages(timginfo *info, int x_offs, int y_offs) {
   w_idx = title->w_idx;
   h_idx = title->h_idx;
   for (i=0;i<15;i++) { /* y */
-    for (ii=0;ii<32;ii++,idx++) { /* x */
+    for (ii=0;ii<32;ii++) { /* x */
       x_idx = ii+(x_offs>>4);
       y_idx = i+(y_offs>>4);
       if (x_idx >= w_idx || y_idx >= h_idx) { continue; }

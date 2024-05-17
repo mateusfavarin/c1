@@ -1413,15 +1413,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   nss->level_update_pending = 1;
   nsd_filename = NSGetFilename(0, lid);
   strcpy(filename, nsd_filename);
-#ifdef PSX
-#ifdef NS_FILEMAP
-  nsd = NSTransferFile(filemap[lid], nsd, 1, 0);
-#else
-  nsd = NSTransferFile(filename, nsd, 1, 0);
-#endif
-#else
   nsd = (struct _nsd*)NSFileRead(filename, 0);
-#endif
   nss->nsd = nsd;
   /* record pointers to nsd data */
   nss->ldat_eid = &nsd->ldat_eid;
@@ -1431,10 +1423,6 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   /* display loading screen */
   TitleLoading(lid, nss->ldat->image_data, nsd);
   nsd_size = sizeof(nsd) + sizeof(nsd_pte)*nsd->page_table_size + sizeof(nsd_ldat);
-#ifdef PSX
-  /* note: psy-q realloc always shrinks in-place */
-  nss->nsd = realloc(nss->nsd, nsd_size); /* trim splash screen image */
-#endif
   /* convert pte bucket relative offsets to absolute pointers */
   buckets = nss->pte_buckets;
   offsets = nss->nsd->ptb_offsets;
@@ -1442,29 +1430,6 @@ void NSInit(ns_struct *nss, uint32_t lid) {
     buckets[i] = &nss->page_table[offsets[i]];
   nsf_filename = NSGetFilename(1, lid);
   strcpy(filename, nsf_filename);
-#ifdef PSX
-  /* record position of nsf file */
-  if (use_cd) { /* cd-rom read? */
-#ifdef NS_FILEMAP
-    ns->nsf_loc = mapping->nsf_loc; /* TODO: mapping? */
-#else
-    CdlFile fp;
-    if (CDSearchFile(&fp, filename) == 0)
-      return ERROR_READ_FAILED;
-    nss->nsf_loc = fp.loc;
-#endif
-  }
-  else {
-#ifdef NS_TRANSFER_PC
-    uint32_t handle = PCopen(filename);
-    ns->nsf_loc = handle;
-    if (handle == -1) {
-      PCclose(-1);
-      return -16;
-    }
-#endif
-  }
-#endif
   /* allocate and init the page map */
   page_count = nss->nsd->page_count;
   nss->page_map = (page_struct**)malloc(page_count*sizeof(page_struct*));
@@ -1476,38 +1441,6 @@ void NSInit(ns_struct *nss, uint32_t lid) {
     if (subsys[i].init)
       (*subsys[i].init)();
   }
-#ifdef PSX
-  /* allocate and init 22 64 kb physical pages (max) */
-  physical_page_count = 22;
-  do {
-    pagemem = malloc(physical_page_count*PAGE_SIZE);
-    if (pagemem) {
-      nss->pagemem = pagemem;
-      break;
-    }
-  } while (physical_page_count > 0);
-  nss->physical_page_count = physical_page_count;
-  ps = &nss->physical_pages[0];
-  for (i=0;i<physical_page_count;i++,ps++) {
-    ps->state = 1;
-    ps->type = 1;
-    ps->idx = i;
-    ps->ref_count = 0;
-    ps->page = &pagemem[i];
-  }
-
-  /* init 38 virtual pages */
-  virtual_page_count = 38;
-  nss->virtual_page_count = virtual_page_count;
-  ps = &nss->virtual_pages[0];
-  for (i=0;i<virtual_page_count;i++,ps++) {
-    ps->state = 1;
-    ps->type = 0;
-    /* no idx recorded for virtual pages */
-    ps->ref_count = 0;
-    ps->page = 0;
-  }
-#else
   /* load all uncompressed pages in nsf into pagemem */
   physical_page_count = page_count;
   pagemem = (page*)NSFileReadFrom(filename, nsd->pages_offset*SECTOR_SIZE, &pagemem_size);
@@ -1528,9 +1461,8 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   /* no need for virtual pages */
   nss->virtual_page_count = 0;
   /* set page map */
-  for (i=0;i<page_count;i++)
-    nss->page_map[i] = &nss->physical_pages[i];
-#endif
+  for (i = 0; i < page_count; i++) { nss->page_map[i] = &nss->physical_pages[i]; }
+
   printf("Inited and Allocated %d pages\n", physical_page_count);
   NSInitTexturePages(nss, lid);
   NSInitAudioPages(nss, lid);

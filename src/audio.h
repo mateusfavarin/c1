@@ -4,12 +4,7 @@
 #include "common.h"
 #include "geom.h"
 #include "gool.h"
-#ifdef PSX
-#include <LIBSPU.H>
-#include <LIBSND.H>
-#else
 #include "pc/sound/audio.h"
-#endif
 
 typedef union {
   gool_object *o;
