@@ -228,7 +228,7 @@ uint8_t *NSFileReadRange(char *filename, int start, int end, size_t *size) {
 
   if (end == 0 || (end != -1 && start >= end)) { return 0; }
   if (size == 0) { size = &tmp; }
-  file = fopen(filename, "r");
+  file = fopen(filename, "rb");
   fseek(file, 0, SEEK_END);
   end = end == -1 ? ftell(file) : end;
   *size = end - start;
