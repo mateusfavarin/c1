@@ -1,19 +1,15 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#ifndef PSX
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#endif
 
 /* compilation settings */
 #define LID_BOOTLEVEL             LID_TITLE
-#ifndef PSX                       /* non-PSX target options */
 #define CFLAGS_GFX_SW_PERSP
-#endif
 
 /* codes */
 #define SUCCESS                   -255

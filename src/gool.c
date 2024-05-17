@@ -9,13 +9,8 @@
 #ifdef GOOL_DEBUG
 #include "ext/disgool.h"
 #endif
-#ifdef PSX
-#include <LIBGTE.h>
-#include "psx/card.h"
-#else
 #include "pc/gfx/soft.h"
 int CardControl(int op, int part_idx) { return 1; }
-#endif
 
 /* forward declarations for unexported funcs */
 int GoolObjectChangeState(gool_object*,uint32_t,int,uint32_t*);
@@ -108,20 +103,11 @@ const gool_accel_state accel_states[7] = { /* 80052C24 */
 };
 
 /* .sdata */
-#ifdef PSX
-#include "psx/r3000a.h"
-extern scratch scratch;
-gool_const_buf in_consts  =
-  { .buf = scratch.consts, .idx = 0 }; /* 80056480; gp[0x21] */
-gool_const_buf out_consts =
-  { .buf = scratch.consts, .idx = 0 }; /* 80056488; gp[0x23] */
-#else
 uint32_t consts[2];
 gool_const_buf in_consts  =
   { .buf = consts, .idx = 0 };     /* 80056480; gp[0x21] */
 gool_const_buf out_consts =
   { .buf = consts, .idx = 0 };     /* 80056488; gp[0x23] */
-#endif
 /* .sbss */
 eid_t crash_eid    = 0;            /* 800566B0; gp[0xAD] */
 gool_object *crash = 0;            /* 800566B4; gp[0xAE] */
@@ -138,15 +124,10 @@ gool_bound object_bounds[28];      /* 80060E08 */
 int object_bound_count;            /* 80061888 */
 gool_globals globals;              /* 8006188C */
 
-#ifdef PSX
-#include "psx/gpu.h"
-extern gfx_context_db context;
-#else
 #include "pc/gfx/gl.h"
 #include "pc/gfx/soft.h"
 extern gl_context context;
 extern sw_transform_struct params;
-#endif
 extern int draw_count;
 
 extern ns_struct ns;
@@ -968,11 +949,7 @@ void GoolUpdateObjects(int flag) {
 
   object_bound_count = 0;
   draw_count_ro = draw_count;
-#ifdef PSX
-  frames_elapsed = context.c2_p->draw_stamp / 34;
-#else
   frames_elapsed = context.draw_stamp / 34;
-#endif
   if (!crash) { return; }
   for (i=0;i<8;i++) {
     handle = &handles[i];
@@ -1233,11 +1210,7 @@ void GoolObjectTransform(gool_object *obj) {
   status_b = obj->status_b;
   anim = (gool_anim*)obj->anim_seq;
   frame_idx = obj->anim_frame >> 8;
-#ifdef PSX
-  ot = context.cur->ot;
-#else
   ot = context.ot;
-#endif
   switch (anim->type) {
   case GOOL_ANIM_TYPE_VTX:
     en = NSLookup(&anim->v.eid);
@@ -1268,17 +1241,6 @@ void GoolObjectTransform(gool_object *obj) {
     header = (zone_header*)cur_zone->items[0];
     far = header->visibility_depth >> 8;
     flag2 = (status_b & 0x40000)?0:1;
-#ifdef PSX
-    res = RGteCalcSpriteRotMatrix(
-      obj_vectors,
-      cam_vectors,
-      flag,
-      shrink,
-      m_rot,
-      screen_proj,
-      far);/*,
-      flag2);*/
-#else
     res = SwCalcSpriteRotMatrix(
       obj_vectors,
       cam_vectors,
@@ -1288,22 +1250,8 @@ void GoolObjectTransform(gool_object *obj) {
       screen_proj,
       far,
       &params);
-#endif
     if (!res) { return; }
     info2 = &anim->s.texinfos[frame_idx];
-#ifdef PSX
-    res = (int)NSLookup(&anim->s.tpage);
-    pginfo = *((tpageinfo*)&res);
-    prims_tail = GpuGetPrimsTail();
-    RGteTransformSprite(
-      context.cur->ot,
-      info2,
-      pginfo,
-      200 << shrink,
-      obj->size + 0x800-(screen_proj/2),
-      prims_tail,
-      (rect28*)uv_map);
-#else
     tpag = anim->s.tpage;
     prims_tail = GLGetPrimsTail();
     SwTransformSprite(
@@ -1315,7 +1263,6 @@ void GoolObjectTransform(gool_object *obj) {
       prims_tail,
       (rect28*)uv_map,
       &params);
-#endif
     break;
   case GOOL_ANIM_TYPE_FONT:
     break;
@@ -1333,17 +1280,6 @@ void GoolObjectTransform(gool_object *obj) {
     header = (zone_header*)cur_zone->items[0];
     far = header->visibility_depth >> 8;
     flag2 = (status_b & 0x40000)?0:1;
-#ifdef PSX
-    res = RGteCalcSpriteRotMatrix(
-      obj_vectors,
-      cam_vectors,
-      flag,
-      shrink,
-      m_rot,
-      screen_proj,
-      far);/*,
-      flag2);*/
-#else
     res = SwCalcSpriteRotMatrix(
       obj_vectors,
       cam_vectors,
@@ -1353,7 +1289,6 @@ void GoolObjectTransform(gool_object *obj) {
       screen_proj,
       far,
       &params);
-#endif
     if (!res) { return; }
     offs = frame_idx*anim->r.frag_count;
     frags = &anim->r.frags[offs];
@@ -1368,11 +1303,7 @@ void GoolObjectTransform(gool_object *obj) {
       bound.p1.y = frags[i].y1 << shrink;
       bound.p2.x = frags[i].x2 << shrink;
       bound.p2.y = frags[i].y2 << shrink;
-#ifdef PSX
-      GfxTransformFragment(&frags[i], obj->size, pginfo, &bound, ot);
-#else
       GfxTransformFragment(&frags[i], obj->size, tpag, &bound, ot);
-#endif
     }
   }
 }
@@ -1383,11 +1314,7 @@ static int GoolTextStringTransform(
   char *str,
   int val,
   gool_font *font,
-#ifdef PSX
-  tpageinfo pginfo,
-#else
   eid_t tpag,
-#endif
   int size,
   void **prims_tail) {
   gool_glyph *glyph;
@@ -1467,22 +1394,14 @@ static int GoolTextStringTransform(
         if (bound.p2.y > bound2.p2.y)
           bound2.p2.y = bound.p2.y;
       }
-#ifdef PSX
-      GfxTransformFontChar(obj, glyph, obj->size, pginfo, &bound, prims_tail, flag);
-#else
       GfxTransformFontChar(obj, glyph, obj->size, tpag, &bound, prims_tail, flag);
-#endif
     }
     bound.p1.x += (int32_t)(glyph->width << size);
   }
   if (center && prims_tail && font->has_backdrop) {
     bound2.p1.x -= 100;
     bound2.p2.x += 100;
-#ifdef PSX
-    GfxTransformFragment(&font->backdrop, obj->size - 10, pginfo, &bound2, prims_tail);
-#else
     GfxTransformFragment(&font->backdrop, obj->size - 10, tpag, &bound2, prims_tail);
-#endif
   }
   return max_x;
 }
@@ -1500,16 +1419,6 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
   int i, j, res, start;
 
   size = abs(obj->scale.x) / 27279; /* scale ignores flip */
-#ifdef PSX
-  res = RGteCalcSpriteRotMatrix(
-    &obj->vectors,
-    (gool_vectors*)&cam_trans_prev,
-    !(obj->status_b & GOOL_FLAG_2D),
-    size,
-    &ms_rot,
-    screen_proj,
-    0x3C00);
-#else
   res = SwCalcSpriteRotMatrix(
     &obj->vectors,
     (gool_vectors*)&cam_trans_prev,
@@ -1519,7 +1428,6 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
     screen_proj,
     0x3C00,
     &params);
-#endif
   if (!res) { return; }
   str = text->strings;
   for (i=0,j=0;j<terms_skip;i++) {
@@ -1542,16 +1450,6 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
     }
     buf[i+1] = 0; /* place null term at end of truncated string */
   }
-#ifdef PSX
-  res = (int)NSLookup(&font->tpage);
-  pginfo = *(tpageinfo*)&res;
-  if (flag)
-    arg = GoolTextStringTransform(obj, str, 0, font, pginfo, size, 0);
-  else
-    arg = 0;
-  prims_tail = GpuGetPrimsTail();
-  GoolTextStringTransform(obj, str, -arg/2, font, pginfo, size, prims_tail);
-#else
   tpag = font->tpage;
   if (flag)
     arg = GoolTextStringTransform(obj, buf, 0, font, tpag, size, 0);
@@ -1559,7 +1457,6 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
     arg = 0;
   prims_tail = GLGetPrimsTail();
   GoolTextStringTransform(obj, buf, -arg/2, font, tpag, size, prims_tail);
-#endif
 }
 
 static inline int GoolObjectColorByZone(gool_object *obj) {
@@ -1802,11 +1699,7 @@ int GoolObjectPhysics(gool_object *obj) {
 
   status_a = obj->status_a;
   status_b = obj->status_b;
-#ifdef PSX
-  scale = min(context->c1_p.ticks_per_frame, 0x66);
-#else
   scale = min(context.ticks_per_frame, 0x66);
-#endif
   if ((status_b & GOOL_FLAG_DPAD_CONTROL) && game_state == GAME_STATE_PLAYING) { /* dir controlled by joypad? */
     speed_scale = GoolObjectControlDir(obj, scale);
     /* calc velocity vector */
@@ -2278,11 +2171,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
     case 0x1B: {
       int32_t speed, velocity;
       G_TRANS_GOPS(obj,instruction,sa,sb);
-#ifdef PSX
-      speed = min(context.cur->ticks_per_frame, 0x66); /* offset 0x84 in disp */
-#else
       speed = min(context.ticks_per_frame, 0x66);
-#endif
       velocity = sb + (sa*speed)/1024;
       GoolObjectPush(obj, velocity);
       break;
@@ -2824,11 +2713,6 @@ void GoolOpMisc(gool_object *obj, uint32_t instruction) {
       break;
     }
     case 10: { /* seek disc to nsf */
-      uint32_t lid;
-      lid = *(ptr) >> 8;
-#ifdef PSX
-      NsCdSeek(lid); /* seek disc to location of NSF file for lid */
-#endif
       break;
     }
     case 11: /* reset global variables */
@@ -3456,11 +3340,7 @@ int16_t GoolObjectRotate(int16_t anga, int16_t angb, int32_t speed, gool_object 
   uint32_t scale;
   int32_t velocity, delta, abs_delta;
 
-#ifdef PSX
-  scale = min(context.c1_p->ticks_per_frame, 0x66);
-#else
   scale = min(context.ticks_per_frame, 0x66);
-#endif
   velocity = (speed*(int32_t)scale)/1024;
   anga = angle12(anga);
   angb = angle12(angb);
@@ -3512,11 +3392,7 @@ int16_t GoolObjectRotate2(int16_t anga, int16_t angb, int32_t speed, gool_object
   uint32_t scale;
   int32_t velocity, delta, abs_delta;
 
-#ifdef PSX
-  scale = min(context.c1_p->ticks_per_frame, 0x66);
-#else
   scale = min(context.ticks_per_frame, 0x66);
-#endif
   velocity = (speed*(int32_t)scale)/1024; /* angular speed */
   anga = angle12(anga);
   angb = angle12(angb);
@@ -3648,13 +3524,7 @@ int GoolTransform2(vec *in, vec *out, int flag) {
     v_in.y = (in->y - cam_trans_prev.y) >> 8;
     v_in.z = (in->z - cam_trans_prev.z) >> 8;
   }
-#ifdef PSX
-  SetRotMatrix(m_rot);
-  SetTransMatrix(&m_trans);
-  RotTrans(v_in, out, &flag);
-#else
   SwRotTrans(&v_in, &v_out, &mn_trans.t, m_rot);
-#endif
   v_out.x <<= 8;
   v_out.y = -(out->y << 8);
   v_out.z <<= 8;
@@ -3665,25 +3535,16 @@ int GoolTransform2(vec *in, vec *out, int flag) {
 //----- (800249E0) --------------------------------------------------------
 int GoolProject(vec *in, vec *out) {
   vec v_in;
-  int32_t p,flag;
-  int32_t sz0,sz1,sz2;
+  int32_t sz2;
 
   v_in.x = (in->x - cam_trans.x) >> 8;
   v_in.y = (in->y - cam_trans.y) >> 8;
   v_in.z = (in->z - cam_trans.z) >> 8;
-#ifdef PSX
-  vec16 r_out;
-  SetRotMatrix(&ms_cam_rot);
-  SetTransMatrix(&mn_trans);
-  RotTransPers(&v_in, &r_out, &p, &flag);
-  ReadSZfifo3(&sz0, &sz1, &sz2);
-#else
   vec r_out;
   vec2 offs;
   offs.x=0;offs.y=0;
   SwRotTransPers(&v_in, &r_out, &mn_trans.t, &ms_cam_rot, &offs, screen_proj);
   sz2 = r_out.z;
-#endif
   out->x = (r_out.x) << 8;
   out->y = -(r_out.y) << 8;
   out->z = sz2 << 8;

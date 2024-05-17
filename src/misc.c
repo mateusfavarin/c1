@@ -7,9 +7,7 @@
 #include "level.h"
 #include "audio.h"
 
-#ifndef PSX
 #include "pc/time.h"
-#endif
 
 /**
  * below are various 'light sequences' or precomputed sequences
@@ -105,9 +103,6 @@ vec dark_illum;                     /* 800566D4; gp[0xB6] */
 
 extern ns_struct ns;
 extern gool_object *crash;
-#ifdef PSX
-extern int ticks_elapsed;
-#endif
 
 //----- (8002EBB4) --------------------------------------------------------
 void ShaderParamsUpdateRipple(int init) {
@@ -145,9 +140,7 @@ void ShaderParamsUpdate(int init) {
   uint32_t val, elapsed_since;
   uint32_t pitch, vol;
   int32_t t;
-#ifndef PSX
   int ticks_elapsed;
-#endif
 
   if (init) {
     far_t1 = 2048;
@@ -269,16 +262,11 @@ void ShaderParamsUpdate(int init) {
       else
         lseq_state = randb(6);
       lseq_idx = 0;
-#ifndef PSX
       ticks_elapsed = GetTicksElapsed();
-#endif
       elapsed_since = ticks_elapsed - prev_lightning_stamp;
       if (elapsed_since < 6145) { return; }
       strcpy(buf, "lt1rA");
       prev_lightning_stamp = lightning_stamp;
-#ifndef PSX
-      ticks_elapsed = GetTicksElapsed();
-#endif
       lightning_stamp = ticks_elapsed;
       buf[2] += randb(3);
       eid = NSStringToEID(buf);

@@ -34,22 +34,6 @@ int SlstKill() {
   return SUCCESS;
 }
 
-#ifdef PSX
-#include "psx/r3000a.h"
-poly_id_list *SlstUpdate(slst_item *item, poly_id_list *src, poly_id_list *dst, int dir) {
-  if (item->type & 1) {
-    if (dir == 1)
-      RSlstDecodeForward(item, src, dst);
-    else
-      RSlstDecodeBackward(item, src, dst);
-  }
-  else {
-    dst->len = item->length;
-    RMemCpy(item->poly_ids, dst->ids, dst->len);
-  }
-  return dst;
-}
-#else
 typedef struct {
   int i;
   int start;
@@ -284,4 +268,3 @@ poly_id_list *SlstUpdate(slst_item *item, poly_id_list *src, poly_id_list *dst, 
   }
   return dst;
 }
-#endif

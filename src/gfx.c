@@ -22,9 +22,6 @@ static inline void GfxCopyMatrix(mat16 *m_s, mat16 *m_d) {
     ((uint16_t*)((m_d)->m))[i]=((uint16_t*)((m_s)->m))[i];
 }
 
-#ifdef PSX
-#define setPolyFT4C(p,c)	setlen(p, 9),  setcode(p, c)
-#else
 #include "pc/gfx/pcgfx.h"
 #include "pc/gfx/soft.h"
 #include "pc/gfx/tex.h"
@@ -47,7 +44,6 @@ static rgba Rgb8ToA32(rgb8 c) {
   res.a = ~0;
   return res;
 }
-#endif
 
 /* .data */
 const vec v_zero = { 0, 0, 0 };
@@ -746,12 +742,6 @@ int GfxInitMatrices() {
   GfxResetCam(&cam_trans);
   GfxFillMatrix(&mn_color, 512);
   screen_proj = GfxScreenProj(ns.ldat->fov);
-#ifdef PSX
-  SetGeomScreen(screen_proj);
-  SetGeomOffset(0, 0);
-  SetFarColor(0, 0, 0);
-  SetColorMatrix(&mn_color);
-#else
   params.screen_proj=screen_proj;
   params.screen.x = 0;
   params.screen.y = 0;
@@ -759,7 +749,6 @@ int GfxInitMatrices() {
   params.far_color.g = 0;
   params.far_color.b = 0;
   GfxCopyMatrix(&params.m_color, &mn_color);
-#endif
   mn_trans.t.x = 0;
   mn_trans.t.y = 0;
   mn_trans.t.z = 0;
@@ -805,37 +794,21 @@ void GfxUpdateMatrices() {
   m[1][0]=     0;m[1][1]=c;m[1][2]=-s;
   m[2][0]=     0;m[2][1]=s;m[2][2]= c;
   GfxCopyMatrix((mat16*)m, &m1);
-#ifdef PSX
-  MulMatrix(&mn_cam_rot, &m1);
-#else
   SwMulMatrix(&mn_cam_rot, &m1);
-#endif
   s = sin(-cam_rot.x);
   c = cos(-cam_rot.x);
   m[0][0]= c;m[0][1]=     0;m[0][2]=s;
   m[1][0]= 0;m[1][1]=0x1000;m[1][2]=0;
   m[2][0]=-s;m[2][1]=     0;m[2][2]=c;
   GfxCopyMatrix((mat16*)m, &m1);
-#ifdef PSX
-  MulMatrix(&mn_cam_rot, &m1);
-#else
   SwMulMatrix(&mn_cam_rot, &m1);
-#endif
   header = (zone_header*)cur_zone->items[0];
   far_color = header->far_color;
-#ifdef PSX
-  SetFarColor(far_color.r, far_color.g, far_color.b);
-#else
   params.far_color = far_color;
-#endif
   trans.x = cam_trans.x >> 8;
   trans.y = cam_trans.y >> 8;
   trans.z = cam_trans.z >> 8;
-#ifdef PSX
-  TransMatrix(&mn_cam_rot, t);
-#else
   mn_cam_rot.t = trans;
-#endif
   /* 5/8 scaled y */
   GfxCopyMatrix(&mn_cam_rot, (mat16*)m);
   mb[0][0]=        m[0][0];mb[0][1]=        m[0][1];mb[0][2]=        m[0][2];
@@ -868,12 +841,8 @@ void GfxUpdateMatrices() {
     mn_rot = mn_cam_rot;
     ms_rot = ms_cam_rot;
   }
-#ifdef PSX
-  SetGeomOffset(screen_ro.x, screen_ro.y + (screen_shake >> 8));
-#else
   params.screen.x = screen_ro.x;
   params.screen.y = screen_ro.y + (screen_shake >> 8);
-#endif
   y_offs = screen_shake >> 8;
   screen_shake = (y_offs ? y_offs < 0 ? ~y_offs : 1-y_offs : 0) << 8;
   cam_trans_ro = cam_trans; /* 80061920 */
@@ -1020,13 +989,7 @@ int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
   u_trans.x = (vectors->trans.x - cam_trans_prev.x) >> 8;
   u_trans.y = (vectors->trans.y - cam_trans_prev.y) >> 8;
   u_trans.z = (vectors->trans.z - cam_trans_prev.z) >> 8;
-#ifdef PSX
-  SetRotMatrix(&ms_rot);
-  SetTransMatrix(&mn_trans);
-  RotTrans(&u_trans, r_trans, &code);
-#else
   SwRotTrans(&u_trans, r_trans, &mn_trans.t, &ms_rot);
-#endif
   if (!(cur_display_flags & 0x10000)) {
     header=(zone_header*)cur_zone->items[0];
     far=header->visibility_depth>>8;
@@ -1046,12 +1009,7 @@ int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
         /* weird code in original impl would set col to &frame->col
            for either branch of a check of a4 */
         col=(vec*)&frame->col_x;
-#ifdef PSX
-        RGteProjectBound(&obj->bound, col, &vectors->trans, &cam_trans_prev);
-        extents = scratch.obj_extents;
-#else
         SwProjectBound(&obj->bound, col, &vectors->trans, &cam_trans_prev, &extents);
-#endif
         //if (extents.p1.x < -256 && extents.p2.x < -256) { return 0; }
         //if (extents.p1.x >  256 && extents.p2.x >  256) { return 0; }
         //if (extents.p1.y < -108 && extents.p2.y < -108) { return 0; }
@@ -1063,19 +1021,9 @@ int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
         return 0;
     }
   }
-#ifdef PSX
-  if (flag)
-    RGteCalcObjectMatrices(mn_rot, t_header, vectors, colors);
-  else
-    RGteCalcObjectRotMatrix(mn_rot, t_header, vectors);
-  SetTransMatrix(m_trans);
-#else
-  if (flag)
-    SwCalcObjectMatrices(&mn_rot, t_header, vectors, colors, &params);
-  else
-    SwCalcObjectRotMatrix(&mn_rot, t_header, vectors, &params);
+  if (flag) { SwCalcObjectMatrices(&mn_rot, t_header, vectors, colors, &params); }
+  else { SwCalcObjectRotMatrix(&mn_rot, t_header, vectors, &params); }
   params.trans = m_trans.t;
-#endif
   return 1;
 }
 
@@ -1092,18 +1040,6 @@ void GfxTransformSvtx(svtx_frame *frame, void *ot, gool_object *obj) {
   polys = (tgeo_polygon*)tgeo->items[1];
   res = GfxCalcObjectMatrices(frame, header, obj, 1, 0);
   if (res) {
-#ifdef PSX
-    prims_tail = GpuGetPrimsTail();
-    RGteTransformSvtx(
-      frame,
-      ot,
-      polys,
-      header,
-      obj->scale.x,
-      obj->size + 0x800-(screen_proj/2),
-      prims_tail,
-      (rect28*)uv_map);
-#else
     prims_tail = GLGetPrimsTail();
     SwTransformSvtx(
       frame,
@@ -1116,7 +1052,6 @@ void GfxTransformSvtx(svtx_frame *frame, void *ot, gool_object *obj) {
       (rect28*)uv_map,
       1,
       &params);
-#endif
   }
 }
 
@@ -1135,16 +1070,6 @@ void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj) {
   z_dist = 0;
   if (obj->status_b & 0x200) {
     z_header = (zone_header*)cur_zone->items[0];
-#ifdef PSX
-    res = RGteCalcSpriteRotMatrix(
-      obj->vectors,
-      (gool_vectors*)&cam_trans_prev,
-      1,
-      0,
-      &ms_rot,
-      screen_proj,
-      z_header->visibility_depth >> 8);
-#else
     res = SwCalcSpriteRotMatrix(
       &obj->vectors,
       (gool_vectors*)&cam_trans_prev,
@@ -1154,24 +1079,10 @@ void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj) {
       screen_proj,
       z_header->visibility_depth >> 8,
       &params);
-#endif
   }
   else
     res = GfxCalcObjectMatrices((svtx_frame*)frame, header, obj, 0, &z_dist);
   if (res) {
-#ifdef PSX
-    prims_tail = GpuGetPrimsTail();
-    RGteTransformCvtx(
-      frame,
-      ot,
-      polys,
-      header,
-      obj->scale.x,
-      obj->size + 0x800 - (screen_proj/2),
-      prims_tail,
-      (rect28*)uv_map,
-      z_dist);
-#else
     prims_tail = GLGetPrimsTail();
     SwTransformCvtx(
       frame,
@@ -1184,181 +1095,8 @@ void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj) {
       (rect28*)uv_map,
       z_dist,
       &params);
-#endif
   }
 }
-
-#ifdef PSX
-
-//----- (80018B98) --------------------------------------------------------
-void GfxTransformFragment(gool_frag *frag, int32_t z,
-  tpageinfo pginfo, bound2 *bound, void *ot) {
-  /* transform ll, lr, and ul rect verts */
-  _$T6 = 0;
-  _$A2 = (bound->p2.y << 16) | bound->p1.x;
-  __asm {
-    mtc2    $a2, $0
-    mtc2    $t6, $1
-  }
-  _$A2 = (bound->p2.y << 16) | bound->p2.x;
-  __asm {
-    mtc2    $a2, $2
-    mtc2    $t6, $3
-  }
-  _$A2 = (bound->p1.y << 16) | bound->p1.x;
-  __asm {
-    mtc2    $a2, $4
-    mtc2    $t6, $5
-    cop2    0x280030
-    cfc2    $a2, $31
-  }
-  if (_$A2 < 0) { return 0; } /* return on fail */
-  poly=(POLY_FT4*)context.cur->tail; /* allocate a poly */
-  context.cur->tail+=sizeof(POLY_FT4);
-  setRGB0(poly,info->r,info->g,info->b)
-  code=info.blend_mode==3?0x2C:0x2E;
-  setcode(poly,code);
-  _$T0=poly;
-  __asm {
-    mfc2    $a1, $17
-    mfc2    $a2, $18
-    mfc2    $a3, $19
-    swc2    $14, 0x18($t0) /* xy3 */
-    swc2    $13, 0x10($t0) /* xy2 */
-    swc2    $12, 8($t0)    /* xy1 */
-  }
-  z_sum=_$A1+_$A2+_$A3;
-  $_A2 = (bound->p1.y << 16) | bound->p2.x;
-  __asm {
-    mtc2    $a2, $0
-    mtc2    $t6, $1
-    cop2    0x180001
-    swc2    $14, 0x20($t0) /* xy4 */
-  }
-  z_dist=z+(0x800-screen_proj/2);
-  z_idx=(z_sum/32)-z_dist;
-  z_idx=limit(z_idx, 0, 0x7FF);
-  prev=ot[z_idx]; /* grab prev poly at this ot idx */
-  setlen(poly, 9);
-  catPrim(poly, prev);
-  ot[z_idx]=poly;
-  /* tail->tag = 0x9000000 | (tail & 0xFFFFFF); */
-  info=frag->texinfo;
-  color_mode=info.color_mode;
-  offs_x=info.offs_x<<(3-color_mode);
-  offs_y=info.offs_y<<2|(a3.flag<<7);
-  offs_xy=(offs_y<<8)|offs_x;
-
-  poly->clut=(pginfo.yid<<6)|(pginfo.xid<<4)|(colinfo.cluty<<6)|info.clutx;
-  poly->tpage=(color_mode<<7)|(info.segment<<5)|(pginfo.yid<<2)|colinfo.semi_trans;
-  idx=info.region_idx;
-  region=&region_map[idx];
-  *(uint16_t*)&poly->u0=region->verts[0]+offs_xy;
-  *(uint16_t*)&poly->u1=region->verts[1]+offs_xy;
-  *(uint16_t*)&poly->u2=region->verts[2]+offs_xy;
-  *(uint16_t*)&poly->u3=region->verts[3]+offs_xy;
-}
-
-//----- (80018DBC) --------------------------------------------------------
-int GfxTransformFontChar(gool_object *obj, gool_glyph *glyph, int32_t z,
-  tpageinfo pginfo, bound2 *bound, void *ot, int gouraud) {
-  /*  TODO: asm rewrite  */
-  POLY_GT4 *poly,*prev;
-  vec *ul,*lr;
-  rect16 *region;
-  int z_sum,z_dist,z_idx,idx;
-  uint32_t tinfo,cinfo,code;
-  uint32_t offsx,offsy,offsxy,
-  uint32_t color_mode;
-
-  ul=&bound->p1;
-  lr=&bound->p2;
-  _$T0=(lr->y<<16)|(int16_t)lr->x;
-  _$T7=0;
-  __asm {
-    mtc2    $t0, $0
-    mtc2    $t7, $1
-  }
-  _$T0=(lr->y<<16)|(int16_t)ul->x;
-  __asm {
-    mtc2    $t0, $2
-    mtc2    $t7, $3
-  }
-  _$T0=(ul->y<<16)|(int16_t)ul->x;
-  __asm
-  {
-    mtc2    $t0, $4
-    mtc2    $t7, $5
-    cop2    0x280030
-    cfc2    $t0, $31
-  }
-  if (_$T0 < 0) { return 0; }
-  poly=(POLY_GT4*)context.cur->tail;
-  context.cur->tail+=sizeof(POLY_GT4);
-  code=tinfo.blend_mode==3?0x3C:0x3E;
-  setcode(poly,code);
-  if (gouraud) {
-    poly->r0=(color->r*info->colors[0].r)>>8;
-    poly->g0=(color->g*info->colors[0].g)>>8;
-    poly->b0=(color->b*info->colors[0].b)>>8;
-    poly->r1=(color->r*info->colors[1].r)>>8;
-    poly->g1=(color->g*info->colors[1].g)>>8;
-    poly->b1=(color->b*info->colors[1].b)>>8;
-    poly->r2=(color->r*info->colors[2].r)>>8;
-    poly->g2=(color->g*info->colors[2].g)>>8;
-    poly->b2=(color->b*info->colors[2].b)>>8;
-    poly->r3=(color->r*info->colors[3].r)>>8;
-    poly->g3=(color->g*info->colors[3].g)>>8;
-    poly->b3=(color->b*info->colors[3].b)>>8;
-  }
-  else {
-    setRGB0(poly,color->r,color->g,color->b);
-    setRGB1(poly,color->r,color->g,color->b);
-    setRGB2(poly,color->r,color->g,color->b);
-    setRGB3(poly,color->r,color->g,color->b);
-  }
-  _$T1 = poly;
-  __asm {
-    mfc2    $a1, $17
-    mfc2    $a2, $18
-    mfc2    $a3, $19
-    swc2    $14, 0x20($t1) /* xy3 */
-    swc2    $13, 0x14($t1) /* xy2 */
-    swc2    $12, 8($t1)    /* xy1 */
-  }
-  z_sum=_$A1+_$A2+_$A3;
-  $_T0=(ul->y<<16)|(int16_t)lr->x;
-  __asm {
-    mtc2    $t0, $0
-    mtc2    $t7, $1
-    cop2    0x180001
-    swc2    $14, 0x2C($t1) /* xy4 */
-  }
-  z_dist=z+(0x800-screen_proj/2);
-  z_idx=(z_sum/32)-z_dist;
-  z_idx=limit(z_idx, 0, 0x7FF);
-  prev=ot[z_idx]; /* grab prev poly at this ot idx */
-  setlen(poly, 12);
-  catPrim(poly, prev);
-  ot[z_idx]=poly;
-  /* poly->tag = 0xC000000 | (poly & 0xFFFFFF); */
-  tinfo=chr->texinfo;
-  cinfo=chr->clutinfo;
-  color_mode=tinfo.color_mode;
-  offsx=tinfo.offsx<<(3-color_mode);
-  offsy=tinfo.offsy<<2|(pginfo.flag<<7);
-  offsxy=(offsy<<8)|offsx;
-  poly->clut=(pginfo.yid<<6)|(pginfo.xid<<4)|(cinfo.cluty<<6)|tinfo.clutx;
-  poly->tpage=(color_mode<<7)|(tinfo.segment<<5)|(pginfo.yid<<2)|cinfo.semi_trans;
-  idx=info.region_idx;
-  region=&region_map[idx];
-  *(uint16_t*)&poly->u0=region->verts[0]+offs_xy;
-  *(uint16_t*)&poly->u1=region->verts[1]+offs_xy;
-  *(uint16_t*)&poly->u2=region->verts[2]+offs_xy;
-  *(uint16_t*)&poly->u3=region->verts[3]+offs_xy;
-}
-
-#else
 
 //----- (80018B98) --------------------------------------------------------
 void GfxTransformFragment(gool_frag *frag, int32_t z, eid_t tpag,
@@ -1470,8 +1208,6 @@ void GfxTransformFontChar(gool_object *obj, gool_glyph *glyph, int32_t z,
   *prims_tail+=sizeof(poly4i);
 }
 
-#endif
-
 //----- (80019144) --------------------------------------------------------
 void GfxTransform(vec *in, mat16 *mat, vec *out) {
 #define m mat->m
@@ -1529,13 +1265,6 @@ void GfxTransformWorlds(void *ot) {
   header=(zone_header*)cur_zone->items[0];
   worlds=(zone_world*)header->worlds;
   size=sizeof(header->worlds);
-#ifdef PSX
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(&mn_light);
-  RMemcpy((void*)worlds, (void*)scratch.worlds/*0x1F800100*/, size); /* copy worlds to scratch mem */
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorlds(poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map);
-#else
   memcpy((void*)params.worlds,(void*)worlds,size);
   params.trans=cam_trans;
   params.m_rot=ms_cam_rot;
@@ -1543,7 +1272,6 @@ void GfxTransformWorlds(void *ot) {
   params.far_color1=params.far_color;
   prims_tail=GLGetPrimsTail();
   SwTransformWorlds(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 //----- (80019AF4) --------------------------------------------------------
@@ -1585,17 +1313,11 @@ void GfxTransformWorldsFog(void *ot) {
   header=(zone_header*)cur_zone->items[0];
   worlds=header->worlds;
   size=sizeof(zone_world)*header->world_count;
-#ifdef PSX
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(dword_800578F4);
-  RMemcpy((void*)worlds,(void*)scratch.worlds/*0x1F800100*/, size); /* copy worlds to scratch mem */
-#else
   memcpy((void*)params.worlds,(void*)worlds,size);
   params.trans=cam_trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1=params.far_color;
-#endif
   GfxGetFar(&far, &shamt);
   for (i=0;i<header->world_count;i++) {
     world=&params.worlds[i];
@@ -1604,13 +1326,8 @@ void GfxTransformWorldsFog(void *ot) {
     val=is_backdrop?0xFFFF:far;
     world->tag=(shamt<<16)|val; /* tag is unioned with wgeo */
   }
-#ifdef PSX
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorldsFog(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map);
-#else
   prims_tail=GLGetPrimsTail();
   SwTransformWorldsFog(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 //----- (80019DE0) --------------------------------------------------------
@@ -1640,18 +1357,6 @@ void GfxTransformWorldsRipple(void *ot) {
   header=(zone_header*)cur_zone->items[0];
   worlds=header->worlds;
   size=sizeof(header->worlds);
-#ifdef PSX
-  for (i=0;i<16;i++) {
-    // tri_wave[i]=abs(tri_wave[i]);
-    scratch.vars[i]=abs(tri_wave[i]); /* scratch.vars will start at 0x1F800048 */
-  }
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(dword_800578F4);
-  header=(zone_header*)cur_zone->items[0];
-  RMemcpy((void*)worlds,(void*)scratch.worlds/*0x1F800100*/,256);
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorldsRipple(poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map);
-#else
   for (i=0;i<16;i++)
     params.tri_wave[i] = abs(tri_wave[i]);
   memcpy((void*)params.worlds,(void*)worlds,size);
@@ -1661,7 +1366,6 @@ void GfxTransformWorldsRipple(void *ot) {
   params.far_color1=params.far_color;
   prims_tail=GLGetPrimsTail();
   SwTransformWorldsRipple(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 //----- (80019F90) --------------------------------------------------------
@@ -1675,21 +1379,6 @@ void GfxTransformWorldsLightning(void *ot) {
   header=(zone_header*)cur_zone->items[0];
   worlds=header->worlds;
   size=sizeof(header->worlds);
-#ifdef PSX
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(dword_800578F4);
-  RMemcpy((void*)worlds,(void*)scratch.worlds,256);
-  scratch.far_color1.r = far_color1.r*16;
-  scratch.far_color1.g = far_color1.g*16;
-  scratch.far_color1.b = far_color1.b*16;
-  scratch.far_t1 = far_t1*16;
-  scratch.far_color2.r = far_color2.r*16;
-  scratch.far_color2.g = far_color2.g*16;
-  scratch.far_color2.b = far_color2.b*16;
-  scratch.far_t2 = far_t2*16;
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorldsLightning(poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map);
-#else
   memcpy((void*)params.worlds,(void*)worlds,size);
   params.trans=cam_trans;
   params.m_rot=ms_cam_rot;
@@ -1704,7 +1393,6 @@ void GfxTransformWorldsLightning(void *ot) {
   params.far_t2 = far_t2*16;
   prims_tail=GLGetPrimsTail();
   SwTransformWorldsLightning(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 //----- (8001A0CC) --------------------------------------------------------
@@ -1721,21 +1409,6 @@ void GfxTransformWorldsDark(void *ot) {
   worlds=header->worlds;
   size=sizeof(header->worlds);
   GfxGetFar(&far, &shamt);
-#ifdef PSX
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(&mn_light);
-  RMemcpy((void*)worlds,(void*)scratch.worlds,256);
-  scratch.far_color1.r = far_color1.r*16;
-  scratch.far_color1.g = far_color1.g*16;
-  scratch.far_color1.b = far_color1.b*16;
-  scratch.far_t1 = far_t1*16;
-  scratch.far_color2.r = far_color2.r*16;
-  scratch.far_color2.g = far_color2.g*16;
-  scratch.far_color2.b = far_color2.b*16;
-  scratch.far_t2 = far_t2*16;
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorldsDark(poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map,far,shamt);
-#else
   memcpy((void*)params.worlds,(void*)worlds,size);
   params.trans=cam_trans;
   params.m_rot=ms_cam_rot;
@@ -1755,7 +1428,6 @@ void GfxTransformWorldsDark(void *ot) {
   }
   prims_tail=GLGetPrimsTail();
   SwTransformWorldsDark(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 //----- (8001A2E0) --------------------------------------------------------
@@ -1770,26 +1442,6 @@ void GfxTransformWorldsDark2(void *ot) {
   header=(zone_header*)cur_zone->items[0];
   worlds=header->worlds;
   size=sizeof(header->worlds);
-#ifdef PSX
-  SetRotMatrix(&ms_cam_rot);
-  SetLightMatrix(&mn_light);
-  RMemcpy((void*)worlds,(void*)scratch.worlds,256);
-  dst=&scratch.polymem;
-  for (i=0;i<header->world_count;i++) {
-    world=&worlds[i];
-    RMemcpy((void*)&world->header->trans_x,(void*)dst,6);
-    dst+=16; /* align each dst trans vec to 16 bytes */
-  }
-  scratch.dark_illum.r=dark_illum.r>>8;
-  scratch.dark_illum.g=dark_illum.g>>8;
-  scratch.dark_illum.b=dark_illum.b>>8;
-  scratch.dark_shamt_add=dark_shamt_add;
-  scratch.dark_shamt_sub=dark_shamt_sub;
-  scratch.dark_amb_fx0=dark_amb_fx0;
-  scratch.dark_amb_fx1=dark_amb_fx1;
-  prims_tail=GpuGetPrimsTail();
-  RGteTransformWorldsDark2(poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,(quad28*)uv_map);
-#else
   memcpy((void*)params.worlds,(void*)worlds,size);
   params.trans=cam_trans;
   params.m_rot=ms_cam_rot;
@@ -1803,7 +1455,6 @@ void GfxTransformWorldsDark2(void *ot) {
   params.amb_fx1=dark_amb_fx1;
   prims_tail=GLGetPrimsTail();
   SwTransformWorldsDark2(cur_poly_ids,ot,0x800-(screen_proj/2),draw_count,prims_tail,&params);
-#endif
 }
 
 /*
@@ -1863,100 +1514,3 @@ void GfxAnimMapPaths(uint32_t flags_a, uint32_t flags_b) {
     }
   }
 }
-
-#ifdef PSX
-int __fastcall sub_8001A5F4(int type, uint8_t *icon, int idx, rect2 *rect) {
-  texinfo *info;
-  uint32_t /*tpageinfo*/pginfo;
-  quad28_t *uvs;
-  int uv_idx;
-
-  if (icon->type == 2)
-    info = &icon[8*(idx>>8)+8];
-  else if (icon->type == 5)
-    info = &icon[16*(idx>>8)+12];
-  pginfo = NSLookup(&icon->ref);
-  if (type == 1) {
-    uv_idx = info->uv_idx;
-    uvs = &uv_map[uv_idx];
-    rect->x = (pginfo&0x300)|(((info->segment<<5)|info->offs_x)<<1);
-    rect->y = ((pginfo>>10)&0x180)|(info->offs_y<<2);
-    rect->w = (uvs[1]->x+1)>>(2-info->color_mode);
-    rect->h = uvs[2]->y+1;
-  }
-  else if (type == 2) {
-    rect->x = (pginfo&0x300)|(info->clut_x<<4);
-    rect->y = ((pginfo>>10)&0x180)|info->clut_y;
-    rect->w = info->color_mode == 0 ? 16 : 256;
-    rect->h = 1;
-  }
-}
-
-void __fastcall sub_8001A754(char *dst, int id, char *src, int len) {
-  char *str, c;
-  int i, j, idx;
-
-  str = ((uint8_t*)dst)+12;
-  idx = id >> 8;
-  /* iterate string array; when number of null terms reaches idx
-     we have reached the string */
-  for (i=0,j=0;j<idx;i++) {
-    if (str[i] == 0) { ++j; }
-  }
-  for (j=0;j<len;j++) { /* copy src to dst string */
-    if (*src == 0) { break; }
-    c = *src & 0x7F;
-    if (c < ' ')  { c = ' '; }
-    if (c == '{') { c = '('; }
-    if (c == '}') { c = ')'; }
-    if (c == '~') { c = '{'; }
-    if (c == '%') { c = '}'; }
-    str[i+j] = c;
-    ++src;
-  }
-  for (;j<len;j++) { /* pad the remainder with space */
-    str[i+j] = ' ';
-  }
-}
-
-/**
-* load or save the texture and clut, described by the texinfo at index idx in the card icon, into/from vram
-*
-* buf1 is the input/output clut data
-* buf2 is the input/output texture data
-*/
-int __fastcall sub_8001A850(int op, uint8_t *icon, int idx, uint8_t *buf1, uint8_t *buf2) {
-  rect2 rect;
-  uint8_t __attribute__((aligned(256))) buf[256];
-  int i;
-
-  if (buf1) {
-    sub_8001A5F4(2, icon, idx, &rect);
-    if (op == 1) {
-      for (i=0;i<rect.w*rect.h*sizeof(uint16_t);i++)
-        buf[i]=buf1[i];
-      LoadImage(&rect, buf);
-    }
-    else {
-      StoreImage(&rect, buf);
-      DrawSync(0);
-      for (i=0;i<rect.w*rect.h*sizeof(uint16_t);i++)
-        buf1[i]=buf[i];
-    }
-  }
-  if (buf2) {
-    sub_8001A5F4(1, icon, idx, &rect);
-    if (op == 1) {
-      for (i=0;i<rect.w*rect.h*sizeof(uint16_t);i++)
-        buf[i]=buf2[i];
-      LoadImage(&rect, buf);
-    }
-    else {
-      StoreImage(&rect, buf);
-      DrawSync(0);
-      for (i=0;i<rect.w*rect.h*sizeof(uint16_t);i++)
-        buf2[i]=buf[i];
-    }
-  }
-}
-#endif

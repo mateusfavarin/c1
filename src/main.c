@@ -13,24 +13,14 @@
 #include "midi.h"
 #include "title.h"
 
-#ifdef PSX
-#include "psx/init.h"
-#include "psx/gpu.h"
-#include "psx/r3000a.h"
-#else
 #include "pc/init.h"
 #include "pc/time.h"
 #include "pc/gfx/gl.h"
 #include "pc/gfx/soft.h" // for ext only
-#endif
 
 /* .data */
 const ns_subsystem subsys[21] = {
-#ifdef PSX
-  { .name = "NONE", .init =      GpuSetupPrims, .init2 =                  0, .on_load =          0, .unsued = 0, .kill =            GpuKill },
-#else
   { .name = "NONE", .init =       GLSetupPrims, .init2 =                  0, .on_load =          0, .unused = 0, .kill =             GLKill },
-#endif
   { .name = "SVTX", .init =                  0, .init2 =                  0, .on_load =          0, .unused = 0, .kill =                  0 },
   { .name = "TGEO", .init =                  0, .init2 =                  0, .on_load = TgeoOnLoad, .unused = 0, .kill =                  0 },
   { .name = "WGEO", .init =                  0, .init2 =                  0, .on_load =          0, .unused = 0, .kill =                  0 },
@@ -81,22 +71,13 @@ int draw_wallmap = 0;
 int draw_objbounds = 0;
 #endif
 
-#ifdef PSX
-extern gfx_context_db context;
-extern int ticks_elapsed;
-#else
 extern gl_context context;
-#endif
 
 void CoreLoop(lid_t lid);
 
 //----- (80011D88) --------------------------------------------------------
 int main() {
-#ifdef PSX
-  use_cd = 1;
-#else
   use_cd = 0;
-#endif
   init();
   CoreLoop(LID_BOOTLEVEL);
   _kill();
@@ -138,9 +119,7 @@ void CoreLoop(lid_t lid) {
   void *ot;
   uint32_t arg;
   int bonus_return2;
-#ifndef PSX
   int ticks_elapsed;
-#endif
 
   LevelInitGlobals();
   NSInit(&ns, lid);
@@ -155,15 +134,8 @@ void CoreLoop(lid_t lid) {
           pause_obj = GoolObjectCreate(&handles[7], 4, 4, 0, 0, 0);
           if (!ISERRORCODE(pause_obj)) {
             pause_status = 1;
-#ifndef PSX
-            ticks_elapsed = GetTicksElapsed();
-#endif
-            pause_stamp = ticks_elapsed;
-#ifdef PSX
-            pause_draw_stamp = context.c2_p->draw_stamp;
-#else
+            pause_stamp = GetTicksElapsed();
             pause_draw_stamp = context.draw_stamp;
-#endif
           }
           else {
             pause_status = 0;
@@ -177,15 +149,9 @@ void CoreLoop(lid_t lid) {
         GoolSendEvent(0, pause_obj, 0xC00, 1, &arg); /* send resume/kill? event to pause screen object */
         pause_obj = 0;
         pause_status = -1;
-#ifndef PSX
         ticks_elapsed = GetTicksElapsed();
-#endif
         ticks_elapsed = pause_stamp;
-#ifdef PSX
-        context.c2_p->draw_stamp = pause_draw_stamp;
-#else
         context.draw_stamp = pause_draw_stamp;
-#endif
       }
     }
     else
@@ -245,11 +211,7 @@ void CoreLoop(lid_t lid) {
       CamUpdate();
     }
     GfxUpdateMatrices();
-#ifdef PSX
-    ot = context.c2_p->ot;
-#else
     ot = context.ot;
-#endif
     header = (zone_header*)cur_zone->items[0];
     if ((cur_display_flags & GOOL_FLAG_DISPLAY_WORLDS) && header->world_count && !wgeom_disabled) {
       if (header->flags & ZONE_FLAG_DARK2)
@@ -280,21 +242,10 @@ void CoreLoop(lid_t lid) {
     if (draw_objbounds)
       SwTransformObjectBounds(object_bounds, object_bound_count, ot, GLGetPrimsTail());
 #endif
-#ifndef PSX
     GLClear();
-#endif
-    if (ns.ldat->lid == LID_TITLE)
-      TitleUpdate(ot);
-#ifdef PSX
-    GpuUpdate();
-#else
+    if (ns.ldat->lid == LID_TITLE) { TitleUpdate(ot); }
     GLUpdate();
-#endif
   } while (!done);
   cur_display_flags = 0;
-#ifdef PSX
-  GpuUpdate();
-  GpuUpdate();
-#endif
   NSKill(&ns);
 }

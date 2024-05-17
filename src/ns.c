@@ -197,30 +197,6 @@ int NSEntryItemSize(entry *entry, int idx) {
   return entry->items[idx+1] - entry->items[idx];
 }
 
-#ifdef PSX
-// unreferenced; exists as inline code elsewhere
-static uint8_t *NSTransferFile(ns_filedesc *fd, uint8_t *buf, int flag) {
-  CdlLOC p;
-  uint8_t res[8];
-  int sector_len, size;
-
-  if (!use_cd) { return 0;}
-  if (!flag) { return buf; }
-  sector_len = shr_ceil(fd->size, 11);
-  if (!buf) {
-    size = sector_len << 11; /* round up to nearest sector size multiple */
-    buf = (uint8_t*)malloc(size);
-    if (!buf)
-      return (uint8_t*)ERROR_MALLOC_FAILED;
-  }
-  CdIntToPos(fd->sector_num, &p);
-  CdControl(2, &p, res); /* CdlSetLoc */
-  if (!CdRead(sector_len, buf, 128) || CdReadSync(0, 0))
-    return (uint8_t*)ERROR_READ_FAILED;
-  return realloc(buf, fd->size); /* realloc to non sector size multiple */
-}
-#else
-
 uint8_t *NSFileReadRange(char *filename, int start, int end, size_t *size) {
   FILE *file;
   size_t tmp;
@@ -249,7 +225,6 @@ static uint8_t *NSFileReadFrom(char *filename, int offset, size_t *size) {
 static uint8_t *NSFileRead(char *filename, size_t *size) {
   return NSFileReadRange(filename, 0, -1, size);
 }
-#endif
 
 int NSCountEntries(ns_struct *nss, int type) {
   nsd *nsd;
@@ -283,9 +258,7 @@ static inline int NSPageTranslateOffsets(page* page) {
   return SUCCESS;
 }
 
-#ifndef PSX
 page tpagemem[16];
-#endif
 //----- (80012F10) --------------------------------------------------------
 static void NSPageUpdateEntries(int idx) {
   page_struct *ps, *tps;
@@ -326,14 +299,8 @@ static void NSPageUpdateEntries(int idx) {
     idx = NSTexturePageAllocate();
     if (idx != -12 || (idx = 15, ps->ref_count)) {
       tps = &texture_pages[idx];
-#ifdef PSX
-      tpage_rect.x = (idx % 4) * 256;
-      tpage_rect.y = (idx / 4) * 128;
-      LoadImage(tpage_rect, page);
-#else
       tpagemem[idx] = *page;
       page = &tpagemem[idx];
-#endif
       tpg = (tpage*)page;
       pte = NSProbe(tpg->eid);
       tps->state = 20;

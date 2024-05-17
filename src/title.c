@@ -23,11 +23,9 @@ int title_once = 1;                            /* 80056500; gp[0x41] */
 /* .sbss */
 int title_not_seen;                            /* 80056678; gp[0x9F] */
 title_struct *title;                           /* 800566E0; gp[0xB9] */
-#ifndef PSX
 uint8_t image[512*256*2];
 uint32_t image_cvt[512*240];
 uint16_t *cluts[480];
-#endif
 
 extern ns_struct ns;
 extern page_struct texture_pages[16];
@@ -35,14 +33,9 @@ extern int paused;
 extern int pause_status;
 extern lid_t cur_lid;
 
-#ifdef PSX
-#include "psx/gpu.h"
-extern gfx_context_db context;
-#else
 #include "pc/gfx/gl.h"
 #include "pc/gfx/tex.h"
 extern gl_context context;
-#endif
 
 //----- (80031BAC) --------------------------------------------------------
 int TitleInit() {
@@ -265,12 +258,8 @@ int TitleKill() {
 
 //----- (800322CC) --------------------------------------------------------
 int TitleLoading(lid_t lid, uint8_t *image_data, nsd *nsd) {
-#ifdef PSX
-  rect216 rect;
-#else
   dim2 dim;
   rect2 rect;
-#endif
   int32_t x, y;
   uint32_t w, h;
   uint8_t *buf;
@@ -357,25 +346,18 @@ transition states
 
 //----- (800326D8) --------------------------------------------------------
 int TitleUpdate(void *ot) {
-#ifdef PSX
-  SPRT_16 *sprite;
-  DR_MODE *dr_mode;
-#else
   uint32_t tile_cvt[16*16];
   uint32_t *subimage;
   rect2 rect;
   dim2 sdim, ddim;
   pnt2 dloc;
   int x, y;
-#endif
   tileinfo *cur;
   int transition_state;
   int i, ii;
 
-#ifndef PSX
   sdim.w=1024;sdim.h=256;
   ddim.w=512;ddim.h=240;
-#endif
   transition_state = title->transition_state;
   switch (transition_state) {
   case 0: /* start of game? */
@@ -430,18 +412,12 @@ int TitleUpdate(void *ot) {
 #endif
       }
     }
-#ifndef PSX
     GLDrawImage(&ddim, (uint8_t*)image_cvt, 0);
-#endif
   }
   if (title->transition_state == 5 && fade_counter == 0) { /* currently fading out and fade counter has reached 0? */
     title->transition_state = 7; /* change transition state to 'finished fading out' */
     next_display_flags &= ~(GOOL_FLAG_DISPLAY | GOOL_FLAG_ANIMATE);
-#ifdef PSX
-    GpuDrawOverlay(255); /* draw semi-trans overlay that will cause primitive to fade */
-#else
     GLDrawOverlay(255);
-#endif
   }
   else if (title->transition_state == 6 && fade_counter == 0) { /* currently fading in and fade counter has reached 0? */
     title->transition_state = 3; /* change transition state to 'finished fading in' */
@@ -455,11 +431,7 @@ int TitleUpdate(void *ot) {
       TitleLoadEntries(title->state, 0, -1); /* close entries opened in this title state */
     title->transition_state = 1; /* change transition state to 'blank screen' */
     title->state = title->next_state; /* go to the next title state */
-#ifdef PSX
-    GpuDrawOverlay(255); /* draw semi-trans overlay that will cause primitives to fade */
-#else
     GLDrawOverlay(255);
-#endif
     TitleLoadState(); /* load the next state */
   }
   if (title->next_state != title_state) { /* pending request to change (to next) state? */
@@ -565,11 +537,7 @@ void TitleLoadImages(timginfo *info, int x_offs, int y_offs) {
   rect216 rect;
   int x_idx, y_idx, w_idx, h_idx;
   int i, ii;
-#ifdef PSX
-  DrawSync(0);
-#else
   int x, y;
-#endif
   w_idx = title->w_idx;
   h_idx = title->h_idx;
   for (i=0;i<15;i++) { /* y */

@@ -23,19 +23,11 @@ extern int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
   gool_object *obj, int flag, int32_t *zdist);
 extern void GfxTransformSvtx(svtx_frame *frame, void *ot, gool_object *obj);
 extern void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj);
-#ifdef PSX
-extern void GfxTransformFragment(
-  gool_frag *frag, int32_t z, tpageinfo pginfo, bound2 *bound, void *ot);
-extern void GfxTransformFontChar(gool_object *obj,
-  gool_glyph *glyph, int32_t z, tpageinfo pginfo, bound2 *bound, void *ot,
-  int gouraud);
-#else
 extern void GfxTransformFragment(
   gool_frag *frag, int32_t z, eid_t tpag, bound2 *bound, void *ot);
 extern void GfxTransformFontChar(gool_object *obj,
   gool_glyph *glyph, int32_t z, eid_t tpag, bound2 *bound, void *ot,
   int gouraud);
-#endif
 extern void GfxTransform(vec *in, mat16 *mat, vec *out);
 extern void GfxLoadWorlds(zone_header *header);
 extern void GfxTransformWorlds(void *ot);

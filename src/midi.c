@@ -2,17 +2,6 @@
 #include "globals.h"
 #include "level.h"
 
-#ifdef PSX
-#define SepSetVol         SsSepSetVol
-#define SepPlay           SsSepPlay
-#define SepPause          SsSepPause
-#define SepReplay         SsSepReplay
-#define SepStop           SsSepStop
-#define SepSetCrescendo   SsSepSetCrescendo
-#define SepSetDecrescendo SsSepSetDecrescendo
-#define SepOpen           SsSepOpen
-#define SepClose          SsSepClose
-#else
 #define SepSetVol         SwSepSetVol
 #define SepPlay           SwSepPlay
 #define SepPause          SwSepPause
@@ -22,7 +11,6 @@
 #define SepSetDecrescendo SwSepSetDecrescendo
 #define SepOpen           SwSepOpen
 #define SepClose          SwSepClose
-#endif
 
 /* .sdata */
 int32_t ramp_rate = 30;    /* 800564F4; gp[0x3E] */
@@ -64,9 +52,6 @@ int MidiInit() {
   int16_t vol;
   int i;
 
-#ifdef PSX
-  SsSetTickMode(1);
-#endif
   seq_vol = (0x3FFF * mus_vol) >> 8;
   vol = seq_vol >> 7;
   for (i=(seq_count>1);i<seq_count;i++)
@@ -141,7 +126,7 @@ void MidiTogglePlayback(int a1) {
   if (midi_state != 3) { return; } /* return if not resuming playback */
   if (a1 >> 8 == 3) {
     if (mus_vol || sfx_vol) {
-      /* bug: orig impl set this to 0x3FFF (14 bit volume) 
+      /* bug: orig impl set this to 0x3FFF (14 bit volume)
               but it should be 0x7F (7 bit volume) */
       seq2_vol = 0x7F;
     }
@@ -309,7 +294,7 @@ void MidiUpdate(void *en_ref) {
   if (midi_state == 4 && (midi_fade_counter == 0 || (--midi_fade_counter) == 0)) /* decrement fade counter! */
     midi_state = 1; /* stop playback (will hit MidiOpenAndPlay below) */
   if (midi_state == 3) { /* resumed/already playing? */
-    if ((ref->is_eid?ref->eid:ref->en->eid)==cur_midi_eid) /* no change in midi entry? */ 
+    if ((ref->is_eid?ref->eid:ref->en->eid)==cur_midi_eid) /* no change in midi entry? */
       return;
     /* playback not paused, vab is already open, and haven't already scheduled a fade? */
     if (!seq2_vol && vab_id != -1 && !next_midi) {
@@ -326,14 +311,9 @@ void MidiUpdate(void *en_ref) {
 //----- (80031938) --------------------------------------------------------
 int MidiKill() {
   MidiClose(sep_access_num, 1);
-
-#ifdef PSX
-  return SsEnd();
-#else
-  int i;
-  for (i=0;i<16;i++)
+  for (int i = 0; i < 16; i++)
     VabClose(i);
-#endif
+  return 1;
 }
 
 //----- (80031964) --------------------------------------------------------

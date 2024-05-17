@@ -10,15 +10,9 @@ int pad_lock;
 extern pbak_header *cur_pbak_header;
 extern pbak_frame *cur_pbak_frame;
 
-#ifdef PSX
-#include <LIBPAD.H>
-#include "psx/gpu.h"
-extern gfx_context_db context;
-#else
 #include "pc/pad.h"
 #include "pc/gfx/gl.h"
 extern gl_context context;
-#endif
 
 //----- (80016718) --------------------------------------------------------
 void PadInit(int count) {
@@ -41,11 +35,7 @@ static inline void PadUpdatePbak(pad *pad) {
 
   if (pad_lock == 2) {
     if (cur_pbak_frame == &cur_pbak_header->frames[0]) {
-#ifdef PSX
-      context.c1_p->ticks_per_frame = cur_pbak_header->ticks_per_frame;
-#else
       context.ticks_per_frame = cur_pbak_header->ticks_per_frame;
-#endif
     }
     held = pad->held;
     pad->held = cur_pbak_frame->held;
@@ -76,11 +66,7 @@ void PadUpdate() {
     pad->held_prev2 = pad->held_prev;
     pad->tapped_prev = pad->tapped;
     pad->held_prev = pad->held;
-#ifdef PSX
-    held = sub_8003E460(i);
-#else
     held = SwPadRead(i);
-#endif
     if (i == 0) { held >>= 16; }
     else        { held &= 0xFFFF; }
     pad->held = held;

@@ -5,19 +5,11 @@
 #include "geom.h"
 #include "gool.h"
 
-#ifdef PSX
-#include <LIBGTE.H>
-#define sin rsin
-#define cos rcos
-#define atan2 ratan2
-#define sqrt SquareRoot0
-#else
 #include "pc/math.h"
 #define sin msin
 #define cos mcos
 #define atan2 matan2
 #define sqrt msqrt
-#endif
 
 extern uint32_t ApxDist(vec *v1, vec *v2);
 extern int OutOfRange(gool_object* obj, vec *v1, vec *v2, int32_t x, int32_t y, int32_t z);
@@ -34,5 +26,5 @@ extern void srandb(uint32_t seed);
 extern void srandb2();
 extern uint32_t randb(uint32_t max);
 extern uint32_t absdiff(int32_t a, int32_t b);
- 
+
 #endif /* _MATH_H_ */

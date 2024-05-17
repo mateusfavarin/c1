@@ -48,14 +48,10 @@ extern vec cam_trans;
 extern ang cam_rot;
 extern uint32_t screen_proj;
 
-#ifdef PSX
-extern int ticks_elapsed;
-#else
 #include "solid.h"
 #include "pc/time.h"
 #include "pc/gfx/soft.h"
 extern sw_transform_struct params;
-#endif
 
 //----- (800253A0) --------------------------------------------------------
 int LdatInit() {
@@ -338,12 +334,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
 
 //----- (800260AC) --------------------------------------------------------
 void LevelUpdateMisc(zone_gfx *gfx, uint32_t flags) {
-#ifndef PSX
-  int ticks_elapsed;
-
-  ticks_elapsed = GetTicksElapsed();
-#endif
-  respawn_stamp = ticks_elapsed;
+  respawn_stamp = GetTicksElapsed();
   prev_vram_fill_color = vram_fill_color;
   next_vram_fill_color = gfx->unknown_h;
   cur_zone_flags_ro = gfx->flags;
@@ -510,11 +501,7 @@ void LevelRestart(level_state *state) {
     NSZoneUnload(&header->loadlist);
   }
   cur_zone = 0;
-#ifdef PSX
-  SetGeomScreen(screen_proj);
-#else
   params.screen_proj = screen_proj;
-#endif
   if (first_spawn) {
     for (i=0;i<sizeof(spawns)/sizeof(uint32_t);i++)
       spawns[i] = state->spawns[i];
@@ -1378,11 +1365,7 @@ int ZoneQueryOctrees(vec *v, gool_object *obj, zone_query *query) {
     if (TestRectIntersectsBound(&query->nodes_bound, (rect*)z_rect)) {
       count = query->result_count;
       results_tail = (zone_query_results*)&query->results[count];
-#ifdef PSX
-      query->result_count = RZoneQueryOctree(z_rect, &query->nodes_bound, results_tail);
-#else
       query->result_count += ZoneQueryOctree(z_rect, &query->nodes_bound, results_tail);
-#endif
     }
   }
   count = query->result_count;

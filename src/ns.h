@@ -162,13 +162,8 @@ typedef struct _page_struct {
 } page_struct;
 
 /* ns struct */
-#ifdef PSX
-#define NS_PHYSICAL_PAGE_COUNT 22
-#define NS_VIRTUAL_PAGE_COUNT  38
-#else
 #define NS_PHYSICAL_PAGE_COUNT 128
 #define NS_VIRTUAL_PAGE_COUNT  0
-#endif
 
 typedef struct {
   int inited;               /* 8005C528 */
@@ -293,7 +288,5 @@ extern entry *NSLookup(void *ref);
 extern void NSInit(ns_struct *nss, uint32_t lid);
 extern int NSKill(ns_struct *nss);
 extern void NSKillPage(ns_struct *nss, int idx);
-#ifndef PSX
 extern uint8_t *NSFileReadRange(char *filename, int start, int end, size_t *size);
-#endif
 #endif /* _NS_H_ */

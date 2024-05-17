@@ -43,11 +43,7 @@ typedef struct {
   };
   uint16_t clut_ids[480]; /* C68 */
   uint16_t tpage_ids[4];  /* D58 */
-#ifdef PSX
-  DR_MODE dr_modes[4];    /* D5A */
-#else
   uint32_t dr_modes[4][3];
-#endif
   int transition_state;   /* D66 */
   int at_title;           /* D67 */
   uint32_t unk7;          /* D68 */

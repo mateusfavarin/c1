@@ -333,16 +333,6 @@ static int StopAtFloor(gool_object *obj, vec *trans, vec *next_trans, zone_query
   delta_y = trans->y - next_trans->y;
   test_y = (delta_y > 0 ? trans->y : next_trans->y) + land_offset;
   GoolCalcBound(&test_bound_surface, next_trans, &query->collider_bound);
-#ifdef PSX
-  RFindFloorY(obj,
-    query,
-    &query->nodes_bound,
-    &query->collider_bound,
-    test_y,
-    (zone_query_summary*)avg_y,
-    -999999999,
-    ProcessNode);
-#else
   FindFloorY(obj,
     query,
     &query->nodes_bound,
@@ -351,7 +341,6 @@ static int StopAtFloor(gool_object *obj, vec *trans, vec *next_trans, zone_query
     (zone_query_summary*)avg_y,
     -999999999,
     ProcessNode);
-#endif
   solid_nodes_y = avg_y[1]; /* avg. height of wall/scenery nodes */
   floor_nodes_y = avg_y[2]; /* avg. height of floor/valid event/level bound nodes */
   solid_objs_y = StopAtHighestObjectBelow(obj, trans, next_trans, query);
@@ -430,15 +419,6 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
     }
   }
   GoolCalcBound(&test_bound_ceil, next_trans, &query->collider_bound);
-#ifdef PSX
-  ceil = RFindCeilY(obj,
-    query,
-    &query->nodes_bound,
-    &query->collider_bound,
-    2,
-    1,
-    -999999999);
-#else
   ceil = FindCeilY(obj,
     query,
     &query->nodes_bound,
@@ -446,7 +426,6 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
     2,
     1,
     -999999999);
-#endif
   header = (zone_header*)obj->zone->items[0];
   if (header->flags & 0x20000) { /* obj's zone is solid at the top? */
     /* first ensure that there is no other zone above it */
@@ -578,10 +557,8 @@ int BinfInit() {
 
 //----- (8002D694) --------------------------------------------------------
 int BinfKill() {
-#ifndef PSX
   free(wall_bitmap);
   free(wall_cache);
-#endif
   return SUCCESS;
 }
 
@@ -745,16 +722,6 @@ void PlotWalls(vec *next_trans, gool_object *obj, zone_query *query) {
     flags = 0;
     if ((obj->status_c & 2) || (obj->invincibility_state >= 2 && obj->invincibility_state <= 4))
       flags = 2;
-#ifdef PSX
-    RPlotQueryWalls(query,
-      &query->nodes_bound,
-      flags,
-      obj->trans.y+land_offset,
-      obj->trans.y+(50<<8),
-      next_trans->y+(665<<8),
-      next_trans->x,
-      next_trans->z);
-#else
     PlotQueryWalls(query,
       &query->nodes_bound,
       flags,
@@ -763,7 +730,6 @@ void PlotWalls(vec *next_trans, gool_object *obj, zone_query *query) {
       next_trans->y+(665<<8),
       next_trans->x,
       next_trans->z);
-#endif
   }
   PlotObjWalls(next_trans, obj, query, 1);
 }
@@ -949,13 +915,6 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
   return 0;
 }
 
-#if (!defined (PSX) || defined (PSX_NOASM))
-/* for psx builds, the default implementations for these functions are in
-   psx/r3000a.s.
-   if noasm is enabled for a psx build then the below implementations are
-   used in place of the pure asm ones; they are referenced in psx/r3000a.c
-   for pc builds these are the default
-*/
 static void ZoneQueryOctreeR(
   zone_rect *zone_rect,
   uint16_t node,
@@ -1299,6 +1258,3 @@ int FindCeilY(
   else
     return sum_y1/count;
 }
-
-#endif
-

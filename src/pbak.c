@@ -13,13 +13,8 @@ extern ns_struct ns;
 extern lid_t cur_lid;
 extern gool_object *crash;
 extern gool_handle handles[8];
-#ifdef PSX
-#include "psx/gpu.h"
-extern gfx_context_db context;
-#else
 #include "pc/gfx/gl.h"
 extern gl_context context;
-#endif
 
 /* note: return types for PbakInit and PbakKill are void in orig impl;
  *       made int for subsys map compatibility */
@@ -43,11 +38,7 @@ static inline void PbakStart() {
   cur_pbak_frame = &cur_pbak_header->frames[0];
   seed = cur_pbak_header->seed;
   sranda(seed);
-#ifdef PSX
-  context.c2_p->draw_stamp = cur_pbak_header->draw_stamp;
-#else
   context.draw_stamp = cur_pbak_header->draw_stamp;
-#endif
   crash->bound = cur_pbak_header->crash_bound;
   checkpoint_id = -1;
   LevelRestart(&cur_pbak_header->savestate);
