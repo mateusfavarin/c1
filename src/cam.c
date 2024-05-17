@@ -162,9 +162,9 @@ static int CamGetProgress(vec *trans, zone_path *path, cam_info *cam, int flags,
   v_dist.x = adjust.x - (rect->x + path->points[pt_idx].x);
   v_dist.y = adjust.y - (rect->y + path->points[pt_idx].y);
   v_dist.z = adjust.z - (rect->z + path->points[pt_idx].z);
-  if (!cam->progress_made 
-   && (abs(v_dist.x) > 3200 
-    || abs(v_dist.y) > 3200 
+  if (!cam->progress_made
+   && (abs(v_dist.x) > 3200
+    || abs(v_dist.y) > 3200
     || abs(v_dist.z) > 3200))
     return 0;
   cam->cur_path = path;
@@ -282,7 +282,7 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
   vec trans, cam_offset_new;
   int32_t progress, new_progress, old_progress;
   int32_t seek_pan, seek_zoom, new_pan, new_zoom, total_zoom;
-  int32_t delta_dist, dist_exit, dist_nearest, cam_speed;
+  int32_t delta_dist, dist_exit, dist_nearest;
   int32_t length;
   int i, path_idx, icam, flags, progress_made, same_dir, n_end;
 
@@ -470,18 +470,13 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
     cam_speed = cam_nearest->delta_progress;
   }
   else {
-#ifdef PSX
     if (cam_nearest->delta_progress <= 0x200) /* change <= 2? */
       cam_speed = cam_nearest->delta_progress/2; /* halve progress */
     else if (cam_nearest->delta_progress < 0x500) /* from 2 to 5 non-inclusive? */
       cam_speed = 0x200; /* limit to 2 */
-    else /* > 5 */ 
+    else /* > 5 */
       cam_speed = min((cam_nearest->delta_progress/2), cam_speed)+0x100;
-#else
-    /* TODO: what makes the camera too slow to keep up with the player
-             when the above limiting code is used? */
-    cam_speed = cam_nearest->delta_progress/2;
-#endif
+
     CamAdjustProgress(cam_speed, cam_nearest);
   }
 }
