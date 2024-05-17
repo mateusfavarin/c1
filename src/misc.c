@@ -71,9 +71,9 @@ const int32_t *t_table2[6] ={ t_table2a, t_table2b, t_table2c,
                               t_table2d, t_table2e, t_table2f };
 
 /* .sdata */
-rgb far_color1 = { 0, 0, 0 };       /* 80056440; gp[0x11] */
+rgb far_color1 = { .r=0, .g=0, .b=0 };       /* 80056440; gp[0x11] */
 int32_t far_t1 = 0x800;             /* 8005644C; gp[0x14] */
-rgb far_color2 = { 255, 255, 255 }; /* 80056450; gp[0x15] */
+rgb far_color2 = { .r=255, .g=255, .b=255 }; /* 80056450; gp[0x15] */
 int32_t far_t2 = 0x800;             /* 8005645C; gp[0x18] */
 int dark_shamt_add = 0;             /* 80056460; gp[0x19] */
 int dark_shamt_sub = 0;             /* 80056464; gp[0x1A] */

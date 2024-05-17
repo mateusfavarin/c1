@@ -46,7 +46,7 @@ static rgba Rgb8ToA32(rgb8 c) {
 }
 
 /* .data */
-const vec v_zero = { 0, 0, 0 };
+const vec v_zero = { .x=0, .y=0, .z=0 };
 const quad28_t uv_map[600] = {
   { { .x= 0, .y= 0 }, { .x= 3, .y= 0 }, { .x= 0, .y= 3 }, { .x= 3, .y= 3 } },
   { { .x= 0, .y= 0 }, { .x= 7, .y= 0 }, { .x= 0, .y= 3 }, { .x= 7, .y= 3 } },
