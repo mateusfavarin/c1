@@ -183,7 +183,8 @@ static gui_item *GuiReflGroup(gui_item **children, int flags) {
   if (!children) { return (gui_item*)-1; }
   item = GuiGroupNew();
   once = 0;
-  for (i=0;it=children[i];i++) {
+  for (i=0;children[i];i++) {
+    it = children[i];
     /* skip children that we chose to not map */
     if ((int)it==-1) { continue; }
     content = GuiNodeContent(it);
@@ -204,7 +205,8 @@ static gui_item *GuiReflNode(gui_item **children) {
   int i;
 
   item = GuiNodeNew(0, 0);
-  for (i=0;it=children[i];i++) {
+  for (i=0;children[i];i++) {
+    it = children[i];
     if ((int)it==-1) { continue; }
     GuiAddChild(item, it);
   }
@@ -456,7 +458,8 @@ static gui_item *GuiObjPropTree(void *obj) {
   if (obj==0) { return tree; }
   gool_object_type = ReflGetType(0, "gool_object");
   items = (gui_item**)ReflMap(obj, gool_object_type, (refl_map_t)GuiMapObjField);
-  for (i=0;it=items[i];i++) {
+  for (i=0;items[i];i++) {
+    it = items[i];
     if ((int)it == -1) { continue; }
     GuiAddChild(tree, it);
   }

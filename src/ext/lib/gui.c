@@ -331,7 +331,8 @@ gui_item *GuiNodeMap(void *data, void **c_mapped) {
 
   item = GuiNodeNew(data, _node_unparse);
   if (!c_mapped) { return item; }
-  for (i=0;it=c_mapped[i];i++) {
+  for (i=0;c_mapped[i];i++) {
+    it = c_mapped[i];
     GuiAddChild(item, it);
   }
   return item;

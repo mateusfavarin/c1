@@ -335,10 +335,10 @@ static void GLConvertToTris(void *ot, poly3i **tris, int *count) {
     trimem=calloc(1,0x800000);
   *tris=trimem;
   prim = (prim_struct*)src;
-  src = (uint8_t*)prim;
   dst = (uint8_t*)*tris;
   ot_idx = 0;
-  while (src = (uint8_t*)prim) {
+  while (prim) {
+    src = (uint8_t*)prim;
     if (prim->type == 1) {
       *(poly3i*)dst = *(poly3i*)src;
 #ifdef CFLAGS_GFX_SW_PERSP

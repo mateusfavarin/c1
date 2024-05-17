@@ -129,33 +129,33 @@ void CoreLoop(lid_t lid) {
     is_pause_lid = lid != LID_TITLE && lid != LID_LEVELEND && lid != LID_INTRO;
     can_pause = (pbak_state == 0) && ((is_pause_lid && title_pause_state != -1) || title_pause_state > 0);
     if ((pads[0].tapped & 0x800) && can_pause) {
-      if (paused = 1 - paused) {
-        if (!pause_obj) {
-          pause_obj = GoolObjectCreate(&handles[7], 4, 4, 0, 0, 0);
-          if (!ISERRORCODE(pause_obj)) {
-            pause_status = 1;
-            pause_stamp = GetTicksElapsed();
-            pause_draw_stamp = context.draw_stamp;
-          }
-          else {
-            pause_status = 0;
-            paused = 0;
-            pause_obj = 0;
-          }
+      paused = 1 - paused;
+      if (!paused) {
+        if (pause_obj) { /* pause screen object exists? */
+          arg = 0;
+          GoolSendEvent(0, pause_obj, 0xC00, 1, &arg); /* send resume/kill? event to pause screen object */
+          pause_obj = 0;
+          pause_status = -1;
+          ticks_elapsed = GetTicksElapsed();
+          ticks_elapsed = pause_stamp;
+          context.draw_stamp = pause_draw_stamp;
         }
       }
-      else if (pause_obj) { /* pause screen object exists? */
-        arg = 0;
-        GoolSendEvent(0, pause_obj, 0xC00, 1, &arg); /* send resume/kill? event to pause screen object */
-        pause_obj = 0;
-        pause_status = -1;
-        ticks_elapsed = GetTicksElapsed();
-        ticks_elapsed = pause_stamp;
-        context.draw_stamp = pause_draw_stamp;
+      else if (!pause_obj) {
+        pause_obj = GoolObjectCreate(&handles[7], 4, 4, 0, 0, 0);
+        if (ISERRORCODE(pause_obj)) {
+          pause_status = 0;
+          paused = 0;
+          pause_obj = 0;
+        }
+        else {
+          pause_status = 1;
+          pause_stamp = GetTicksElapsed();
+          pause_draw_stamp = context.draw_stamp;
+        }
       }
     }
-    else
-      pause_status = 0;
+    else { pause_status = 0; }
     if (crash && crash_eid != EID_NONE) /* crash exists and there is a pbak entry to play? */
       PbakPlay(&crash_eid);
     if (next_lid == -1 && lid != LID_TITLE

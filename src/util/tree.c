@@ -3,7 +3,8 @@
 //#include "mmalloc.h"
 
 tree_node_t *tree_node_next_ancestor(tree_node_t *node, tree_node_t *root) {
-  while (node=node->parent) {
+  while (node->parent) {
+    node = node->parent;
     if (node == root) { return 0; }
     if (node->next) { return node->next; }
   }
@@ -32,7 +33,8 @@ tree_node_t *tree_node_next_cousin(tree_node_t *node, tree_node_t *root) {
 }
 
 tree_node_t *tree_node_prev_ancestor(tree_node_t *node, tree_node_t *root) {
-  while (node=node->parent) {
+  while (node->parent) {
+    node = node->parent;
     if (node == root) { return 0; }
     if (node->prev) { return node->prev; }
   }

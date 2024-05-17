@@ -1336,7 +1336,8 @@ static int GoolTextStringTransform(
   bound.p1.x = val;
   max_x = 0;
   y_offs = 0;
-  while (c = *(str++)) {
+  while (*str) {
+    c = *(str++);
     scale.x = 400 << size;
     scale.y = 400 << size;
     if (c == '~') {
