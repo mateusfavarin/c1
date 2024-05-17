@@ -51,7 +51,7 @@ CC = gcc
 MAKE = make
 
 # [c]imgui
-CIMGUI_PATH = ./src/ext/lib/cimgui
+CIMGUI_PATH = ./3rd_party/cimgui
 CIMGUI_OBJ = $(CIMGUI_PATH)/imgui/backends/imgui_impl_opengl2.o \
 	$(CIMGUI_PATH)/imgui/backends/imgui_impl_sdl.o \
 	$(CIMGUI_PATH)/imgui/imgui_draw.o \
