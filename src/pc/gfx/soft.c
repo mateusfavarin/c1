@@ -91,8 +91,9 @@ int SwRotTransPers(vec *in, vec *out, vec *trans, mat16 *m_rot, vec2 *offs, uint
   s_vert.y = ((int64_t)(offs->y<<16)+(((int64_t)r_vert.y*(proj<<16))/r_vert.z))>>16;
   s_vert.z = r_vert.z;
   if (s_vert.x < -0x400 || s_vert.x > 0x3FF
-   || s_vert.y < -0x400 || s_vert.y > 0x3FF)
+    || s_vert.y < -0x400 || s_vert.y > 0x3FF) {
     res = 0;
+  }
   *out=s_vert;
   return res;
 }

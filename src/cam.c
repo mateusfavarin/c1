@@ -81,20 +81,13 @@ static void CamAdjustProgress(int32_t speed, cam_info *cam) {
   }
   else { /* backward change in progress */
     next_progress = cur_progress - speed;
-    if (cam->next_path) { /* change to a new path? */
-      next_idx = next_progress >> 8;
-      /* since cam changes to a new path the next idx *should*
-         fall below 0; this check ensures it */
-      if (next_progress < 0) {
-        /* that negative idx plus the next path length gives the correct index
-           however LevelUpdate is already written to handle negative indexes in this way */
-        if (cam->relation & 2) /* in front of the preceding path? */
-          next_progress = -next_progress;
-        next_zone = cam->next_path->parent_zone;
-        next_progress += cam->entrance; /* adjust by the entrance offset??? */
-        LevelUpdate(next_zone, cam->next_path, max(next_progress, cam->progress), 0);
-        return;
-      }
+    if (cam->next_path && next_progress < 0) { /* change to a new path? */
+      /* in front of the preceding path? */
+      if (cam->relation & 2) { next_progress = -next_progress; }
+      next_zone = cam->next_path->parent_zone;
+      next_progress += cam->entrance; /* adjust by the entrance offset??? */
+      LevelUpdate(next_zone, cam->next_path, max(next_progress, cam->progress), 0);
+      return;
     }
   }
   LevelUpdate(cur_zone, cur_path, next_progress, 0);
@@ -512,24 +505,21 @@ int CamUpdate() {
   case 3:
     header = (zone_header*)cur_zone->items[0];
     skip = 0;
-    if ((pads[0].tapped & 0xF0) && !(header->gfx.flags & 0x81000))
-      skip = 1; /* skip the transition */
+    if ((pads[0].tapped & 0xF0) && !(header->gfx.flags & 0x81000)) { skip = 1; } /* skip the transition */
     do { /* auto-increment progress and update; or skip to next non-auto-cam path */
       if (!(header->gfx.flags & 0x1000))
         game_state = GAME_STATE_CUTSCENE;
       pt_idx = (cur_progress >> 8) + 1;
       /* auto-cam hasn't reached end of path and not skipping? */
-      if (pt_idx < cur_path->length && !skip) {
+      if ((pt_idx < cur_path->length) && !skip) {
         LevelUpdate(cur_zone, cur_path, cur_progress + 0x100, 0);
         return 1;
       }
       neighbor_path = cur_path->neighbor_paths[0];
       n_path = ZoneGetNeighborPath(cur_zone, cur_path, 0);
       if (!n_path) { return 1; } /* TODO: make ZoneGetNeighborPath return 0 if no neighbors */
-      if (neighbor_path.goal & 1)
-        n_progress = 0;
-      else
-        n_progress = (n_path->length - 1) << 8;
+      if (neighbor_path.goal & 1) { n_progress = 0; }
+      else { n_progress = (n_path->length - 1) << 8; }
       n_zone = n_path->parent_zone;
       n_header = (zone_header*)n_zone->items[0];
       LevelUpdate(n_zone, n_path, n_progress, 0); /* skip forward to next path */

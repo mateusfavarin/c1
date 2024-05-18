@@ -116,6 +116,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_TITLE
+#define LID_BOOTLEVEL         LID_NSANITYBEACH
 
 #endif /* _COMMON_H_ */

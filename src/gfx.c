@@ -17,9 +17,12 @@ static inline void GfxFillMatrix(mat16 *m, uint16_t val) {
 }
 
 static inline void GfxCopyMatrix(mat16 *m_s, mat16 *m_d) {
-  int i;
-  for (i=0;i<9;i++)
-    ((uint16_t*)((m_d)->m))[i]=((uint16_t*)((m_s)->m))[i];
+  int i, j;
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 3; j++) {
+      m_d->m[i][j] = m_s->m[i][j];
+    }
+  }
 }
 
 #include "pc/gfx/pcgfx.h"
@@ -845,7 +848,7 @@ void GfxUpdateMatrices() {
   params.screen.x = screen_ro.x;
   params.screen.y = screen_ro.y + (screen_shake >> 8);
   y_offs = screen_shake >> 8;
-  screen_shake = (y_offs ? y_offs < 0 ? ~y_offs : 1-y_offs : 0) << 8;
+  screen_shake = (y_offs ? (y_offs <= 0 ? ~y_offs : 1-y_offs) : 0) << 8;
   cam_trans_ro = cam_trans; /* 80061920 */
   cam_rot_ro = cam_rot;     /* 8006192C */
   if (header->gfx.flags & 0x1000)
@@ -1081,8 +1084,8 @@ void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj) {
       z_header->gfx.visibility_depth >> 8,
       &params);
   }
-  else
-    res = GfxCalcObjectMatrices((svtx_frame*)frame, header, obj, 0, &z_dist);
+  else { res = GfxCalcObjectMatrices((svtx_frame*)frame, header, obj, 0, &z_dist); }
+
   if (res) {
     prims_tail = GLGetPrimsTail();
     SwTransformCvtx(
