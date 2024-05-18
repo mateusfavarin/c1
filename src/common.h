@@ -7,9 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* compilation settings */
-#define LID_BOOTLEVEL             LID_HOGWILD
-
 /* Compiler flags */
 #define CFLAGS_GFX_SW_PERSP
 //#define CFLAGS_DRAW_EXTENSIONS
@@ -117,5 +114,8 @@
 #define LID_CASTLEMACHINERY   0x37
 #define LID_INTRO             0x38
 #define LID_GAMEWIN           0x39
+
+/* compilation settings */
+#define LID_BOOTLEVEL         LID_NSANITYBEACH
 
 #endif /* _COMMON_H_ */

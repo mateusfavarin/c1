@@ -2,8 +2,6 @@
 
 This is a port of the game *Crash Bandicoot* to C.
 
-The code is designed to compile for both psx and pc. At the moment only pc-specific code is working.
-
 ## Status ##
 
 - Code - 100% ported
@@ -13,15 +11,25 @@ At the moment the game is only partially playable with a number of currently ide
 
 ## Compiling ##
 
+### Windows ###
+
+#### Dependencies ####
+
+- Visual Studio 2022
+- clangd-cl package
+
+Open the project solution in `vsproject/c1.sln` and hit `Build -> Build Solution`.
+
+### Linux ###
+
 As of currently, compilation has only been tested on Ubuntu/Debian. However, the game should build on any system with a working 32-bit GNU toolchain and other dependencies listed below.
 
 Note that only 32-bit target executables are currently supported. If you are not already running a 32-bit OS, you will need multilib versions of gcc and g++ and 32-bit versions of the dependencies.
 
 To compile c1, install the dependencies listed below, `cd` into the main project directory, and run `make`.
 
-### Dependencies ###
+#### Dependencies ####
 
-#### pc ####
 - gcc / binutils / glibc
 - GNU make
 - OpenGL 2.0 or higher
@@ -35,14 +43,7 @@ Ubuntu/Debian:
 - 64-bit: `sudo apt install build-essential gcc-multilib g++-multilib libstdc++6:i386 libgl1-mesa-dev:i386 libsdl2-dev:i386 libfluidsynth-dev:i386`
 - 32-bit: `sudo apt install build-essential libstdc++6 libgl1-mesa-dev libsdl2-dev libfluidsynth-dev`
 
-#### psx ####
-(note: psx build currently does not work)
-
-- Psy-Q
-
 ## Running ##
-
-To run c1, `cd` into the main project directory and run `./c1`.
 
 Copies of the asset files from the Crash Bandicoot game disc are needed for the game to function. Asset files are the (.NSD/.NSF) files located in the `/S0`, `/S1`, `/S2`, and `/S3` directories, respectively. Each of these files must be copied from its respective `/S*` directory into the `/streams` directory.
 
@@ -149,6 +150,8 @@ Note that further documentation can be found in the `doc` directory.
 │       ├── gui.c,h          # in-game GUI
 │       ├── refl.c,h         # game-specific type metadata
 │       └── disgool.c,h      # GOOL disassembler
+├── 3rd_party                # third party subprojects, libs and headers
+├── vsproject                # visual studio project (windows)
 ├── streams                  # game assets (.NSD/.NSF files)
 ├── Makefile                 # project makefile
 └── README.md                # project overview; this file
