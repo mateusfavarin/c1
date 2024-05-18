@@ -232,7 +232,7 @@ int16_t SwSepOpen(uint8_t *sep, int vab_id, int count) {
     sfid = fluid_synth_sfload(synth, buf.dummy, 0);
     context->sfid = sfid;
   }
-  midi_data = (uint8_t*)malloc(0x80000);
+  midi_data = (uint8_t*)malloc(0x800000);
   mid = midi_data;
   pthd = (PThd*)sep;
   seq = pthd->data;

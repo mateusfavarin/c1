@@ -1435,10 +1435,8 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
   start = i;
   anims = obj->global->items[5];
   font_offset = obj->process.invincibility_state >> 8;
-  if (font_offset == 0)
-    font = (gool_font*)&anims[text->glyphs_offset*4];
-  else
-    font = (gool_font*)&anims[font_offset*4];
+  if (font_offset == 0) { font = (gool_font*)&anims[text->glyphs_offset * 4]; }
+  else { font = (gool_font*)&anims[font_offset * 4]; }
   sprintf(buf, &str[i], obj->process.sp[-2], obj->process.sp[-3], obj->process.sp[-4], obj->process.sp[-5]);
   while(buf[i++] != 0); /* skip to first null term char */
   i--;
@@ -1450,10 +1448,8 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
     buf[i+1] = 0; /* place null term at end of truncated string */
   }
   tpag = font->tpage;
-  if (flag)
-    arg = GoolTextStringTransform(obj, buf, 0, font, tpag, size, 0);
-  else
-    arg = 0;
+  if (flag) { arg = GoolTextStringTransform(obj, buf, 0, font, tpag, size, 0); }
+  else { arg = 0; }
   prims_tail = GLGetPrimsTail();
   GoolTextStringTransform(obj, buf, -arg/2, font, tpag, size, prims_tail);
 }
