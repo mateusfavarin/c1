@@ -47,7 +47,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -70,7 +70,7 @@ xcopy /y /d "$(ProjectDir)..\3rd_party\fluidsynth\tools\fluidsynth\*.dll" "$(Out
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

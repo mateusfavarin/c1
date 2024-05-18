@@ -2434,10 +2434,9 @@ void GoolOpMisc(gool_object *obj, uint32_t instruction) {
   case 0: { /* read event [service routine?] argument */
     uint32_t *args;
     if (!ptr) { break; }
-    if (args = (uint32_t*)*ptr)
-      GoolObjectPush(obj, args[idx]);
-    else
-      GoolObjectPush(obj, 0);
+    args = (uint32_t*)*ptr;
+    if (args) { GoolObjectPush(obj, args[idx]); }
+    else { GoolObjectPush(obj, 0); }
     break;
   }
   case 1:   /* [euclidian or manhattan] distance from obj(src) to link(dst) */
