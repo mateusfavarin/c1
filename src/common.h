@@ -8,7 +8,6 @@
 #include <string.h>
 
 /* Compiler flags */
-#define CFLAGS_GFX_SW_PERSP
 //#define CFLAGS_DRAW_EXTENSIONS
 //#define CFLAGS_GUI
 //#define CFLAGS_GOOL_DEBUG

@@ -341,10 +341,8 @@ static void GLConvertToTris(void *ot, poly3i **tris, int *count) {
     src = (uint8_t*)prim;
     if (prim->type == 1) {
       *(poly3i*)dst = *(poly3i*)src;
-#ifdef CFLAGS_GFX_SW_PERSP
       for (i=0;i<3;i++)
         ((poly3i*)dst)->verts[i].z = -1;
-#endif
       dst += sizeof(poly3i);
       ++(*count);
     }
@@ -356,9 +354,7 @@ static void GLConvertToTris(void *ot, poly3i **tris, int *count) {
           tri.prim.type = prim->type == 2 ? 1: 3;
           tri.prim.next = 0;
           tri.verts[k] = ((poly4i*)src)->verts[idx];
-#ifdef CFLAGS_GFX_SW_PERSP
           tri.verts[k].z = -1;
-#endif
           tri.colors[k] = ((poly4i*)src)->colors[idx];
           tri.texid = ((poly4i*)src)->texid;
           if (prim->type == 3) {

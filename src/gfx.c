@@ -737,16 +737,6 @@ inline static int GfxScreenProj(int fov) {
   return 0;
 }
 
-static void PrintMatrix(mat16 * m) {
-  printf("Matrix:\n");
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      printf("%d ", m->m[i][j]);
-    }
-    printf("\n");
-  }
-}
-
 //----- (80017790) --------------------------------------------------------
 void GfxInitMatrices() {
   GfxResetCam(&cam.trans);
@@ -1126,12 +1116,8 @@ void GfxTransformFragment(gool_frag *frag, int32_t z, eid_t tpag,
   verts[1].x=bound->p2.x;verts[1].y=bound->p2.y;
   for (i=0;i<4;i++) {
     verts[i].z = 0;
-#ifdef CFLAGS_GFX_SW_PERSP
     SwRotTransPers(&verts[i], &r_verts[i], &params.trans, &params.m_rot,
       &params.screen, screen_proj);
-#else
-    SwRotTrans(&verts[i], &r_verts[i], &params.trans, &params.m_rot);
-#endif
   }
   // if (_$A2 < 0) { return 0; } /* return on fail */ // TODO!
   prims_tail=GLGetPrimsTail();
@@ -1177,12 +1163,8 @@ void GfxTransformFontChar(gool_object *obj, gool_glyph *glyph, int32_t z,
   verts[1].x=bound->p2.x;verts[1].y=bound->p2.y;
   for (i=0;i<4;i++) {
     verts[i].z = 0;
-#ifdef CFLAGS_GFX_SW_PERSP
     SwRotTransPers(&verts[i], &r_verts[i], &params.trans, &params.m_rot,
       &params.screen, screen_proj);
-#else
-    SwRotTrans(&verts[i], &r_verts[i], &params.trans, &params.m_rot);
-#endif
   }
   // if (_$T0 < 0) { return 0; } /* return on fail */ // TODO!
   prims_tail=GLGetPrimsTail();

@@ -365,12 +365,8 @@ void SwTransformSvtx(
       u_vert.x=((frame->x-128)+vert->x)*4;
       u_vert.y=((frame->y-128)+vert->y)*4;
       u_vert.z=((frame->z-128)+vert->z)*4;
-#ifdef CFLAGS_GFX_SW_PERSP
       res = SwRotTransPers(&u_vert, &r_verts[ii], &params->trans, &params->m_rot,
         &params->screen, params->screen_proj);
-#else
-      res = SwRotTrans(&u_vert, &r_verts[ii], &params->trans, &params->m_rot);
-#endif
       if (!res) { break; }
     }
     if (!res) { continue; }
@@ -492,12 +488,8 @@ void SwTransformCvtx(
       u_vert.x=((frame->x-128)+vert->x)*4;
       u_vert.y=((frame->y-128)+vert->y)*4;
       u_vert.z=((frame->z-128)+vert->z)*4;
-#ifdef CFLAGS_GFX_SW_PERSP
       res = SwRotTransPers(&u_vert, &r_verts[ii], &params->trans, &params->m_rot,
         &params->screen, params->screen_proj);
-#else
-      res = SwRotTrans(&u_vert, &r_verts[ii], &params->trans, &params->m_rot);
-#endif
       if (!res) { break; }
     }
     if (!res) { continue; }
@@ -567,12 +559,8 @@ void SwTransformSprite(
   verts[2].x=-size;verts[2].y=-size;verts[2].z=0;
   verts[3].x= size;verts[3].y=-size;verts[3].z=0;
   for (i=0;i<4;i++) {
-#ifdef CFLAGS_GFX_SW_PERSP
     res = SwRotTransPers(&verts[i], &r_verts[i], &params->trans, &params->m_rot,
       &params->screen, params->screen_proj);
-#else
-    res = SwRotTrans(&verts[i], &r_verts[i], &params->trans, &params->m_rot);
-#endif
   }
   if (!res) { return; } /* return on fail */
   prim=(poly4i*)*prims_tail;
@@ -724,12 +712,8 @@ static void SwTransformAndShadeWorlds(
         vert_id.vert_idx = ii;
         pre_shader(vert_id, &u_verts[ii], &colors[ii], params);
       }
-#ifdef CFLAGS_GFX_SW_PERSP
       SwRotTransPers(&u_verts[ii], &r_verts[ii], &world->trans, &params->m_rot,
         &params->screen, params->screen_proj);
-#else
-      SwRotTrans(&u_verts[ii], &r_verts[ii], &world->trans, &params->m_rot);
-#endif
       if (post_shader) {
         vert_id.world_idx = world_idx;
         vert_id.poly_idx = poly_idx;
