@@ -24,7 +24,7 @@ typedef struct {
 } prim_struct;
 
 typedef struct {
-  prim_struct;
+  prim_struct prim;
   vec verts[3];
   rgba colors[3];
   fvec uvs[3];
@@ -33,7 +33,7 @@ typedef struct {
 } poly3i;
 
 typedef struct {
-  prim_struct;
+  prim_struct prim;
   vec verts[4];
   rgba colors[4];
   fvec uvs[4];

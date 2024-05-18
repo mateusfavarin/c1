@@ -136,10 +136,10 @@
 #define ISHANDLE(obj)     (HANDLE(obj).type==2)
 
 #define GoolObjectGetChildren(obj) \
-(ISHANDLE(obj) ? HANDLE(obj).children : OBJECT(obj)->children)
+(ISHANDLE(obj) ? HANDLE(obj).children : OBJECT(obj)->process.gool_links.children)
 #define GoolObjectSetChildren(obj,c) \
 if (ISHANDLE(obj)) { HANDLE(obj).children = c; } \
-else               { OBJECT(obj)->children = c; }
+else               { OBJECT(obj)->process.gool_links.children = c; }
 
 #define GoolCalcBound(b,t,o) \
 (o)->p1.x = (b)->p1.x + (t)->x; \
@@ -149,7 +149,7 @@ else               { OBJECT(obj)->children = c; }
 (o)->p2.y = (b)->p2.y + (t)->y; \
 (o)->p2.z = (b)->p2.z + (t)->z
 #define GoolObjectCalcBound(o,b) \
-GoolCalcBound(&(o)->bound, &(o)->trans, (b))
+GoolCalcBound(&(o)->bound, &(o)->process.vectors.trans, (b))
 
 /* object structure definitions */
 typedef struct {
@@ -195,9 +195,11 @@ typedef struct {
 } gool_vectors;
 
 typedef struct {
-  union { gool_links; struct _gool_object *links[8]; };
   union {
-    gool_vectors;
+    gool_links gool_links;
+    struct _gool_object *links[8];
+  };
+  union {
     gool_vectors vectors;
     vec vectors_v[6];
     ang vectors_a[6];
@@ -264,12 +266,10 @@ typedef struct _gool_object {
   entry *zone;
   uint32_t state;
   union {
-    gool_colors;
     gool_colors colors;
     uint16_t colors_i[24];
   };
   union {
-    gool_process;
     gool_process process;
     uint32_t regs[0x1FC];
   };
@@ -354,7 +354,7 @@ extern int16_t GoolObjectRotate(int16_t,int16_t,int32_t,gool_object*);
 extern int16_t GoolObjectRotate2(int16_t,int16_t,int32_t,gool_object*);
 extern int16_t GoolAngDiff(int16_t,int16_t);
 extern int32_t GoolSeek(int32_t,int32_t,int32_t);
-extern int GoolTransform(vec*,vec*,ang*,vec*,vec*);
+extern void GoolTransform(vec*,vec*,ang*,vec*,vec*);
 extern int GoolTransform2(vec*,vec*,int);
 extern int GoolCollide(gool_object*,bound*,gool_object*,bound*);
 extern int GoolSendToColliders(gool_object*,uint32_t,int,int,uint32_t*);

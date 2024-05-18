@@ -154,7 +154,7 @@ char *NSGetFilename2(int type, uint32_t lid, char *path, char *subdir) {
       sprintf(ns_filename, "%s%sS%07X.NSF", NS_PATH, NS_SUBPATH, lid);
     return ns_filename;
   }
-  return (char*)ERROR; /* invalid type */
+  return (char*)CODE_ERROR; /* invalid type */
 }
 
 //----- (8001297C) --------------------------------------------------------
@@ -772,7 +772,7 @@ int NSTexturePageFree(int idx) {
   }
   else if (ps->state == 21)
     ps->state = 1;
-  return ERROR;
+  return CODE_ERROR;
 }
 
 #ifdef PSX
@@ -927,10 +927,9 @@ static page_struct* NSPagePhysical(int pgid, eid_t eid) {
 #else
 
 static page_struct* NSPageTranslate(page_struct *ps) {
-  int state, type;
+  int state;
 
   state = ps->state;
-  type = ps->page->type;
   if (state == 3) {
     ps->state = 4;
     NSPageTranslateOffsets(ps->page);

@@ -67,21 +67,22 @@ const vec28 sorted_points[152] ={
 
 /* note: these consts and not originally part of the .data section
    they are embedded in load instructions */
-#define vec_shl8(x,y,z) {(int)(x*256),(int)(y*256),(int)(z*256)}
-bound test_bound_default = { vec_shl8( -100,      0,  -100),
-                             vec_shl8(  100,      0,   100) };
-bound test_bound_event   = { vec_shl8( -150,      0,  -150),
-                             vec_shl8(  150,    665,   150) };
-bound test_bound_surface = { vec_shl8(-6.25,      0, -6.25),
-                             vec_shl8( 6.25,    665,  6.25) };
-bound test_bound_zone    = { vec_shl8( -300, -267.5,  -300),
-                             vec_shl8(  300,  932.5,   300) };
-bound test_bound_obj     = { vec_shl8(  -75,      0,   -75),
-                             vec_shl8(   75,    665,    75) };
-bound test_bound_objtop  = { vec_shl8(  -75, 498.75,   -75),
-                             vec_shl8(   75,    665,    75) };
-bound test_bound_ceil    = { vec_shl8(-37.5, 498.75, -37.5),
-                             vec_shl8( 37.5,    665,  37.5) };
+#define vec_shl8(a,b,c) {.x=(int)(a*256), .y=(int)(b*256), .z=(int)(c*256)}
+
+bound test_bound_default = { .p1=vec_shl8( -100,      0,  -100),
+                             .p2=vec_shl8(  100,      0,   100) };
+bound test_bound_event   = { .p1=vec_shl8( -150,      0,  -150),
+                             .p2=vec_shl8(  150,    665,   150) };
+bound test_bound_surface = { .p1=vec_shl8(-6.25,      0, -6.25),
+                             .p2=vec_shl8( 6.25,    665,  6.25) };
+bound test_bound_zone    = { .p1=vec_shl8( -300, -267.5,  -300),
+                             .p2=vec_shl8(  300,  932.5,   300) };
+bound test_bound_obj     = { .p1=vec_shl8(  -75,      0,   -75),
+                             .p2=vec_shl8(   75,    665,    75) };
+bound test_bound_objtop  = { .p1=vec_shl8(  -75, 498.75,   -75),
+                             .p2=vec_shl8(   75,    665,    75) };
+bound test_bound_ceil    = { .p1=vec_shl8(-37.5, 498.75, -37.5),
+                             .p2=vec_shl8( 37.5,    665,  37.5) };
 /* .sdata */
 int32_t land_offset = 62500;     /* 800564BC; gp[0x30] */
 /* .sbss */
@@ -115,7 +116,7 @@ void TransSmoothStopAtSolid(gool_object *obj, vec *velocity, zone_query *query) 
   else
     land_offset =  62500;
   cur_velocity = *velocity;
-  cur_trans = obj->trans;
+  cur_trans = obj->process.vectors.trans;
   if (being_stopped) { /* supported by a solid surface? */
     slope_accel.x = prev_velocity.x - cur_velocity.x;
     slope_accel.y = prev_velocity.y - cur_velocity.y;
@@ -143,13 +144,13 @@ void TransSmoothStopAtSolid(gool_object *obj, vec *velocity, zone_query *query) 
   }
   else
     being_stopped = 0;
-  obj->trans = next_trans; /* finally set the new trans */
-  if (obj->status_a & 0x400) {
+  obj->process.vectors.trans = next_trans; /* finally set the new trans */
+  if (obj->process.status_a & 0x400) {
     arg = 0x6400;
-    if (!(obj->status_a & 1))
-      GoolSendEvent(0, obj, obj->event, 1, &arg);
-    else if (obj->event != GOOL_EVENT_BOX_STACK_BREAK)
-      GoolSendEvent(0, obj, obj->event, 1, &arg);
+    if (!(obj->process.status_a & 1))
+      GoolSendEvent(0, obj, obj->process.event, 1, &arg);
+    else if (obj->process.event != GOOL_EVENT_BOX_STACK_BREAK)
+      GoolSendEvent(0, obj, obj->process.event, 1, &arg);
   }
 }
 
@@ -215,43 +216,43 @@ static int ProcessNode(gool_object *obj, uint32_t node) {
   if (node == 0) { type = 0; }
   switch (subtype) {
   case 1:
-    obj->event     = 0x700;
-    obj->status_a |= 0x400;
+    obj->process.event     = 0x700;
+    obj->process.status_a |= 0x400;
     break;
   case 2:
-    obj->event     = 0xC00;
-    obj->status_a |= 0x400;
+    obj->process.event = 0xC00;
+    obj->process.status_a |= 0x400;
     break;
   case 3:
-    obj->event     = GOOL_EVENT_DROWN;
-    obj->status_a |= 0x400;
+    obj->process.event     = GOOL_EVENT_DROWN;
+    obj->process.status_a |= 0x400;
     break;
   case 4:
-    obj->event     = GOOL_EVENT_BURN;
-    obj->status_a |= 0x400;
+    obj->process.event     = GOOL_EVENT_BURN;
+    obj->process.status_a |= 0x400;
     break;
   case 5:
-    obj->event     = GOOL_EVENT_EXPLODE;
-    obj->status_a |= 0x400;
+    obj->process.event     = GOOL_EVENT_EXPLODE;
+    obj->process.status_a |= 0x400;
     break;
   case 6:
-    obj->event     = 0xD00;
-    obj->status_a |= 0x400;
+    obj->process.event     = 0xD00;
+    obj->process.status_a |= 0x400;
     break;
   case 7:
   case 8:
   case 9:
   case 10:
-    obj->event     = 0x1200;
-    obj->status_a |= 0x2000;
+    obj->process.event     = 0x1200;
+    obj->process.status_a |= 0x2000;
     break;
   case 11:
-    obj->event     = GOOL_EVENT_FALL_KILL;
-    obj->status_a |= 0x400;
+    obj->process.event     = GOOL_EVENT_FALL_KILL;
+    obj->process.status_a |= 0x400;
     return 1;
   case 12:
-    obj->event     = GOOL_EVENT_SHOCK;
-    obj->status_a |= 0x400;
+    obj->process.event     = GOOL_EVENT_SHOCK;
+    obj->process.status_a |= 0x400;
     break;
   }
   if (type == 4) /* pit death type a? */ {
@@ -296,20 +297,20 @@ static int StopAtHighestObjectBelow(gool_object *obj, vec *trans, vec *next_tran
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
     colliding = 0;
-    if ((test_y >= bound->bound.p2.y || (bound->obj->status_b & 0x400000))
+    if ((test_y >= bound->bound.p2.y || (bound->obj->process.status_b & 0x400000))
       && max_y < bound->bound.p2.y
       && TestBoundIntersection(&query->collider_bound, &bound->bound)) {
       found = bound;
       query->i += 4096;
       colliding = 1;
     }
-    if (colliding && (bound->obj->status_b & GOOL_FLAG_SOLID_TOP)) {
+    if (colliding && (bound->obj->process.status_b & GOOL_FLAG_SOLID_TOP)) {
       exec = bound->obj->global;
       header = (gool_header*)exec->items[0];
-      if ((!(obj->state_flags & GOOL_FLAG_FLING_STATE)
-       && obj->invincibility_state != 5)
+      if ((!(obj->process.state_flags & GOOL_FLAG_FLING_STATE)
+       && obj->process.invincibility_state != 5)
        || header->category != 0x300
-       || ((bound->obj->status_c & 0x1012) && !(bound->obj->state_flags & 10020)))
+       || ((bound->obj->process.status_c & 0x1012) && !(bound->obj->process.state_flags & 10020)))
         max_y = bound->bound.p2.y + 1;
     }
   }
@@ -344,41 +345,41 @@ static int StopAtFloor(gool_object *obj, vec *trans, vec *next_trans, zone_query
   solid_nodes_y = avg_y[1]; /* avg. height of wall/scenery nodes */
   floor_nodes_y = avg_y[2]; /* avg. height of floor/valid event/level bound nodes */
   solid_objs_y = StopAtHighestObjectBelow(obj, trans, next_trans, query);
-  query->floor_nodes_y = floor_nodes_y != -999999999 ? floor_nodes_y : 0;
-  query->solid_nodes_y = solid_nodes_y != -999999999 ? solid_nodes_y : 0;
-  query->solid_objs_y  = solid_objs_y  != -999999999 ? solid_objs_y  : 0;
+  query->summary_results.floor_nodes_y = floor_nodes_y != -999999999 ? floor_nodes_y : 0;
+  query->summary_results.solid_nodes_y = solid_nodes_y != -999999999 ? solid_nodes_y : 0;
+  query->summary_results.solid_objs_y  = solid_objs_y  != -999999999 ? solid_objs_y  : 0;
   flags = 0x40001; /* assume on the floor and hitting the floor */
   if (solid_objs_y != -999999999) { /* solid object below? */
     floor_nodes_y = solid_objs_y; /* overrides the floor */
     flags = 0x200001; /* on an object and hitting at the top */
-    if (obj->collider) { /* object is set as the collider? */
-      if (obj->collider->status_b & 0x400000) /* object beneath us is a box? */
+    if (obj->process.gool_links.collider) { /* object is set as the collider? */
+      if (obj->process.gool_links.collider->process.status_b & 0x400000) /* object beneath us is a box? */
         floor_offset = 0x19000; /* set floor offset to box height */
-      if ((obj->anim_stamp - obj->floor_impact_stamp) >= 4) /* more than 4 frames since last hitting floor? */
+      if ((obj->process.anim_stamp - obj->process.floor_impact_stamp) >= 4) /* more than 4 frames since last hitting floor? */
         flags |= 0x4000; /* breaking/bouncing(?) */
     }
   }
-  if (obj->velocity.y > 0) { /* jumping/launching? */
+  if (obj->process.vectors.velocity.y > 0) { /* jumping/launching? */
     /* no toggle, no bounce/break box, not on ground, no collide box */
-    obj->status_a &= ~0x244001; /* clear bits 1,15,19,22 */
+    obj->process.status_a &= ~0x244001; /* clear bits 1,15,19,22 */
   }
   if ((floor_nodes_y == -999999999 && solid_nodes_y == -999999999)
-   || obj->velocity.y > 0) { /* not atop the floor or wall? */
+   || obj->process.vectors.velocity.y > 0) { /* not atop the floor or wall? */
     query->floor = 0; /* not on any kind of floor */
     return -999999999;
   }
   if (floor_nodes_y != -999999999) { /* collision with solid floor node? */
     floor = floor_nodes_y; /* takes precedence over solid non-floor node collision */
-    max_floor = obj->trans.y + floor_offset + land_offset;
+    max_floor = obj->process.vectors.trans.y + floor_offset + land_offset;
   }
   else { /* collision with solid non-floor node */
     floor = solid_nodes_y;
-    max_floor = obj->trans.y;
+    max_floor = obj->process.vectors.trans.y;
     flags = 1;
   }
   query->floor = floor;
   floor += 1;
-  if (floor > max_floor) { floor = obj->trans.y; }
+  if (floor > max_floor) { floor = obj->process.vectors.trans.y; }
   *out = max_floor;
   next_trans->y = floor; /* force new y position to the floor */
   query->collider_bound.p1.y = floor;
@@ -386,12 +387,12 @@ static int StopAtFloor(gool_object *obj, vec *trans, vec *next_trans, zone_query
   if (!query->once
     || !TestBoundInBound(&query->collider_bound, &query->nodes_bound))
     ZoneQueryOctrees(next_trans, obj, query); /* requery with the new bounds */
-  if (obj->velocity.y < 0 && (flags & 1)) { /* falling and just hit solid ground? */
-    obj->floor_impact_velocity = obj->velocity.y; /* record y velocity at impact */
-    obj->velocity.y = 0; /* stop falling */
+  if (obj->process.vectors.velocity.y < 0 && (flags & 1)) { /* falling and just hit solid ground? */
+    obj->process.floor_impact_velocity = obj->process.vectors.velocity.y; /* record y velocity at impact */
+    obj->process.vectors.velocity.y = 0; /* stop falling */
   }
-  obj->status_a |= flags;
-  obj->floor_impact_stamp = frames_elapsed; /* record timestamp for this floor collision */
+  obj->process.status_a |= flags;
+  obj->process.floor_impact_stamp = frames_elapsed; /* record timestamp for this floor collision */
   return floor;
 }
 
@@ -411,7 +412,7 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
   GoolCalcBound(&test_bound_objtop, next_trans, &query->collider_bound);
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (!(bound->obj->status_b & GOOL_FLAG_SOLID_BOTTOM)) { continue; } /* skip objects which are not solid at the bottom */
+    if (!(bound->obj->process.status_b & GOOL_FLAG_SOLID_BOTTOM)) { continue; } /* skip objects which are not solid at the bottom */
     if (TestBoundIntersection(&query->collider_bound, &bound->bound)) {
       found = bound;
       if (min_y == -999999999 || bound->bound.p1.y <= min_y)
@@ -427,7 +428,7 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
     1,
     -999999999);
   header = (zone_header*)obj->zone->items[0];
-  if (header->flags & 0x20000) { /* obj's zone is solid at the top? */
+  if (header->gfx.flags & 0x20000) { /* obj's zone is solid at the top? */
     /* first ensure that there is no other zone above it */
     /* find a neighbor zone which contains the pt 0x2580 units above the obj */
     above_zone.x = next_trans->x;
@@ -444,7 +445,7 @@ static int StopAtCeil(gool_object *obj, vec *next_trans, zone_query *query) {
   /* found an object that is hit from the bottom
      and either no ceiling found or the object is lower than the ceiling? */
   if (min_y != -999999999 && (ceil == -999999999 || min_y < ceil)) {
-    found->obj->status_a |= GOOL_FLAG_HIT_AT_BOTTOM; /* set flag for 'hit from the bottom' */
+    found->obj->process.status_a |= GOOL_FLAG_HIT_AT_BOTTOM; /* set flag for 'hit from the bottom' */
     arg = 0x6400;
     GoolSendEvent(obj, found->obj, 0x1700, 1, &arg); /* ...and send the corresponding event */
     return min_y; /* return y location of the object bottom */
@@ -469,16 +470,16 @@ static int StopAtZone(gool_object *obj, vec *next_trans) {
         GoolSendEvent(0, obj, GOOL_EVENT_DROWN, 1, &arg);
       }
       header = (zone_header*)obj->zone->items[0];
-      if ((header->flags & 2) && obj->invincibility_state != 2) { /* zone not solid at bottom? */
+      if ((header->gfx.flags & 2) && obj->process.invincibility_state != 2) { /* zone not solid at bottom? */
         arg = 0x6400;
         GoolSendEvent(0, obj, GOOL_EVENT_FALL_KILL, 1, &arg); /* fall into a hole and die */
       }
       else { /* zone is solid at bottom */
         next_trans->y = (rect->y << 8) - obj->bound.p1.y; /* readjust to bottom of zone */
-        obj->floor_impact_velocity = obj->velocity.y; /* record y velocity of impact */
-        obj->velocity.y = 0; /* stop falling */
-        obj->status_a |= GOOL_FLAG_GROUNDLAND; /* set flag for 'stopped by floor' */
-        obj->floor_impact_stamp = frames_elapsed; /* record timestamp for this floor collision */
+        obj->process.floor_impact_velocity = obj->process.vectors.velocity.y; /* record y velocity of impact */
+        obj->process.vectors.velocity.y = 0; /* stop falling */
+        obj->process.status_a |= GOOL_FLAG_GROUNDLAND; /* set flag for 'stopped by floor' */
+        obj->process.floor_impact_stamp = frames_elapsed; /* record timestamp for this floor collision */
       }
     }
   }
@@ -486,7 +487,7 @@ static int StopAtZone(gool_object *obj, vec *next_trans) {
     obj->zone = neighbor; /* set objects zone to correct */
   if (!obj->zone) { return -255; } /* return error if still no zone */
   header = (zone_header*)obj->zone->items[0];
-  if ((header->flags & 4) && obj->trans.y < header->water_y /* lower than water? */
+  if ((header->gfx.flags & 4) && obj->process.vectors.trans.y < header->gfx.water_y /* lower than water? */
     && (ns.ldat->lid == LID_UPSTREAM || ns.ldat->lid == LID_UPTHECREEK)) { /* upstream or up the creek? */
     arg = 0x27100;
     GoolSendEvent(0, obj, GOOL_EVENT_DROWN, 1, &arg); /* water death */
@@ -520,19 +521,19 @@ void TransStopAtSolid(gool_object *obj, zone_query *query, vec *trans, vec *delt
   query->i++;
   if ((bit_idx.x != 16 || bit_idx.z != 16) /* does this count as movement at the bitmap scale? 4) */
     && adj_bit_idx.x == bit_idx.x && adj_bit_idx.z == bit_idx.z) /* no readjustment due to solid wall? 5) */
-    obj->status_a |= 0x100; /* set flag for 'not stopped by a wall' */
+    obj->process.status_a |= 0x100; /* set flag for 'not stopped by a wall' */
   ceil = StopAtCeil(obj, &adj_trans, query); /* check for solids above crash */
   if (ceil != -999999999) /* was a solid found? */
-    query->ceil = ceil; /* record its y location */
+    query->summary_results.ceil = ceil; /* record its y location */
   else
-    query->ceil = 0;
+    query->summary_results.ceil = 0;
   /* ceiling y location above bottom of object bound box? */
   if (ceil != -999999999 && ceil < (adj_trans.y+0x29901)) {
     if (trans->y < ceil-0x29901) /* top of object above ceiling? */
       adj_trans.y = ceil-0x29901; /* stop object */
-    if (obj->velocity.y > 0) /* also clear positive y velocity */
-      obj->velocity.y = 0;
-    obj->status_a |= 0x80; /* set flag for 'hit the ceiling' */
+    if (obj->process.vectors.velocity.y > 0) /* also clear positive y velocity */
+      obj->process.vectors.velocity.y = 0;
+    obj->process.status_a |= 0x80; /* set flag for 'hit the ceiling' */
   }
   StopAtZone(obj, &adj_trans); /* stop at solid zone floors */
   *next_trans = adj_trans;
@@ -656,7 +657,7 @@ static void PlotObjWalls(vec *next_trans, gool_object *obj, zone_query *query, i
 
   if (!object_bound_count) { return; }
   header = (zone_header*)cur_zone->items[0];
-  zone_has_walls = !(header->flags & 0x100000);
+  zone_has_walls = !(header->gfx.flags & 0x100000);
   GoolCalcBound(&obj->bound, next_trans, &obj_bound);
   test_bound.p1.x = obj_bound.p1.x - (100<<8);
   test_bound.p1.y = obj_bound.p1.y;
@@ -666,24 +667,24 @@ static void PlotObjWalls(vec *next_trans, gool_object *obj, zone_query *query, i
   test_bound.p2.z = obj_bound.p2.z + (100<<8);
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (flag && bound->obj == obj->collider && test_bound.p1.y >= bound->bound.p2.y) { continue; }
+    if (flag && bound->obj == obj->process.gool_links.collider && test_bound.p1.y >= bound->bound.p2.y) { continue; }
     if (!TestBoundIntersection(&test_bound, &bound->bound)) { continue; }
-    node_bound.p1.x = bound->bound.p1.x + bound->obj->hotspot_size;
+    node_bound.p1.x = bound->bound.p1.x + bound->obj->process.hotspot_size;
     node_bound.p1.y = bound->bound.p1.y;
-    node_bound.p1.z = bound->bound.p1.z + bound->obj->hotspot_size;
-    node_bound.p2.x = bound->bound.p2.x - bound->obj->hotspot_size;
+    node_bound.p1.z = bound->bound.p1.z + bound->obj->process.hotspot_size;
+    node_bound.p2.x = bound->bound.p2.x - bound->obj->process.hotspot_size;
     node_bound.p2.y = bound->bound.p2.y;
-    node_bound.p2.z = bound->bound.p2.z - bound->obj->hotspot_size;
+    node_bound.p2.z = bound->bound.p2.z - bound->obj->process.hotspot_size;
     exec = bound->obj->global;
     g_header = (gool_header*)exec->items[0];
-    if (zone_has_walls && (bound->obj->status_b & 0x10000)
-      && ((!(obj->state_flags & 0x10) && obj->invincibility_state != 5)
+    if (zone_has_walls && (bound->obj->process.status_b & 0x10000)
+      && ((!(obj->process.state_flags & 0x10) && obj->process.invincibility_state != 5)
         || g_header->category != 0x300
-        || ((bound->obj->status_c & 0x1012) && !(bound->obj->state_flags & 0x10020)))) {
+        || ((bound->obj->process.status_c & 0x1012) && !(bound->obj->process.state_flags & 0x10020)))) {
       if (bound->bound.p2.y < test_bound.p1.y || test_bound.p2.y <= bound->bound.p1.y) { continue; }
       if (g_header->type == 11) { /* PoPIC? */
-        delta.x = (next_trans->x - bound->obj->trans.x) >> 8;
-        delta.z = (next_trans->z - bound->obj->trans.z) >> 8;
+        delta.x = (next_trans->x - bound->obj->process.vectors.trans.x) >> 8;
+        delta.z = (next_trans->z - bound->obj->process.vectors.trans.z) >> 8;
         dist_xz = sqrt((delta.x*delta.x)+(delta.z*delta.z)) << 8;
         if (dist_xz <= 0x19000) { continue; }
       }
@@ -714,19 +715,19 @@ void PlotWalls(vec *next_trans, gool_object *obj, zone_query *query) {
   int i, flags;
 
   header = (zone_header*)cur_zone->items[0];
-  if (!(header->flags & 0x100000)) {
+  if (!(header->gfx.flags & 0x100000)) {
     for (i=0;i<32;i++)
       wall_bitmap[i] = 0;
     for (i=0;i<128;i++)
       wall_cache[i] = 0;
     flags = 0;
-    if ((obj->status_c & 2) || (obj->invincibility_state >= 2 && obj->invincibility_state <= 4))
+    if ((obj->process.status_c & 2) || (obj->process.invincibility_state >= 2 && obj->process.invincibility_state <= 4))
       flags = 2;
     PlotQueryWalls(query,
       &query->nodes_bound,
       flags,
-      obj->trans.y+land_offset,
-      obj->trans.y+(50<<8),
+      obj->process.vectors.trans.y+land_offset,
+      obj->process.vectors.trans.y+(50<<8),
       next_trans->y+(665<<8),
       next_trans->x,
       next_trans->z);
@@ -845,7 +846,7 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
   done = 0;
   while (!done) {
     header = (zone_header*)cur_zone->items[0];
-    if (TestWall(x, z) || (header->flags & 0x100000)) {
+    if (TestWall(x, z) || (header->gfx.flags & 0x100000)) {
       *adj_x = x;
       *adj_z = z;
       return ret+2;
@@ -885,9 +886,9 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
     done = 1; /* assume done */
     if (x == 16 || z == 16) /* check was done w.r.t. the origin? */
       break; /* all bits in the bitmap have been tested, so break */
-    if (!obj->collider) /* no collider? */
+    if (!obj->process.gool_links.collider) /* no collider? */
       break; /* shouldn't expect to find any non-solid bits, so break */
-    collider_header = (gool_header*)obj->collider->global->items[0];
+    collider_header = (gool_header*)obj->process.gool_links.collider->global->items[0];
     if (collider_header->type == 0x22) /* collider is a box? */
       break; /* shouldn't expect to find any non-solid bits, so break */
     for (i=0;i<32;i++) {
@@ -899,9 +900,9 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
     }
   }
   if (ret < 0x100) { /* function has not been called recursively? */
-    if (obj->collider)
-      collider_header = (gool_header*)obj->collider->global->items[0];
-    if (!obj->collider || collider_header->type != 0x22) { /* no collider or its a non-box? */
+    if (obj->process.gool_links.collider)
+      collider_header = (gool_header*)obj->process.gool_links.collider->global->items[0];
+    if (!obj->process.gool_links.collider || collider_header->type != 0x22) { /* no collider or its a non-box? */
       if (ReplotWalls(0, 0, trans, obj)) {
         ReplotWalls(1, 1, trans, obj);
         PlotObjWalls(trans, obj, &cur_zone_query, 0);
@@ -909,7 +910,7 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
       return StopAtWalls(trans, x, z, adj_x, adj_z, obj, 0x100);
     }
   }
-  obj->status_a |= 0x100000; /* set flag for 'bounce from box/enemy'???? */
+  obj->process.status_a |= 0x100000; /* set flag for 'bounce from box/enemy'???? */
   *adj_x = 16; /* no movement */
   *adj_z = 16;
   return 0;

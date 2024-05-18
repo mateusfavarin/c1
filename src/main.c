@@ -202,10 +202,10 @@ void CoreLoop(lid_t lid) {
     LevelSpawnObjects();
     if (!paused) {
       header = (zone_header*)cur_zone->items[0];
-      if (header->flags & (ZONE_FLAG_DARK2 | ZONE_FLAG_LIGHTNING))
+      if (header->gfx.flags & (ZONE_FLAG_DARK2 | ZONE_FLAG_LIGHTNING))
         ShaderParamsUpdate(0);
       /* if (!globals->paused) { ??? */
-      if (header->flags & ZONE_FLAG_RIPPLE)
+      if (header->gfx.flags & ZONE_FLAG_RIPPLE)
         ShaderParamsUpdateRipple(0);
       /* if (!globals->paused) ???*/
       CamUpdate();
@@ -214,15 +214,15 @@ void CoreLoop(lid_t lid) {
     ot = context.ot;
     header = (zone_header*)cur_zone->items[0];
     if ((cur_display_flags & GOOL_FLAG_DISPLAY_WORLDS) && header->world_count && !wgeom_disabled) {
-      if (header->flags & ZONE_FLAG_DARK2)
+      if (header->gfx.flags & ZONE_FLAG_DARK2)
         GfxTransformWorldsDark2(ot);
-      else if ((header->flags & ZONE_FLAG_FOG_LIGHTNING) == ZONE_FLAG_FOG_LIGHTNING)
+      else if ((header->gfx.flags & ZONE_FLAG_FOG_LIGHTNING) == ZONE_FLAG_FOG_LIGHTNING)
         GfxTransformWorldsDark(ot);
-      else if (header->flags & ZONE_FLAG_FOG)
+      else if (header->gfx.flags & ZONE_FLAG_FOG)
         GfxTransformWorldsFog(ot);
-      else if (header->flags & ZONE_FLAG_RIPPLE)
+      else if (header->gfx.flags & ZONE_FLAG_RIPPLE)
         GfxTransformWorldsRipple(ot);
-      else if (header->flags & ZONE_FLAG_LIGHTNING)
+      else if (header->gfx.flags & ZONE_FLAG_LIGHTNING)
         GfxTransformWorldsLightning(ot);
       else
         GfxTransformWorlds(ot);

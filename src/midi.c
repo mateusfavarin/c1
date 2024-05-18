@@ -36,7 +36,7 @@ eid_t insts[8];            /* 8005728C */
 extern lid_t cur_lid;
 
 //----- (800311B0) --------------------------------------------------------
-int MidiResetSeqVol(int16_t val) {
+void MidiResetSeqVol(int16_t val) {
   int32_t vol;
   int i;
 

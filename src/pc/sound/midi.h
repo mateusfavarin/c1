@@ -6,7 +6,7 @@
 extern void SwMidiInit();
 extern void SwMidiKill();
 extern int16_t SwSepOpen(uint8_t *sep, int vab_id, int count);
-extern void SwSepClose();
+extern void SwSepClose(int san);
 extern void SwSepSetVol(int san, int seq_num, uint32_t voll, uint32_t volr);
 extern void SwSepPlay(int san, int seq_num, int mode, int loops);
 extern void SwSepStop(int san, int seq_num);

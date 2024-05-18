@@ -443,13 +443,13 @@ void LevelSaveState(gool_object *obj, level_state *state, int flag) {
   int i, idx;
 
   header = (zone_header*)cur_zone->items[0];
-  if (header->flags & 0x2000) { return; } /* do not save state if restricted for zone */
+  if (header->gfx.flags & 0x2000) { return; } /* do not save state if restricted for zone */
   state->flag = flag;
-  state->player_trans = crash->trans;
-  state->player_rot = crash->rot;
-  state->player_scale = crash->scale;
-  if (obj->status_b & 0x200) /* obj status_b bit 10 set? */
-    state->player_trans = obj->trans; /* override saved trans vector with obj trans vector */
+  state->player_trans = crash->process.vectors.trans;
+  state->player_rot = crash->process.vectors.rot;
+  state->player_scale = crash->process.vectors.scale;
+  if (obj->process.status_b & 0x200) /* obj status_b bit 10 set? */
+    state->player_trans = obj->process.vectors.trans; /* override saved trans vector with obj trans vector */
   if (checkpoint_id != -1 && checkpoint_id) /* checkpoint? */
     state->player_trans = spawn_trans; /* override saved trans vector */
   state->player_rot.x = 0;
@@ -520,20 +520,20 @@ void LevelRestart(level_state *state) {
   LevelUpdate(zone, path, state->progress, first_spawn==0);
   NSClose(&zone_eid, 1);
   if (!crash) { GoolObjectCreate(&handles[6], 0, 0, 0, 0, 1); }
-  crash->trans = state->player_trans;
-  crash->rot = state->player_rot;
-  crash->scale = state->player_scale;
+  crash->process.vectors.trans = state->player_trans;
+  crash->process.vectors.rot = state->player_rot;
+  crash->process.vectors.scale = state->player_scale;
   crash->zone = cur_zone;
-  crash->floor_impact_stamp = 0;
-  crash->velocity.x = 0;
-  crash->velocity.y = 0;
-  crash->velocity.z = 0;
-  crash->speed = 0;
-  crash->target_rot.x = crash->rot.x;
-  collider = crash->collider;
+  crash->process.floor_impact_stamp = 0;
+  crash->process.vectors.velocity.x = 0;
+  crash->process.vectors.velocity.y = 0;
+  crash->process.vectors.velocity.z = 0;
+  crash->process.speed = 0;
+  crash->process.vectors.target_rot.x = crash->process.vectors.rot.x;
+  collider = crash->process.gool_links.collider;
   if (collider) {
-    collider->collider = 0;
-    crash->collider = 0;
+    collider->process.gool_links.collider = 0;
+    crash->process.gool_links.collider = 0;
   }
   draw_count = 0;
   screen_shake = 0;
@@ -790,12 +790,12 @@ uint16_t ZoneReboundVector(vec *va, vec *vb) {
 static inline void sub_80027A08(gool_object *obj, int idx, uint32_t val) {
   uint32_t inc, res;
 
-  inc = obj->state_flags & 0x18 ? 0: 0x18;
+  inc = obj->process.state_flags & 0x18 ? 0: 0x18;
   if (idx < 0)
     res = inc + val;
   else
     res = inc + size_map[idx];
-  obj->size = res;
+  obj->process.size = res;
 }
 
 //----- (80027A4C) --------------------------------------------------------
@@ -948,7 +948,7 @@ void ZoneColorsScaleSeek(gool_colors *colors, gool_object *obj, int subtype, int
   gool_colors *src, dst;
   int i, step;
 
-  if (obj == crash && obj->state_flags & 0x20)
+  if (obj == crash && obj->process.state_flags & 0x20)
     subtype = 0x37;
   ZoneColorsScaleByNode(subtype, colors, &dst);
   src = &obj->colors;
@@ -1085,7 +1085,7 @@ gool_objnode ZoneFindNearestObjectNode(gool_object *obj, vec *v) {
   found_max = 0;
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (!(bound->obj->status_b & 0x20000)) { continue; }
+    if (!(bound->obj->process.status_b & 0x20000)) { continue; }
     if (bound->bound.p1.x - 20000 <= va.x && va.x <= bound->bound.p2.x + 20000 /* bound box padding! */
       && bound->bound.p1.z - 20000 <= va.z && va.z <= bound->bound.p2.z + 20000) {
       if (bound->bound.p1.y <= va.y && va.y <= bound->bound.p2.y) { /* collides with va? */
@@ -1125,7 +1125,7 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   int i, y_max, found;
 
   res.value = 0;
-  if (!(obj->status_b & 0x4000000))
+  if (!(obj->process.status_b & 0x4000000))
     return res;
   y_max = -999999999;
   header = (zone_header *)cur_zone->items[0];
@@ -1155,7 +1155,7 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   found = 0; found_max = 0;
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (!((bound->obj->status_b & 0x40020000) == 0x20000)) { continue; }
+    if (!((bound->obj->process.status_b & 0x40020000) == 0x20000)) { continue; }
     if (va.x >= bound->bound.p1.x - 35000 && va.x <= bound->bound.p2.x + 35000
       && va.z >= bound->bound.p1.z - 35000 && va.z <= bound->bound.p2.z + 35000) {
       if (va.y >= bound->bound.p1.y && va.y <= bound->bound.p2.y) {
@@ -1178,15 +1178,15 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
     res.obj = found_max; /* put max object in the result */
   }
   if (!res.value) /* has nothing been found? */
-    sub_80027A08(obj->parent, -1, 0);
+    sub_80027A08(obj->process.gool_links.parent, -1, 0);
   else if (found) { /* has an object been found? */
-    size = res.obj->size;
-    if (obj->trans.y > cam_trans.y)
-      size -= (obj->trans.y - cam_trans.y) >> 12;
-    sub_80027A08(obj->parent, -1, size);
+    size = res.obj->process.size;
+    if (obj->process.vectors.trans.y > cam_trans.y)
+      size -= (obj->process.vectors.trans.y - cam_trans.y) >> 12;
+    sub_80027A08(obj->process.gool_links.parent, -1, size);
   }
   else /* a node was found */
-    sub_80027A08(obj->parent, (res.node&0x3C00)>>10, 0);
+    sub_80027A08(obj->process.gool_links.parent, (res.node&0x3C00)>>10, 0);
   return res; /* gool object or node */
 }
 
@@ -1205,7 +1205,7 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   int i, yz_max, found, subtype;
 
   res.value = 0;
-  if (!(obj->status_b & 0x4000000) || ((flags & 4) && !(obj->parent->status_b & 0x4000000)))
+  if (!(obj->process.status_b & 0x4000000) || ((flags & 4) && !(obj->process.gool_links.parent->process.status_b & 0x4000000)))
     return res;
   yz_max = -999999999;
   header = (zone_header *)cur_zone->items[0];
@@ -1239,7 +1239,7 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   found = 0; found_max = 0;
   for (i=0;i<object_bound_count;i++) {
     bound = &object_bounds[i];
-    if (bound->obj == obj || bound->obj->node == 0xFFFF)
+    if (bound->obj == obj || bound->obj->process.node == 0xFFFF)
       continue;
     if (flags & 1) {
       if (va.x >= bound->bound.p1.x && va.x <= bound->bound.p2.x
@@ -1291,17 +1291,17 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
     }
   }
   if (flags & 4)
-    header = (zone_header*)obj->parent->zone->items[0];
+    header = (zone_header*)obj->process.gool_links.parent->zone->items[0];
   else
     header = (zone_header*)obj->zone->items[0];
-  if (obj == crash || obj->parent == crash)
-    colors = &header->player_colors;
+  if (obj == crash || obj->process.gool_links.parent == crash)
+    colors = &header->gfx.player_colors;
   else
-    colors = &header->object_colors;
+    colors = &header->gfx.object_colors;
   if (!res.value) /* has nothing been found? */
     subtype = -1;
   else if (found) { /* has an object been found? */
-    subtype = res.obj->node; /* get node subtype from the object */
+    subtype = res.obj->process.node; /* get node subtype from the object */
     if (subtype < 0) { /* subtype is negative? ('no seek' bit set) */
       flag = 0; /* clear the seek flag */
       subtype = -subtype; /* clear the 'no seek' bit */
@@ -1315,7 +1315,7 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   if (flags & 4) {
     /* seek parent object colors towards zone colors
        scaled per the node value */
-    ZoneColorsScaleSeek(colors, obj->parent, subtype, flag);
+    ZoneColorsScaleSeek(colors, obj->process.gool_links.parent, subtype, flag);
   }
   return res; /* gool object or node */
 }
@@ -1327,13 +1327,13 @@ void ZoneColorsScaleSeekByEntityNode(gool_object *obj) {
   int16_t node;
   int subtype;
 
-  if (!obj->entity) { return; }
+  if (!obj->process.entity) { return; }
   header = (zone_header*)obj->zone->items[0];
-  if (obj == crash || obj->parent == crash)
-    colors = &header->player_colors;
+  if (obj == crash || obj->process.gool_links.parent == crash)
+    colors = &header->gfx.player_colors;
   else
-    colors = &header->object_colors;
-  node = (int16_t)((obj->entity->spawn_flags) >> 3);
+    colors = &header->gfx.object_colors;
+  node = (int16_t)((obj->process.entity->spawn_flags) >> 3);
   if (node != -1) {
     subtype = (node & 0x3F0) >> 4;
     if (subtype < 39)
@@ -1376,7 +1376,7 @@ int ZoneQueryOctrees(vec *v, gool_object *obj, zone_query *query) {
 
 //----- (8002967C) --------------------------------------------------------
 int ZoneQueryOctrees2(gool_object *obj, zone_query *query) {
-  return ZoneQueryOctrees(&obj->trans, obj, query);
+  return ZoneQueryOctrees(&obj->process.vectors.trans, obj, query);
 }
 
 //----- (800296A8) --------------------------------------------------------

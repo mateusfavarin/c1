@@ -129,7 +129,7 @@ static int CamGetProgress(vec *trans, zone_path *path, cam_info *cam, int flags,
     cam->next_path = 0; /* no next path */
   else { /* new path */
     header = (zone_header*)cur_zone->items[0];
-    if (path->direction_x && rel_path.y < -12800 && (header->flags & 0x40000))
+    if (path->direction_x && rel_path.y < -12800 && (header->gfx.flags & 0x40000))
       return 0;
     cam->next_path = path; /* set the next path */
   }
@@ -156,9 +156,9 @@ static int CamGetProgress(vec *trans, zone_path *path, cam_info *cam, int flags,
     pt_idx = 0;
     cam->progress_made = 0; /* no progress made */
   }
-  adjust.x = (cam->pan_x + crash->trans.x) >> 8;
-  adjust.y = (cam->pan_y + crash->trans.y) >> 8;
-  adjust.z = (cam->zoom + crash->trans.z) >> 8;
+  adjust.x = (cam->pan_x + crash->process.vectors.trans.x) >> 8;
+  adjust.y = (cam->pan_y + crash->process.vectors.trans.y) >> 8;
+  adjust.z = (cam->zoom + crash->process.vectors.trans.z) >> 8;
   v_dist.x = adjust.x - (rect->x + path->points[pt_idx].x);
   v_dist.y = adjust.y - (rect->y + path->points[pt_idx].y);
   v_dist.z = adjust.z - (rect->z + path->points[pt_idx].z);
@@ -259,9 +259,9 @@ static int CamGetProgress2(vec *trans, zone_path *path, cam_info *cam, int flags
     cam->progress_made = 0; /* no progress made */
   }
   pt_idx = progress >> 8;
-  adjust.x = (cam->pan_x + crash->trans.x) >> 8;
-  adjust.y = (cam->pan_y + crash->trans.y) >> 8;
-  adjust.z = (cam->zoom + crash->trans.z) >> 8;
+  adjust.x = (cam->pan_x + crash->process.vectors.trans.x) >> 8;
+  adjust.y = (cam->pan_y + crash->process.vectors.trans.y) >> 8;
+  adjust.z = (cam->zoom + crash->process.vectors.trans.z) >> 8;
   v_dist.x = adjust.x - (rect->x + path->points[pt_idx].x);
   v_dist.y = adjust.y - (rect->y + path->points[pt_idx].y);
   v_dist.z = adjust.z - (rect->z + path->points[pt_idx].z);
@@ -296,7 +296,7 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
   /* more than halfway but max of 50 from end of path */
   if (path_idx >= (length/2) || (length-path_idx) < 50)
     flags |= 2;
-  if (!(header->flags & 0x80) && (cam_zoom > 0x31FFF)) { /* first person zone? */
+  if (!(header->gfx.flags & 0x80) && (cam_zoom > 0x31FFF)) { /* first person zone? */
     if (!(pads[0].held & 0x1000)) { /* up not pressed? */
       if (pads[0].held & 0x4000) /* down pressed? */
         cam_offset_dir_z = 1; /* offset cam backward */
@@ -306,7 +306,7 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
       cam_offset_dir_z = 0; /* offset cam forward */
   }
   else /* cam z dir depends on zone flag */
-    cam_offset_dir_z = !!(header->flags & 0x8000);
+    cam_offset_dir_z = !!(header->gfx.flags & 0x8000);
   if (!(pads[0].held & 0x8000)) { /* left not pressed? */
     if (pads[0].held & 0x2000)  /* right pressed? */
       cam_offset_dir_x = 1; /* offset cam right */
@@ -318,7 +318,7 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
     cam_offset_z = max(cam_offset_z - 0x3200, -0x12C00); /* seek towards -0x12C00 */
   else /* cam offset is backward; so seek towards 0x12C00, cortex power 0x4B000 */
     cam_offset_z = min(cam_offset_z + 0x3200, (ns.ldat->lid != 3 ? 0x12C00: 0x4B000));
-  if (!(header->flags & 0x4000)) /* not a left/right direction zone? */
+  if (!(header->gfx.flags & 0x4000)) /* not a left/right direction zone? */
     cam_offset_x = 0; /* no x offset */
   else if (cur_path->direction_x) { /* path runs left or right? */
     if (cam_offset_dir_x == 0) { /* cam offset is left? */
@@ -368,19 +368,19 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
     else
       cam_offset_y = new_pan;
   }
-  total_zoom = cam_offset_z + cam_zoom + obj->cam_zoom;
+  total_zoom = cam_offset_z + cam_zoom + obj->process.cam_zoom;
   icam = 0; /* cam iterator */
   cameras[icam].pan_x = cam_offset_x; /* record values for first camera */
   cameras[icam].pan_y = cam_offset_y;
   cameras[icam].zoom = total_zoom;
   if (cur_path->direction_z != 0) {
-    trans = obj->trans;
+    trans = obj->process.vectors.trans;
     progress_made = CamGetProgress2(&trans, cur_path, &cameras[icam], 0, 0);
   }
   else {
-    trans.x = obj->trans.x + cam_offset_x;
-    trans.y = obj->trans.y + cam_offset_y;
-    trans.z = obj->trans.z + total_zoom;
+    trans.x = obj->process.vectors.trans.x + cam_offset_x;
+    trans.y = obj->process.vectors.trans.y + cam_offset_y;
+    trans.z = obj->process.vectors.trans.z + total_zoom;
     progress_made = CamGetProgress(&trans, cur_path, &cameras[icam], 0, 0);
   }
   if (progress_made) { /* was progress made? */
@@ -408,13 +408,13 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
     cameras[icam].pan_y = cam_offset_y;
     cameras[icam].zoom = total_zoom;
     if (n_path->direction_z != 0) {
-      trans = obj->trans;
+      trans = obj->process.vectors.trans;
       progress_made = CamGetProgress2(&trans, n_path, &cameras[icam], flags, !same_dir);
     }
     else {
-      trans.x = obj->trans.x + cam_offset_x;
-      trans.y = obj->trans.y + cam_offset_y;
-      trans.z = obj->trans.z + total_zoom;
+      trans.x = obj->process.vectors.trans.x + cam_offset_x;
+      trans.y = obj->process.vectors.trans.y + cam_offset_y;
+      trans.z = obj->process.vectors.trans.z + total_zoom;
       progress_made = CamGetProgress(&trans, n_path, &cameras[icam], flags, !same_dir);
     }
     if (progress_made) { /* was progress made? */
@@ -512,10 +512,10 @@ int CamUpdate() {
   case 3:
     header = (zone_header*)cur_zone->items[0];
     skip = 0;
-    if ((pads[0].tapped & 0xF0) && !(header->flags & 0x81000))
+    if ((pads[0].tapped & 0xF0) && !(header->gfx.flags & 0x81000))
       skip = 1; /* skip the transition */
     do { /* auto-increment progress and update; or skip to next non-auto-cam path */
-      if (!(header->flags & 0x1000))
+      if (!(header->gfx.flags & 0x1000))
         game_state = GAME_STATE_CUTSCENE;
       pt_idx = (cur_progress >> 8) + 1;
       /* auto-cam hasn't reached end of path and not skipping? */
@@ -533,7 +533,7 @@ int CamUpdate() {
       n_zone = n_path->parent_zone;
       n_header = (zone_header*)n_zone->items[0];
       LevelUpdate(n_zone, n_path, n_progress, 0); /* skip forward to next path */
-      if (!(n_header->flags & 0x1000))
+      if (!(n_header->gfx.flags & 0x1000))
         LevelSaveState(crash, &savestate, 1);
       if (!skip) { return 1; }
       /* continue skipping while 1,3 */
@@ -677,9 +677,9 @@ int CamDeath(int *count) {
   int32_t ang_xz, ang_yz;
 
   obj = cam_spin_obj;
-  anim = obj->anim_seq;
+  anim = obj->process.anim_seq;
   svtx = NSLookup(&anim->eid);
-  frame = (svtx_frame*)svtx->items[obj->anim_frame >> 8];
+  frame = (svtx_frame*)svtx->items[obj->process.anim_frame >> 8];
   tgeo = NSLookup(&frame->tgeo);
   /* get [unrotated] vertex in the current frame referenced by the gool object */
   vert = &frame->vertices[cam_spin_obj_vert >> 8];
@@ -688,11 +688,11 @@ int CamDeath(int *count) {
   u_vert.y = ((int8_t)(vert->y - 128) + frame->y) << 10;
   u_vert.z = ((int8_t)(vert->z - 128) + frame->z) << 10;
   /* calculate scale */
-  scale.x = (obj->scale.x * t_header->scale_x) >> 12;
-  scale.y = (obj->scale.y * t_header->scale_y) >> 12;
-  scale.z = (obj->scale.z * t_header->scale_z) >> 12;
+  scale.x = (obj->process.vectors.scale.x * t_header->scale_x) >> 12;
+  scale.y = (obj->process.vectors.scale.y * t_header->scale_y) >> 12;
+  scale.z = (obj->process.vectors.scale.z * t_header->scale_z) >> 12;
   /* trans, rotate, and scale the vertex */
-  GoolTransform(&u_vert, &obj->trans, &obj->rot, &scale, &r_vert);
+  GoolTransform(&u_vert, &obj->process.vectors.trans, &obj->process.vectors.rot, &scale, &r_vert);
   /* get relative location of transformed vertex w.r.t camera */
   v_vert.x = (cam_trans.x - r_vert.x) >> 8;
   v_vert.y = (cam_trans.y - r_vert.y) >> 8;

@@ -126,7 +126,7 @@ int init() {
   return SUCCESS;
 }
 
-int _kill() {
+void _kill() {
   GLKill();
   SDLKill();
 }

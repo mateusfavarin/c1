@@ -227,7 +227,7 @@ void GLDrawPrims(void *data, int count) {
   glDisable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   for (i=0;i<count;i++,poly++) {
-    if (poly->type == 3)
+    if (poly->prim.type == 3)
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -353,8 +353,8 @@ static void GLConvertToTris(void *ot, poly3i **tris, int *count) {
       for (j=0;j<2;j++) {
         for (k=0;k<3;k++) {
           idx = idxs[((j*2)+k)%4];
-          tri.type = prim->type == 2 ? 1: 3;
-          tri.next = 0;
+          tri.prim.type = prim->type == 2 ? 1: 3;
+          tri.prim.next = 0;
           tri.verts[k] = ((poly4i*)src)->verts[idx];
 #ifdef CFLAGS_GFX_SW_PERSP
           tri.verts[k].z = -1;
@@ -363,7 +363,7 @@ static void GLConvertToTris(void *ot, poly3i **tris, int *count) {
           tri.texid = ((poly4i*)src)->texid;
           if (prim->type == 3) {
             tri.texid = -1;
-            tri.type = 3;
+            tri.prim.type = 3;
           }
           tri.flags = ((poly4i*)src)->flags;
           tri.uvs[k] = ((poly4i*)src)->uvs[idx];
@@ -423,11 +423,11 @@ void GLClear() {
   if (!(cur_display_flags & 0x80000)) {
     /* fill bg color(s) */
     header = (zone_header*)cur_zone->items[0];
-    fh = header->vram_fill_height;
+    fh = header->gfx.vram_fill_height;
     if (cur_display_flags & 0x2000) {
       fill = vram_fill_color;
       GLDrawRect(0,  12+0, 512,     fh, fill.r, fill.g, fill.b); /* top color */
-      fill = header->vram_fill;
+      fill = header->gfx.vram_fill;
       GLDrawRect(0, 12+fh, 512, 216-fh, fill.r, fill.g, fill.b); /* bottom color */
     }
     else {

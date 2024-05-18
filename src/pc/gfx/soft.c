@@ -442,8 +442,8 @@ void SwTransformSvtx(
     z_idx = far - (z_sum/32);
     z_idx = limit(z_idx, 0, 0x7FF);
     next = ((poly3i**)ot)[z_idx];
-    prim->next = next;
-    prim->type = 1;
+    prim->prim.next = next;
+    prim->prim.type = 1;
     ((poly3i**)ot)[z_idx] = prim;
     *prims_tail+=sizeof(poly3i);
   }
@@ -538,8 +538,8 @@ void SwTransformCvtx(
     z_idx = far - ((z_sum/32)+idx_adj);
     z_idx = limit(z_idx, 0, 0x7FF);
     next = ((poly3i**)ot)[z_idx];
-    prim->next = next;
-    prim->type = 1;
+    prim->prim.next = next;
+    prim->prim.type = 1;
     ((poly3i**)ot)[z_idx] = prim;
     *prims_tail+=sizeof(poly3i);
   }
@@ -590,8 +590,8 @@ void SwTransformSprite(
   z_idx=far-(z_sum/32);
   z_idx=limit(z_idx, 0, 0x7FF);
   next=((poly4i**)ot)[z_idx];
-  prim->next=next;
-  prim->type=2;
+  prim->prim.next=next;
+  prim->prim.type=2;
   ((poly4i**)ot)[z_idx] = prim;
   *prims_tail+=sizeof(poly4i);
 }
@@ -768,8 +768,8 @@ static void SwTransformAndShadeWorlds(
     else
       z_idx = min_z_idx;
     next = ((poly3i**)ot)[z_idx];
-    prim->next = next;
-    prim->type = 1;
+    prim->prim.next = next;
+    prim->prim.type = 1;
     ((poly3i**)ot)[z_idx] = prim;
     *prims_tail += sizeof(poly3i);
   }

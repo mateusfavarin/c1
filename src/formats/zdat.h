@@ -76,7 +76,6 @@ typedef struct {
   ns_loadlist loadlist;
   uint32_t display_flags;
   union {
-    zone_gfx;
     zone_gfx gfx;
   };
 } zone_header;

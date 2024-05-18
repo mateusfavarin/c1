@@ -2,6 +2,6 @@
 #define _PC_INIT_H_
 
 extern int init();
-extern int _kill();
+extern void _kill();
 
 #endif /* _PC_INIT_H_ */

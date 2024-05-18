@@ -39,7 +39,7 @@ int OutOfRange(gool_object *obj, vec *v1, vec *v2, int32_t x, int32_t y, int32_t
     || y < d.y || d.y < -y
     || z < d.z || d.z < -z) {
     if (obj)
-      obj->status_a |= GOOL_FLAG_LBOUND_INVALID;
+      obj->process.status_a |= GOOL_FLAG_LBOUND_INVALID;
     return 1;
   }
   return 0;

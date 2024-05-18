@@ -51,6 +51,7 @@
       <ConformanceMode>true</ConformanceMode>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,6 +74,7 @@ xcopy /y /d "$(ProjectDir)..\3rd_party\fluidsynth\tools\fluidsynth\*.dll" "$(Out
       <ConformanceMode>true</ConformanceMode>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AdditionalIncludeDirectories>$(SolutionDir)../src/;$(SolutionDir)../3rd_party/SDL/include/;$(SolutionDir)../3rd_party/fluidsynth/include/;$(SolutionDir)../3rd_party/GLEW/include/;$(SolutionDir)../3rd_party/cimgui/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

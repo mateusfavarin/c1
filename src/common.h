@@ -8,19 +8,19 @@
 #include <string.h>
 
 /* compilation settings */
-#define LID_BOOTLEVEL             LID_TITLE
+#define LID_BOOTLEVEL             LID_HOGWILD
 
 /* Compiler flags */
 #define CFLAGS_GFX_SW_PERSP
 //#define CFLAGS_DRAW_EXTENSIONS
-#define CFLAGS_GUI
-#define CFLAGS_GOOL_DEBUG
+//#define CFLAGS_GUI
+//#define CFLAGS_GOOL_DEBUG
 
 /* codes */
 #define SUCCESS                   -255
 #define ERROR_ALLOC_FAILED        -254
 #define ERROR_COLLISION_OVERRIDE  -28
-#define ERROR_INVALID_STATE       -27
+#define CODE_ERROR_INVALID_STATE  -27
 #define ERROR_INVALID_STATERETURN -26
 #define ERROR_INVALID_RETURN      -25
 #define ERROR_NO_NEIGHBORS_FOUND  -23
@@ -28,7 +28,7 @@
 #define ERROR_INVALID_MAGIC       -18
 #define ERROR_READ_FAILED         -16
 #define ERROR_MALLOC_FAILED       -15
-#define ERROR                     -14
+#define CODE_ERROR                -14
 #define ERROR_NO_FREE_PAGES       -12
 #define ERROR_INVALID_REF         -10
 
@@ -59,8 +59,6 @@
   a09; a08; a07; a06; a05; a04; a03; a02; a01;
 
 /* misc */
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
 #define min3(a,b,c)   min(min(a,b),c)
 #define min4(a,b,c,d) min(min3(a,b,c),d)
 #define max3(a,b,c)   max(max(a,b),c)

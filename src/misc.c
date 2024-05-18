@@ -324,7 +324,7 @@ void ShaderParamsUpdate(int init) {
     return;
   case LID_LIGHTSOUT:
   case LID_FUMBLINGINTHEDARK:
-    trans = doctor ? &doctor->trans : &crash->trans;
+    trans = doctor ? &doctor->process.vectors.trans : &crash->process.vectors.trans;
     dark_illum = *trans;
     if (!light_src_obj) {
       if (prev_light_src_obj) {

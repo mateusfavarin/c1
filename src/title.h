@@ -37,10 +37,7 @@ typedef struct {
   uint32_t h_idx; /* height of display in 16x16 tiles */
   uint32_t x_offs; /* x offset of display */
   uint32_t y_offs; /* y offset of display */
-  union {                 /* 7 */
-    timginfo;
-    timginfo info;
-  };
+  timginfo info;
   uint16_t clut_ids[480]; /* C68 */
   uint16_t tpage_ids[4];  /* D58 */
   uint32_t dr_modes[4][3];

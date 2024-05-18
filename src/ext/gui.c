@@ -50,9 +50,9 @@ static void **GuiObjChildren(void *_obj) {
     children[i] = 0;
     return (void**)children;
   }
-  for (it=GoolObjectGetChildren(obj),i=0;it;it=it->sibling,i++);
+  for (it=GoolObjectGetChildren(obj),i=0;it;it=it->process.gool_links.sibling,i++);
   children = (gool_object**)malloc(sizeof(gool_object*)*(i+1));
-  for (it=GoolObjectGetChildren(obj),i=0;it;it=it->sibling,i++) {
+  for (it=GoolObjectGetChildren(obj),i=0;it;it=it->process.gool_links.sibling,i++) {
     children[i] = it;
   }
   children[i] = 0;
@@ -93,7 +93,7 @@ static int GuiUnparseObjPtr(void *data, char *str) {
     sprintf(str, "root");
     return 1;
   }
-  entity = obj->entity;
+  entity = obj->process.entity;
   if ((int)entity >= (int)ns.pagemem
    && (int)entity <= (int)(ns.pagemem+ns.physical_page_count)) {
     id = entity->id;
@@ -103,7 +103,7 @@ static int GuiUnparseObjPtr(void *data, char *str) {
   }
   else if ((exec = obj->external) || (exec = obj->global)) {
     eid_str = NSEIDToString(exec->eid);
-    subtype = obj->subtype;
+    subtype = obj->process.subtype;
     sprintf(str, "%s (subtype %i)", eid_str, subtype);
   }
   else {
@@ -158,6 +158,7 @@ static gui_item *GuiReflScalar(refl_value *val) {
   gui_ptype *ptype;
   char *typename;
 
+  ptype = NULL;
   typename = val->field->type->name;
   if (strcmp(typename, "uint32_t") == 0)
     ptype = &gui_u32;

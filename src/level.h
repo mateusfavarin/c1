@@ -68,10 +68,7 @@ typedef struct _zone_query {
   bound nodes_bound; /* bound with which to query */
   bound collider_bound; /* bound with which to test query results against, usually a subbound of nodes_bound */
   int32_t floor;
-  union {
-    zone_query_summary;
-    zone_query_summary summary_results;
-  };
+  zone_query_summary summary_results;
   int i;
 } zone_query;
 
