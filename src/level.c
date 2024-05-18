@@ -44,8 +44,7 @@ extern uint16_t level_spawns[GOOL_LEVEL_SPAWN_COUNT];
 extern gool_handle handles[8];
 extern gool_bound object_bounds[28];
 extern int object_bound_count;
-extern vec cam_trans;
-extern ang cam_rot;
+extern gool_vectors cam;
 extern uint32_t screen_proj;
 
 #include "solid.h"
@@ -326,9 +325,9 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
     }
     cur_progress = progress; /* else set the new progress */
   }
-  cam_rot_before = cam_rot;
-  ZonePathProgressToLoc(cur_path, -cur_progress, (gool_vectors*)&cam_trans);
-  cam_rot_after = cam_rot;
+  cam_rot_before = cam.rot;
+  ZonePathProgressToLoc(cur_path, -cur_progress, &cam);
+  cam_rot_after = cam.rot;
   ns.level_update_pending = 0;
 }
 
@@ -1181,8 +1180,8 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
     sub_80027A08(obj->process.gool_links.parent, -1, 0);
   else if (found) { /* has an object been found? */
     size = res.obj->process.size;
-    if (obj->process.vectors.trans.y > cam_trans.y)
-      size -= (obj->process.vectors.trans.y - cam_trans.y) >> 12;
+    if (obj->process.vectors.trans.y > cam.trans.y)
+      size -= (obj->process.vectors.trans.y - cam.trans.y) >> 12;
     sub_80027A08(obj->process.gool_links.parent, -1, size);
   }
   else /* a node was found */

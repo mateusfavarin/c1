@@ -965,7 +965,7 @@ void SwTransformWorldsDark2(
 #ifdef CFLAGS_DRAW_EXTENSIONS
 
 #include "level.h"
-extern vec cam_trans;
+extern gool_vectors cam;
 extern mat16 ms_cam_rot;
 const int rface_vert_idxes[6][4] = { { 0, 1, 2, 3 },
                                      { 1, 5, 3, 7 },

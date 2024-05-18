@@ -139,7 +139,7 @@ extern vec v_zero;
 extern vec2 screen;
 extern uint32_t screen_proj;
 extern mat16 mn_trans;
-extern vec cam_trans, cam_trans_prev;
+extern gool_vectors cam, cam_prev;
 extern mat16 ms_rot, ms_cam_rot;
 extern int32_t cam_rot_xz;
 extern quad28_t uv_map[600];
@@ -1233,7 +1233,7 @@ void GoolObjectTransform(gool_object *obj) {
     x = obj->process.vectors.scale.x;
     shrink = abs(x) / 27279;
     obj_vectors = &obj->process.vectors;
-    cam_vectors = (gool_vectors*)(status_b & 0x200000 ? &cam_trans: &cam_trans_prev);
+    cam_vectors = (status_b & 0x200000 ? &cam : &cam_prev);
     flag = status_b & GOOL_FLAG_2D;
     m_rot = status_b & 0x200000 ? &ms_cam_rot: &ms_rot;
     header = (zone_header*)cur_zone->items[0];
@@ -1272,7 +1272,7 @@ void GoolObjectTransform(gool_object *obj) {
     x = obj->process.vectors.scale.x;
     shrink = abs(x) / 27279;
     obj_vectors = &obj->process.vectors;
-    cam_vectors = (gool_vectors*)&cam_trans_prev;
+    cam_vectors = &cam_prev;
     flag = status_b & GOOL_FLAG_2D;
     m_rot = &ms_rot;
     header = (zone_header*)cur_zone->items[0];
@@ -1420,7 +1420,7 @@ void GoolTextObjectTransform(gool_object *obj, gool_text *text, int terms_skip, 
   size = abs(obj->process.vectors.scale.x) / 27279; /* scale ignores flip */
   res = SwCalcSpriteRotMatrix(
     &obj->process.vectors,
-    (gool_vectors*)&cam_trans_prev,
+    &cam_prev,
     (obj->process.status_b & GOOL_FLAG_2D),
     size,
     &ms_rot,
@@ -3508,15 +3508,15 @@ int GoolTransform2(vec *in, vec *out, int flag) {
 
   if (!flag) {
     m_rot = &ms_cam_rot;
-    v_in.x = (in->x - cam_trans.x) >> 8;
-    v_in.y = (in->y - cam_trans.y) >> 8;
-    v_in.z = (in->z - cam_trans.z) >> 8;
+    v_in.x = (in->x - cam.trans.x) >> 8;
+    v_in.y = (in->y - cam.trans.y) >> 8;
+    v_in.z = (in->z - cam.trans.z) >> 8;
   }
   else {
     m_rot = &ms_rot;
-    v_in.x = (in->x - cam_trans_prev.x) >> 8;
-    v_in.y = (in->y - cam_trans_prev.y) >> 8;
-    v_in.z = (in->z - cam_trans_prev.z) >> 8;
+    v_in.x = (in->x - cam_prev.trans.x) >> 8;
+    v_in.y = (in->y - cam_prev.trans.y) >> 8;
+    v_in.z = (in->z - cam_prev.trans.z) >> 8;
   }
   SwRotTrans(&v_in, &v_out, &mn_trans.t, m_rot);
   v_out.x <<= 8;
@@ -3531,9 +3531,9 @@ int GoolProject(vec *in, vec *out) {
   vec v_in;
   int32_t sz2;
 
-  v_in.x = (in->x - cam_trans.x) >> 8;
-  v_in.y = (in->y - cam_trans.y) >> 8;
-  v_in.z = (in->z - cam_trans.z) >> 8;
+  v_in.x = (in->x - cam.trans.x) >> 8;
+  v_in.y = (in->y - cam.trans.y) >> 8;
+  v_in.z = (in->z - cam.trans.z) >> 8;
   vec r_out;
   vec2 offs;
   offs.x=0;offs.y=0;

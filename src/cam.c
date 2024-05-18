@@ -28,7 +28,7 @@ int32_t dcam_trans_z = 0;         /* 800565D8; gp[0x77] */
 
 extern ns_struct ns;
 extern level_state savestate;
-extern vec cam_trans;
+extern gool_vectors cam;
 extern int frames_elapsed;
 
 typedef struct {
@@ -53,7 +53,6 @@ extern uint32_t cur_progress;
 
 extern pad pads[2];
 extern gool_object *crash;
-extern ang cam_rot;
 
 //----- (80029F6C) --------------------------------------------------------
 static void CamAdjustProgress(int32_t speed, cam_info *cam) {
@@ -540,7 +539,7 @@ int CamUpdate() {
     else if (island_cam_state == 5 || island_cam_state == 6)
       angle = 0x22;
     else {
-      angle = GoolAngDiff(cam_rot.x, island_cam_rot_x);
+      angle = GoolAngDiff(cam.rot.x, island_cam_rot_x);
       if (abs(angle) < 0x17)
         angle = 0;
       else
@@ -684,36 +683,36 @@ int CamDeath(int *count) {
   /* trans, rotate, and scale the vertex */
   GoolTransform(&u_vert, &obj->process.vectors.trans, &obj->process.vectors.rot, &scale, &r_vert);
   /* get relative location of transformed vertex w.r.t camera */
-  v_vert.x = (cam_trans.x - r_vert.x) >> 8;
-  v_vert.y = (cam_trans.y - r_vert.y) >> 8;
-  v_vert.z = (cam_trans.z - r_vert.z) >> 8;
+  v_vert.x = (cam.trans.x - r_vert.x) >> 8;
+  v_vert.y = (cam.trans.y - r_vert.y) >> 8;
+  v_vert.z = (cam.trans.z - r_vert.z) >> 8;
   /* calculate the xz distance and angle in the xz plane */
   dist_xz = sqrt(v_vert.x*v_vert.x+v_vert.z*v_vert.z);
   ang_xz = atan2(-v_vert.x, -v_vert.z) + 0x800;
   if (*count < 9) {
     if (*count == 0) /* calculate delta xz angle between transformed vertex and camera, for 9 iterations */
-      dcam_angvel = GoolAngDiff(cam_rot.x, ang_xz) / 9;
+      dcam_angvel = GoolAngDiff(cam.rot.x, ang_xz) / 9;
     dcam_trans_z = dist_xz << 8; /* radius of the below circle (this seeks towards 175000 for count >= 9 */
     dcam_rot_y1 = 0; /* base angular distance around the below circle circumference */
     dcam_rot_y2 = ang_xz; /* angular distance around the below circle circumference */
     dcam_accel = 22;
-    cam_rot.x += dcam_angvel; /* rotate cam in xz plane towards the vertex */
+    cam.rot.x += dcam_angvel; /* rotate cam in xz plane towards the vertex */
     *(count)++;
   }
   /* calculate the angle in the yz plane */
   ang_yz = atan2(v_vert.y, dist_xz);
-  if (GoolAngDiff(cam_rot.y, -ang_yz) < 0x72) /* less than 10 degrees? */
+  if (GoolAngDiff(cam.rot.y, -ang_yz) < 0x72) /* less than 10 degrees? */
     dcam_angvel2 = dcam_flip_speed / 2; /* slower yz rot rate */
   else
     dcam_angvel2 = dcam_flip_speed; /* normal yz rot rate */
   /* rotate cam in yz plane towards the vertex */
-  cam_rot.y = GoolObjectRotate(cam_rot.y, -ang_yz, dcam_angvel2, 0);
+  cam.rot.y = GoolObjectRotate(cam.rot.y, -ang_yz, dcam_angvel2, 0);
   if (cur_display_flags & GOOL_FLAG_SPIN_ACCEL) {
     dcam_angvel2 += dcam_accel; /* accelerate?? no further usage of this value... */
-    cam_rot.x += dcam_accel; /* additional rotation??? */
+    cam.rot.x += dcam_accel; /* additional rotation??? */
   }
   /* move camera up towards the vertex */
-  cam_trans.y = GoolSeek(cam_trans.y, r_vert.y + 120000, 102400);
+  cam.trans.y = GoolSeek(cam.trans.y, r_vert.y + 120000, 102400);
   /* seek the xz distance toward 175000 */
   dcam_trans_z = GoolSeek(dist_xz << 8, 175000, dcam_zoom_speed);
   /* translate cam around the circle of radius equal to the xz distance in the xz plane */
@@ -721,11 +720,11 @@ int CamDeath(int *count) {
   u_trans.y = 0;
   u_trans.z = dcam_trans_z;
   trans.x = r_vert.x;
-  trans.y = cam_trans.y;
+  trans.y = cam.trans.y;
   trans.z = r_vert.z;
   rot.x = dcam_rot_y1 + dcam_rot_y2;
   rot.y = 0;
   rot.z = 0;
-  GoolTransform(&u_trans, &trans, &rot, 0, &cam_trans);
+  GoolTransform(&u_trans, &trans, &rot, 0, &cam.trans);
   return SUCCESS;
 }

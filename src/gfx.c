@@ -660,12 +660,8 @@ mat16 ms_cam_rot;      /* 800577E4 */
 mat16 ms_cam_rot2;     /* 80057804 */
 mat16 mn_rot;          /* 80057824 */
 mat16 ms_rot;          /* 80057844 */
-vec cam_trans;         /* 80057864 */
-ang cam_rot;           /* 80057870 */
-vec cam_scale;         /* 8005787C */
-vec cam_trans_prev;    /* 80057888 */
-ang cam_rot_prev;      /* 80057894 */
-vec cam_scale_prev;    /* 800578A0 */
+gool_vectors cam;      /* 80057864 */
+gool_vectors cam_prev; /* 80057888 */
 uint32_t unk_800578AC; /* 800578AC */
 vec16 unk_800578B0;    /* 800578B0 */
 vec unk_800578B8;      /* 800578B8 */
@@ -741,9 +737,19 @@ inline static int GfxScreenProj(int fov) {
   return 0;
 }
 
+static void PrintMatrix(mat16 * m) {
+  printf("Matrix:\n");
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      printf("%d ", m->m[i][j]);
+    }
+    printf("\n");
+  }
+}
+
 //----- (80017790) --------------------------------------------------------
 void GfxInitMatrices() {
-  GfxResetCam(&cam_trans);
+  GfxResetCam(&cam.trans);
   GfxFillMatrix(&mn_color, 512);
   screen_proj = GfxScreenProj(ns.ldat->fov);
   params.screen_proj=screen_proj;
@@ -762,15 +768,15 @@ void GfxInitMatrices() {
   v_unk2.x = 0;
   v_unk2.y = 0;
   v_unk2.z = 0;
-  cam_trans.x = 0;
-  cam_trans.y = 0;
-  cam_trans.z = 128000;
-  cam_rot.y = 0;
-  cam_rot.x = 0;
-  cam_rot.z = 0;
-  cam_trans_prev.x = 0;
-  cam_trans_prev.y = 921600;
-  cam_trans_prev.z = 6144000;
+  cam.trans.x = 0;
+  cam.trans.y = 0;
+  cam.trans.z = 128000;
+  cam.rot.y = 0;
+  cam.rot.x = 0;
+  cam.rot.z = 0;
+  cam_prev.trans.x = 0;
+  cam_prev.trans.y = 921600;
+  cam_prev.trans.z = 6144000;
   unk_800578AC = 0;
   screen_ro.x = 0;
   screen_ro.y = 0;
@@ -786,21 +792,21 @@ void GfxUpdateMatrices() {
   rgb8 far_color;
   int32_t y_offs;
 
-  s=sin(-cam_rot.z);
-  c=cos(-cam_rot.z);
+  s=sin(-cam.rot.z);
+  c=cos(-cam.rot.z);
   m[0][0]=c;m[0][1]=-s;m[0][2]=     0;
   m[1][0]=s;m[1][1]= c;m[1][2]=     0;
   m[2][0]=0;m[2][1]= 0;m[2][2]=0x1000;
   GfxCopyMatrix((mat16*)m, &mn_cam_rot);
-  s=sin(-cam_rot.y);
-  c=cos(-cam_rot.y);
+  s=sin(-cam.rot.y);
+  c=cos(-cam.rot.y);
   m[0][0]=0x1000;m[0][1]=0;m[0][2]= 0;
   m[1][0]=     0;m[1][1]=c;m[1][2]=-s;
   m[2][0]=     0;m[2][1]=s;m[2][2]= c;
   GfxCopyMatrix((mat16*)m, &m1);
   SwMulMatrix(&mn_cam_rot, &m1);
-  s = sin(-cam_rot.x);
-  c = cos(-cam_rot.x);
+  s = sin(-cam.rot.x);
+  c = cos(-cam.rot.x);
   m[0][0]= c;m[0][1]=     0;m[0][2]=s;
   m[1][0]= 0;m[1][1]=0x1000;m[1][2]=0;
   m[2][0]=-s;m[2][1]=     0;m[2][2]=c;
@@ -809,9 +815,9 @@ void GfxUpdateMatrices() {
   header = (zone_header*)cur_zone->items[0];
   far_color = header->gfx.far_color;
   params.far_color = far_color;
-  trans.x = cam_trans.x >> 8;
-  trans.y = cam_trans.y >> 8;
-  trans.z = cam_trans.z >> 8;
+  trans.x = cam.trans.x >> 8;
+  trans.y = cam.trans.y >> 8;
+  trans.z = cam.trans.z >> 8;
   mn_cam_rot.t = trans;
   /* 5/8 scaled y */
   GfxCopyMatrix(&mn_cam_rot, (mat16*)m);
@@ -823,7 +829,7 @@ void GfxUpdateMatrices() {
   if (header->gfx.flags & 0x1000) {
     /* linearly ramp cam up and down approx. every 4 seconds or 128 draws */
     y_offs = abs(frames_elapsed % 128 - 64)*800;
-    cam_trans_prev.y = y_offs + 901600;
+    cam_prev.trans.y = y_offs + 901600;
     s = sin(125);
     c = cos(125);
     m[0][0]=0x1000;m[0][1]=0;m[0][2]= 0;
@@ -849,12 +855,12 @@ void GfxUpdateMatrices() {
   params.screen.y = screen_ro.y + (screen_shake >> 8);
   y_offs = screen_shake >> 8;
   screen_shake = (y_offs ? (y_offs <= 0 ? ~y_offs : 1-y_offs) : 0) << 8;
-  cam_trans_ro = cam_trans; /* 80061920 */
-  cam_rot_ro = cam_rot;     /* 8006192C */
+  cam_trans_ro = cam.trans; /* 80061920 */
+  cam_rot_ro = cam.rot;     /* 8006192C */
   if (header->gfx.flags & 0x1000)
     cam_rot_xz = 0;
   else {
-    cam_trans_prev = cam_trans;
+    cam_prev.trans = cam.trans;
     cam_rot_xz = cam_rot_after.x & 0xFFF;
   }
   cam_rot_xz_ro = cam_rot_xz; /* 800618C8 */
@@ -990,9 +996,9 @@ int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
   colors=&obj->colors;
   if (zdist)
     *zdist = 0;
-  u_trans.x = (vectors->trans.x - cam_trans_prev.x) >> 8;
-  u_trans.y = (vectors->trans.y - cam_trans_prev.y) >> 8;
-  u_trans.z = (vectors->trans.z - cam_trans_prev.z) >> 8;
+  u_trans.x = (vectors->trans.x - cam_prev.trans.x) >> 8;
+  u_trans.y = (vectors->trans.y - cam_prev.trans.y) >> 8;
+  u_trans.z = (vectors->trans.z - cam_prev.trans.z) >> 8;
   SwRotTrans(&u_trans, r_trans, &mn_trans.t, &ms_rot);
   if (!(cur_display_flags & 0x10000)) {
     header=(zone_header*)cur_zone->items[0];
@@ -1013,7 +1019,7 @@ int GfxCalcObjectMatrices(svtx_frame *frame, tgeo_header *t_header,
         /* weird code in original impl would set col to &frame->col
            for either branch of a check of a4 */
         col=(vec*)&frame->col_x;
-        SwProjectBound(&obj->bound, col, &vectors->trans, &cam_trans_prev, &extents);
+        SwProjectBound(&obj->bound, col, &vectors->trans, &cam_prev.trans, &extents);
         //if (extents.p1.x < -256 && extents.p2.x < -256) { return 0; }
         //if (extents.p1.x >  256 && extents.p2.x >  256) { return 0; }
         //if (extents.p1.y < -108 && extents.p2.y < -108) { return 0; }
@@ -1076,7 +1082,7 @@ void GfxTransformCvtx(cvtx_frame *frame, void *ot, gool_object *obj) {
     z_header = (zone_header*)cur_zone->items[0];
     res = SwCalcSpriteRotMatrix(
       &obj->process.vectors,
-      (gool_vectors*)&cam_trans_prev,
+      &cam_prev,
       1,
       0,
       &ms_rot,
@@ -1239,9 +1245,9 @@ void GfxLoadWorlds(zone_header *header) {
       world->trans.z=0;
     }
     else {
-      trans.x=w_header->trans_x-(cam_trans.x>>8);
-      trans.y=w_header->trans_y-(cam_trans.y>>8);
-      trans.z=w_header->trans_z-(cam_trans.z>>8);
+      trans.x=w_header->trans_x-(cam.trans.x>>8);
+      trans.y=w_header->trans_y-(cam.trans.y>>8);
+      trans.z=w_header->trans_z-(cam.trans.z>>8);
       world->trans.x=(ms_cam_rot.m[0][0]*trans.x+ms_cam_rot.m[0][1]*trans.y+ms_cam_rot.m[0][2]*trans.z)>>12;
       world->trans.y=(ms_cam_rot.m[1][0]*trans.x+ms_cam_rot.m[1][1]*trans.y+ms_cam_rot.m[1][2]*trans.z)>>12;
       world->trans.z=(ms_cam_rot.m[2][0]*trans.x+ms_cam_rot.m[2][1]*trans.y+ms_cam_rot.m[2][2]*trans.z)>>12;
@@ -1270,7 +1276,7 @@ void GfxTransformWorlds(void *ot) {
   worlds=(zone_world*)header->worlds;
   size=sizeof(header->worlds);
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1=params.far_color;
@@ -1318,7 +1324,7 @@ void GfxTransformWorldsFog(void *ot) {
   worlds=header->worlds;
   size=sizeof(zone_world)*header->world_count;
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1=params.far_color;
@@ -1364,7 +1370,7 @@ void GfxTransformWorldsRipple(void *ot) {
   for (i=0;i<16;i++)
     params.tri_wave[i] = abs(tri_wave[i]);
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1=params.far_color;
@@ -1384,7 +1390,7 @@ void GfxTransformWorldsLightning(void *ot) {
   worlds=header->worlds;
   size=sizeof(header->worlds);
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1.r = far_color1.r*16;
@@ -1414,7 +1420,7 @@ void GfxTransformWorldsDark(void *ot) {
   size=sizeof(header->worlds);
   GfxGetFar(&far, &shamt);
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.far_color1.r = far_color1.r*16;
@@ -1447,7 +1453,7 @@ void GfxTransformWorldsDark2(void *ot) {
   worlds=header->worlds;
   size=sizeof(header->worlds);
   memcpy((void*)params.worlds,(void*)worlds,size);
-  params.trans=cam_trans;
+  params.trans=cam.trans;
   params.m_rot=ms_cam_rot;
   params.m_light=mn_light;
   params.illum.x=dark_illum.x>>8;
