@@ -19,6 +19,7 @@
 
 - camera is incorrect
 - textures fail to load in some instances
+- Moving around the map can cause the game to softlock
 
 ### N. Sanity Beach
 
@@ -77,8 +78,6 @@
 ### Heavy Machinery
 
 ### Cortex Power
-
-- going near a MafiC causes the game to crash
 
 ### Generator Room
 
