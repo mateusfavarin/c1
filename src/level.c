@@ -766,15 +766,16 @@ uint16_t ZoneReboundVector(vec *va, vec *vb) {
 
   if (!vb->x && !vb->y && !vb->z) { return 0; }
   header = (zone_header*)cur_zone->items[0];
-  while (1) { /* this will loop endlessly while ZoneFindNode returns 0 */
-    for (i=0;i<header->neighbor_count;i++) {
+  i = 0;
+  while (1) {
+    while (i < header->neighbor_count) {
       neighbor = NSLookup(&header->neighbors[i]);
       z_rect = (zone_rect*)neighbor->items[1];
-      if (TestPointInRect((rect*)z_rect, va))
-        break;
+      if (TestPointInRect((rect*)z_rect, va)) { break; }
+      i++;
     }
-    if (i==header->neighbor_count) /* did not find a zone that contains va? */
-      return 1; /* return */
+    /* did not find a zone that contains va? */
+    if (i++ == header->neighbor_count) { return 1; } /* return */
     _rect = *((rect*)z_rect);
     _rect.x<<=8;_rect.y<<=8;_rect.z<<=8;
     _rect.w<<=8;_rect.h<<=8;_rect.d<<=8;
