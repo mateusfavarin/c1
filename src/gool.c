@@ -340,10 +340,7 @@ void GoolInitLevelSpawns(lid_t lid) {
 }
 
 //----- (8001B648) --------------------------------------------------------
-int GoolObjectTraverseTreePreorder(
-  gool_object *obj,
-  int (*func)(gool_object*,int),
-  int arg) {
+int GoolObjectTraverseTreePreorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child, *sibling; // $a0, @s0
   int res; // $v0 MAPDST
 
@@ -407,10 +404,7 @@ int GoolObjectSearchTree(
 }
 
 //----- (8001B84C) --------------------------------------------------------
-int GoolObjectHandleTraverseTreePreorder(
-  gool_object *obj,
-  int (*func)(gool_object*,int),
-  int arg) {
+int GoolObjectHandleTraverseTreePreorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child, *sibling; // $s0, $s1
   gool_object *grandchild, *next_grandchild; // %a0, $s0
   int res; // $v0
@@ -419,13 +413,11 @@ int GoolObjectHandleTraverseTreePreorder(
   while (child) {
     sibling = child->process.gool_links.sibling;
     res = func(child, arg);
-    if (res == ERROR_INVALID_RETURN)
-      GoolObjectKill(child, 0);
+    if (res == ERROR_INVALID_RETURN) { GoolObjectKill(child, 0); }
     else {
       grandchild = child->process.gool_links.children;
       while (grandchild) {
-        if (ISFREEOBJECT(grandchild))
-          break;
+        if (ISFREEOBJECT(grandchild)) { break; }
         next_grandchild = grandchild->process.gool_links.sibling;
         GoolObjectTraverseTreePreorder(grandchild, func, arg);
         grandchild = next_grandchild;
@@ -1468,28 +1460,30 @@ static inline void GoolObjectColorByZone(gool_object *obj) {
 
 //----- (8001EB28) --------------------------------------------------------
 int GoolObjectColors(gool_object *obj) {
-  entry *zone;
-  zone_header *header;
   gool_header *g_header;
+  gool_object *collider;
   int invincibility_state, elapsed_since;
   int mod, val;
 
   invincibility_state = obj->process.invincibility_state;
   elapsed_since = frames_elapsed - obj->process.invincibility_stamp;
-  zone = obj->zone ? obj->zone : cur_zone;
-  header = (zone_header*)zone->items[0];
   switch (invincibility_state) { /* cases 3, 4, 5 all fall down to case 2 */
   case 4:
     if (elapsed_since > 60) /* 1s at 60fps */
       GoolObjectColorByZone(obj);
-    if (obj->process.gool_links.collider) {
-      g_header = (gool_header*)obj->global->items[0];
-      if (g_header->category == 0x300)
-        GoolSendEvent(obj, obj->process.gool_links.collider, GOOL_EVENT_HIT_INVINCIBLE, 1, 0);
-    }
   case 3:
-    if (invincibility_state == 3 && elapsed_since > 451) /* 7.5s at 60fps */
-      GoolObjectColorByZone(obj);
+    if (invincibility_state == 3) {
+      if (elapsed_since > 451) /* 7.5s at 60fps */
+        GoolObjectColorByZone(obj);
+    }
+    else if (invincibility_state == 4) {
+      collider = obj->process.gool_links.collider;
+      if (collider) {
+        g_header = (gool_header*)collider->global->items[0];
+        if (g_header->category == 0x300)
+          GoolSendEvent(obj, collider, GOOL_EVENT_HIT_INVINCIBLE, 1, 0);
+      }
+    }
   case 5:
     if (invincibility_state == 5 && elapsed_since > 602) /* 10s at 60fps */
       GoolObjectColorByZone(obj);
@@ -2352,7 +2346,8 @@ int GoolObjectTryBreak(gool_object *obj, uint32_t opcode, uint32_t flags, int re
 
 static inline
 void GoolOp13unnamed(gool_object *obj, uint32_t instruction) {
-  int32_t *inout,p1,p2,rate,prog,absprog;
+  uint32_t *inout;
+  int32_t p1, p2, rate, prog, absprog;
 
   if (G_OPA(instruction) == 0xBF0) {
     p1 = GoolObjectPop(obj);
@@ -2386,8 +2381,8 @@ void GoolOp13unnamed(gool_object *obj, uint32_t instruction) {
 
 static inline
 void GoolOp2225unnamed(gool_object *obj, uint32_t instruction) {
+  uint32_t *p_ang1;
   int32_t ang1,ang2,speed,angout;
-  int32_t *p_ang1;
   if (G_OPA(instruction) == 0xBF0) {
     speed = GoolObjectPop(obj);
     ang2 = GoolObjectPop(obj);
@@ -3260,7 +3255,7 @@ int GoolSendEvent(gool_object *sender, gool_object *recipient, uint32_t event, i
   uint32_t state, state_idx, subtype_map_idx;
   uint32_t offs, status_c;
   uint32_t *code, flags;
-  int res, test, i;
+  int res, i;
 
   if (sender)
     sender->process.misc_flag = !!recipient;

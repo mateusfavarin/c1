@@ -153,14 +153,14 @@ GoolCalcBound(&(o)->bound, &(o)->process.vectors.trans, (b))
 
 /* object structure definitions */
 typedef struct {
-  struct _gool_object *self;
-  struct _gool_object *parent;
-  struct _gool_object *sibling;
-  struct _gool_object *children;
-  struct _gool_object *creator;
-  struct _gool_object *player;
-  struct _gool_object *collider;
-  struct _gool_object *interrupter;
+  struct _gool_object *self; // 0x0
+  struct _gool_object *parent; // 0x4
+  struct _gool_object *sibling; // 0x8
+  struct _gool_object *children; // 0xC
+  struct _gool_object *creator; // 0x10
+  struct _gool_object *player; // 0x14
+  struct _gool_object *collider; // 0x18
+  struct _gool_object *interrupter; // 0x1C
 } gool_links;
 
 typedef struct {
@@ -259,20 +259,20 @@ typedef struct {
 } gool_handle;
 
 typedef struct _gool_object {
-  gool_handle handle;
-  bound bound;
-  entry *global;
-  entry *external;
-  entry *zone;
-  uint32_t state;
+  gool_handle handle; // 0x0
+  bound bound; // 0x8
+  entry *global; // 0x20
+  entry *external; // 0x24
+  entry *zone; // 0x28
+  uint32_t state; // 0x2C
   union {
     gool_colors colors;
     uint16_t colors_i[24];
-  };
+  }; // 0x30
   union {
     gool_process process;
     uint32_t regs[0x1FC];
-  };
+  }; // 0x60
 } gool_object;
 
 typedef union {

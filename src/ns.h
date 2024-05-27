@@ -14,14 +14,14 @@ typedef uint32_t eid_t;
 #define ENTRY_ITEMS_MAX 128
 
 typedef struct _entry {
-  uint32_t magic;
-  eid_t eid;
-  int type;
-  int item_count;
+  uint32_t magic; // 0x0
+  eid_t eid; // 0x4
+  int type; // 0x8
+  int item_count; // 0xC
   union {
     uint32_t item_offsets[0];
     uint8_t *items[0];
-  };
+  }; // 0x10
 } entry;
 
 /* pgid */
