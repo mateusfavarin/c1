@@ -60,8 +60,6 @@
 
 ### Road To Nowhere
 
-- objects do not detect solid floor; any wumpa fruit/lives released from boxes seem to fall past the floor without being stopped
-
 ### Boulder Dash
 
 ### Whole Hog
@@ -72,7 +70,6 @@
 
 ### Koala Kong
 
-- TNT boxes fall through the floor
 - boulders launched by Koala Kong do not appear or are not thrown in the destined direction
 
 ### Heavy Machinery
