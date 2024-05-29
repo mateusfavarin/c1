@@ -50,7 +50,7 @@ extern entry *cur_zone;
 
 extern int32_t ramp_rate;
 extern uint32_t init_vol;
-extern uint32_t fade_vol;
+extern int32_t fade_vol;
 extern int32_t fade_vol_step;
 extern int max_midi_voices;
 extern uint32_t seq2_vol;

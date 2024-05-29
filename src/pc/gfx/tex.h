@@ -5,9 +5,10 @@
 #include "geom.h"
 #include "pcgfx.h"
 
+typedef unsigned int GLuint;
 typedef int (*tex_create_callback_t)(dim2, uint8_t*);
-typedef void (*tex_delete_callback_t)(int);
-typedef void (*tex_subimage_callback_t)(int, rect2, uint8_t*);
+typedef void (*tex_delete_callback_t)(GLuint);
+typedef void (*tex_subimage_callback_t)(GLuint, rect2, uint8_t*);
 
 extern void TexturesInit(tex_create_callback_t create,
   tex_delete_callback_t delete, tex_subimage_callback_t subimage);

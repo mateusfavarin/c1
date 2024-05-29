@@ -30,10 +30,10 @@ typedef struct {
   float gain;
 } svoice_t;
 
-const sampler_t def_sampler = { 
-  .amp = { 1.0, 1.0 } 
+const sampler_t def_sampler = {
+  .amp = { 1.0, 1.0 }
 };
-const svoice_t def_svoice = {  
+const svoice_t def_svoice = {
   .vol = { SVOICE_VOL_BASE, SVOICE_VOL_BASE },
   .pitch = SVOICE_PITCH_BASE,
   .sampler = def_sampler,
@@ -49,7 +49,7 @@ static void SampleNext(sampler_t *sampler, int len, int16_t *data) {
   int16_t *p, s;
   int loop_len;
   int i, idx;
-  
+
   sample = sampler->sample;
   if (!sample) {
     memset(data, 0, len*2*sizeof(int16_t));
@@ -65,9 +65,9 @@ static void SampleNext(sampler_t *sampler, int len, int16_t *data) {
       idx = (int)sampler->t;
     }
     if (idx == sample->len-1) { --idx; t+=1.0; }
-    else if (idx >= sample->len) { 
+    else if (idx >= sample->len) {
       sampler->done=1;
-      break; 
+      break;
     }
     s = sample->data[idx];
     s+=t*(sample->data[idx+1]-s);
@@ -87,7 +87,7 @@ static void AudioCallback(void *userdata, uint8_t *stream, size_t size) {
   int32_t *p32, buf32[2048];
   int16_t *p16, buf16[2048];
   int i, j, len;
-  
+
   len = size/(2*sizeof(int16_t));
   memset(buf32, 0, len*2*sizeof(int32_t));
   for (i=0;i<24;i++) {
@@ -104,7 +104,7 @@ static void AudioCallback(void *userdata, uint8_t *stream, size_t size) {
       float amp[2], freq;
       callback = svoice->callback;
       amp[0] = (double)svoice->vol[0] / SVOICE_VOL_BASE;
-      amp[1] = (double)svoice->vol[1] / SVOICE_VOL_BASE; 
+      amp[1] = (double)svoice->vol[1] / SVOICE_VOL_BASE;
       freq = (double)svoice->pitch / SVOICE_PITCH_BASE;
       callback(i, amp, freq, len, buf16);
     }
@@ -114,9 +114,9 @@ static void AudioCallback(void *userdata, uint8_t *stream, size_t size) {
       *(p32++) += ((int32_t)*(p16++))*svoice->gain;
       *(p32++) += ((int32_t)*(p16++))*svoice->gain;
     }
-  } 
+  }
   p32 = buf32;
-  p16 = (int16_t*)stream; 
+  p16 = (int16_t*)stream;
   for (i=0;i<len;i++) {
     *(p16++) = *(p32++) / 24;
     *(p16++) = *(p32++) / 24;
@@ -141,7 +141,7 @@ void SwAudioInit() {
     printf("Error initializing audio: %s\n", SDL_GetError());
     return;
   }
-  SDL_PauseAudio(0);  
+  SDL_PauseAudio(0);
 }
 
 void SwAudioKill() {
@@ -154,8 +154,8 @@ void SwAudioKill() {
   SDL_CloseAudio();
 }
 
-void SwSetMVol(uint32_t vol) {
-  m_amp = (double)vol / 0x7F;  
+void SwSetMVol(int32_t vol) {
+  m_amp = (double)vol / 127.0;
 }
 
 uint8_t pcm_buf[0x80000];
@@ -182,7 +182,7 @@ void SwLoadSample(int voice_idx, uint8_t *data, size_t size) {
   }
   memcpy(sample->data, data, size);
   /* used when interpolating looping samples */
-  sample->data[sample->len] = sample->data[0]; 
+  sample->data[sample->len] = sample->data[0];
 }
 
 void SwUnloadSample(int voice_idx) {
@@ -191,7 +191,7 @@ void SwUnloadSample(int voice_idx) {
 
   svoice = &svoices[voice_idx];
   sampler = &svoice->sampler;
-  if (sampler->sample) 
+  if (sampler->sample)
     free(sampler->sample);
 }
 
@@ -199,21 +199,21 @@ void SwNoteOn(int voice_idx) {
   svoice_t *svoice;
   sampler_t *sampler;
 
-  svoice = &svoices[voice_idx]; 
+  svoice = &svoices[voice_idx];
   if (!svoice->on) {
     svoice->on = 1;
     sampler = &svoice->sampler;
     sampler->done = 0;
     sampler->t = 0;
     sampler->amp[0] = (double)svoice->vol[0] / SVOICE_VOL_BASE;
-    sampler->amp[1] = (double)svoice->vol[1] / SVOICE_VOL_BASE; 
+    sampler->amp[1] = (double)svoice->vol[1] / SVOICE_VOL_BASE;
     sampler->freq = (double)svoice->pitch / SVOICE_PITCH_BASE;
   }
 }
 
 void SwNoteOff(int voice_idx) {
   svoice_t *svoice;
-  
+
   svoice = &svoices[voice_idx];
   if (svoice->on) {
     svoice->on = 0;
@@ -257,12 +257,12 @@ void SwVoiceSetCallback(int voice_idx, svoice_callback_t callback) {
 
   svoice = &svoices[voice_idx];
   svoice->on = 1;
-  svoice->callback = callback; 
+  svoice->callback = callback;
 }
 
 void SwVoiceSetGain(int voice_idx, float gain) {
   svoice_t *svoice;
 
   svoice = &svoices[voice_idx];
-  svoice->gain = gain; 
+  svoice->gain = gain;
 }

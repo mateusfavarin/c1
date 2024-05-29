@@ -275,18 +275,18 @@ static void RgbToFloats(void *in, float out[3]) {
   rgb *color;
 
   color = in;
-  out[0] = (float)color->r / 0xFFFFFFFF;
-  out[1] = (float)color->g / 0xFFFFFFFF;
-  out[2] = (float)color->b / 0xFFFFFFFF;
+  out[0] = ((float)color->r) / 4294967295.0f; // UNSIGNED_INT_MAX
+  out[1] = ((float)color->g) / 4294967295.0f;
+  out[2] = ((float)color->b) / 4294967295.0f;
 }
 
 static void FloatsToRgb(float in[3], void *out) {
   rgb *color;
 
   color = out;
-  color->r = (uint32_t)(in[0] * 0xFFFFFFFF);
-  color->g = (uint32_t)(in[1] * 0XFFFFFFFF);
-  color->b = (uint32_t)(in[2] * 0xFFFFFFFF);
+  color->r = (uint32_t)(in[0] * 4294967295.0f);
+  color->g = (uint32_t)(in[1] * 4294967295.0f);
+  color->b = (uint32_t)(in[2] * 4294967295.0f);
 }
 
 static gui_item *GuiReflRgb8(gui_item **children) {

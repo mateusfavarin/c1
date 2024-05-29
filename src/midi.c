@@ -24,7 +24,7 @@ eid_t cur_midi_eid;        /* 80056650; gp[0x95] */
 int sep_access_num;        /* 80056654; gp[0x96] */
 int vab_id;                /* 80056658; gp[0x97] */
 int seq_count;             /* 8005665C; gp[0x98] */
-uint32_t fade_vol;         /* 80056660; gp[0x99] */
+int32_t fade_vol;         /* 80056660; gp[0x99] */
 int32_t fade_vol_step;     /* 80056664; gp[0x9A] */
 int max_midi_voices;       /* 80056668; gp[0x9B] */
 uint32_t seq2_vol;         /* 8005666C; gp[0x9C] */

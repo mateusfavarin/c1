@@ -79,7 +79,7 @@ typedef struct _tpage {
 } tpage;
 
 /* lid */
-typedef uint32_t lid_t;
+typedef int32_t lid_t;
 
 /* ldat */
 #define MAGIC_LDAT     1

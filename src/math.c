@@ -8,7 +8,7 @@ uint32_t seed_a, seed_b; /* 800564D8, 800564DC; gp[0xDC], gp[0xE0] */
  * compute the approximate (manhattan) distance between 2 3d points
  */
 //----- (80029B90) --------------------------------------------------------
-uint32_t ApxDist(vec *v1, vec *v2) {
+int32_t ApxDist(vec *v1, vec *v2) {
   vec da;
   int max_da;
 
@@ -49,7 +49,7 @@ int OutOfRange(gool_object *obj, vec *v1, vec *v2, int32_t x, int32_t y, int32_t
  * compute the (euclidean) distance between two [3d] points
  */
 //----- (80029D30) --------------------------------------------------------
-uint32_t EucDist(vec *v1, vec *v2) {
+int32_t EucDist(vec *v1, vec *v2) {
   vec d;
 
   d.x = (v1->x - v2->x) >> 8;
@@ -62,7 +62,7 @@ uint32_t EucDist(vec *v1, vec *v2) {
  * compute the xz plane distance between two [3d] points
  */
 //----- (80029DB0) --------------------------------------------------------
-uint32_t EucDistXZ(vec *v1, vec *v2) {
+int32_t EucDistXZ(vec *v1, vec *v2) {
   vec d;
 
   d.x = (v1->x - v2->x) >> 8;

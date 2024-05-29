@@ -473,7 +473,8 @@ int GoolFindNearestObject(gool_object *obj, gool_nearest_query *query) {
   gool_state *states, *state;
   gool_state_maps *maps;
   int category, state_idx, flag;
-  uint32_t dist, arg;
+  uint32_t arg;
+  int32_t dist;
 
   if (obj == query->obj) { return 0; }
   header = (gool_header*)obj->global->items[0];
@@ -3536,7 +3537,7 @@ int GoolProject(vec *in, vec *out) {
 //----- (80024AD4) --------------------------------------------------------
 int GoolCollide(gool_object *tgt, bound *tgt_bound, gool_object *src, bound *src_bound) {
   gool_object *cur_collider;
-  uint32_t dist_cur, dist_new;
+  int32_t dist_cur, dist_new;
   bound test_bound;
 
   cur_collider = tgt->process.gool_links.collider;

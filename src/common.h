@@ -115,6 +115,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_ROADTONOWHERE
+#define LID_BOOTLEVEL         LID_NSANITYBEACH
 
 #endif /* _COMMON_H_ */

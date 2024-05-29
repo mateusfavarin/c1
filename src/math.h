@@ -11,10 +11,10 @@
 #define atan2 matan2
 #define sqrt msqrt
 
-extern uint32_t ApxDist(vec *v1, vec *v2);
+extern int32_t ApxDist(vec *v1, vec *v2);
 extern int OutOfRange(gool_object* obj, vec *v1, vec *v2, int32_t x, int32_t y, int32_t z);
-extern uint32_t EucDist(vec *v1, vec *v2);
-extern uint32_t EucDistXZ(vec *v1, vec *v2);
+extern int32_t EucDist(vec *v1, vec *v2);
+extern int32_t EucDistXZ(vec *v1, vec *v2);
 extern int32_t AngDistXZ(vec *v1, vec *v2);
 extern int32_t AngDistXY(vec *v1, vec *v2);
 extern int sub_80029E80(int32_t a1, int32_t a2, uint32_t aa_max);

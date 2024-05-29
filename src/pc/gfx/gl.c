@@ -26,7 +26,7 @@
 #endif
 
 int GLCreateTexture(dim2 dim, uint8_t *buf) {
-  int texid;
+  GLuint texid;
 
   glGenTextures(1, &texid);
   glActiveTexture(GL_TEXTURE0);
@@ -41,11 +41,11 @@ int GLCreateTexture(dim2 dim, uint8_t *buf) {
   return texid;
 }
 
-void GLDeleteTexture(int texid) {
+void GLDeleteTexture(GLuint texid) {
   glDeleteTextures(1, &texid);
 }
 
-void GLUpdateTexture(int texid, rect2 rect, uint8_t *buf) {
+void GLUpdateTexture(GLuint texid, rect2 rect, uint8_t *buf) {
   glBindTexture(GL_TEXTURE_2D, texid);
   glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.w, rect.h,
     GL_RGBA, GL_UNSIGNED_BYTE, buf);
