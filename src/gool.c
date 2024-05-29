@@ -144,7 +144,7 @@ extern mat16 ms_rot, ms_cam_rot;
 extern int32_t cam_rot_xz;
 extern quad28_t uv_map[600];
 
-//----- (8001AAD8) --------------------------------------------------------
+//----- (8001AAD8) -------------------------------------------------------- [OK!]
 int GoolInitAllocTable() {
   gool_handle *handle; // $v1
   gool_object *obj;
@@ -180,14 +180,14 @@ int GoolInitAllocTable() {
   return SUCCESS;
 }
 
-//----- (8001AC28) --------------------------------------------------------
+//----- (8001AC28) -------------------------------------------------------- [OK!]
 int GoolKillAllocTable() {
   free(objects);
   free(player);
   return SUCCESS;
 }
 
-//----- (8001AC60) --------------------------------------------------------
+//----- (8001AC60) -------------------------------------------------------- [OK!]
 int GoolInitLid() {
   cur_lid_ro = ns.ldat->lid << 8;  /* TODO: verify this global, @ 0x8006188C*/
   if (ns.ldat->magic)
@@ -196,7 +196,7 @@ int GoolInitLid() {
     return CODE_ERROR;
 }
 
-//----- (8001AC9C) --------------------------------------------------------
+//----- (8001AC9C) -------------------------------------------------------- [OK!]
 int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
   zone_rect *rect; // $t0
   zone_entity *entity; // $s5
@@ -211,8 +211,9 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
   zone_loc = NULL;
   scale = 0;
 
+  if (!obj) { return CODE_ERROR; }
   entity = obj->process.entity;
-  if (!obj || !entity) { return CODE_ERROR; }
+  if (!entity) { return CODE_ERROR; }
   type = entity->parent_zone->type;
   if (type == 7) {
     rect = (zone_rect*)entity->parent_zone->items[1];
@@ -223,12 +224,13 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
     zone_loc = &v_zero;
     scale = 0;
   }
+  else if (!zone_loc) { return CODE_ERROR; }
   path_length = entity->path_length;
   idx = abs(progress) >> 8;
   fractional = progress & 0xFF;
   path_pt = &entity->path_points[idx];
   if ((idx == (path_length - 1)) && idx) { /* at last point and more than 1 point? */
-    fractional = (progress & 0xFF) + 0x100;
+    fractional += 0x100;
     path_pt = &entity->path_points[path_length-2];
   }
   loc->x = ((path_pt->x << scale) + zone_loc->x) << 8;
@@ -326,7 +328,7 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
   return path_length;
 }
 
-//----- (8001B3F0) --------------------------------------------------------
+//----- (8001B3F0) -------------------------------------------------------- [OK!]
 void GoolInitLevelSpawns(lid_t lid) {
   int idx;
   uint16_t *level_spawn;
@@ -339,7 +341,7 @@ void GoolInitLevelSpawns(lid_t lid) {
   }
 }
 
-//----- (8001B648) --------------------------------------------------------
+//----- (8001B648) -------------------------------------------------------- [OK!]
 int GoolObjectTraverseTreePreorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child, *sibling; // $a0, @s0
   int res; // $v0 MAPDST
@@ -359,11 +361,8 @@ int GoolObjectTraverseTreePreorder(gool_object *obj, int (*func)(gool_object*,in
   return res;
 }
 
-//----- (8001B6F0) --------------------------------------------------------
-int GoolObjectTraverseTreePostorder(
-  gool_object *obj,
-  int (*func)(gool_object*,int),
-  int arg) {
+//----- (8001B6F0) -------------------------------------------------------- [OK!]
+int GoolObjectTraverseTreePostorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child; // $a0
   gool_object *sibling; // $s0
   int res; // $v0
@@ -373,28 +372,26 @@ int GoolObjectTraverseTreePostorder(
     sibling = child->process.gool_links.sibling;
     res = GoolObjectTraverseTreePostorder(child, func, arg);
     child = sibling;
-    if (res == ERROR_INVALID_RETURN)
-      GoolObjectKill(obj, 0);
+    if (res == ERROR_INVALID_RETURN) { GoolObjectKill(obj, 0); }
   }
   return func(obj, arg);
 }
 
-//----- (8001B788) --------------------------------------------------------
-int GoolObjectSearchTree(
-  gool_object *obj,
-  int (*func)(gool_object*,int),
-  int arg) {
+//----- (8001B788) -------------------------------------------------------- [OK!]
+int GoolObjectSearchTree(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   // int prev_result; // $v1
   gool_object *child, *sibling; // $a0, $s0
   int res; // $v0
 
   if (!obj) { return 0; }
+  child = HANDLE(obj).children;
   if (!ISHANDLE(obj)) {
     res = func(obj, arg);
     if (res) { return res; }
+    child = GoolObjectGetChildren(obj);
   }
-  child = GoolObjectGetChildren(obj);
   if (!child) { return 0; }
+  res = 0;
   while (!res && child) {
     sibling = child->process.gool_links.sibling;
     res = GoolObjectSearchTree(child, func, arg);
@@ -403,7 +400,7 @@ int GoolObjectSearchTree(
   return res;
 }
 
-//----- (8001B84C) --------------------------------------------------------
+//----- (8001B84C) -------------------------------------------------------- [OK!]
 int GoolObjectHandleTraverseTreePreorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child, *sibling; // $s0, $s1
   gool_object *grandchild, *next_grandchild; // %a0, $s0
@@ -428,11 +425,8 @@ int GoolObjectHandleTraverseTreePreorder(gool_object *obj, int (*func)(gool_obje
   return SUCCESS;
 }
 
-//----- (8001B92C) --------------------------------------------------------
-int GoolObjectHandleTraverseTreePostorder(
-  gool_object *obj,
-  int (*func)(gool_object*,int),
-  int arg) {
+//----- (8001B92C) -------------------------------------------------------- [OK!]
+int GoolObjectHandleTraverseTreePostorder(gool_object *obj, int (*func)(gool_object*,int), int arg) {
   gool_object *child, *sibling; // $s0, $s5
   gool_object *grandchild, *next_grandchild; // %a0, $s1
   int res; // $v0 MAPDST
@@ -441,7 +435,6 @@ int GoolObjectHandleTraverseTreePostorder(
   while (child) {
     grandchild = child->process.gool_links.children;
     sibling = child->process.gool_links.sibling;
-    /* TODO: verify-should there be an else block somewhere here */
     while (grandchild) {
       next_grandchild = grandchild->process.gool_links.sibling;
       res = GoolObjectTraverseTreePostorder(grandchild, func, arg);
@@ -457,11 +450,8 @@ int GoolObjectHandleTraverseTreePostorder(
   return SUCCESS;
 }
 
-//----- (8001BA18) --------------------------------------------------------
-void GoolForEachObjectHandle(
-  int (*func)(gool_object*,int,int),
-  int arg1,
-  int arg2) {
+//----- (8001BA18) -------------------------------------------------------- [OK!]
+void GoolForEachObjectHandle(int (*func)(gool_object*,int,int), int arg1, int arg2) {
   int i;
   gool_handle *handle;
   for (i=0;i<8;i++) {
@@ -470,14 +460,14 @@ void GoolForEachObjectHandle(
   }
 }
 
-//----- (8001BA90) --------------------------------------------------------
+//----- (8001BA90) -------------------------------------------------------- [OK!]
 gool_object *GoolObjectHasPidFlags(gool_object *obj, uint32_t pid_flags) {
   if (obj->process.pid_flags == pid_flags)
     return obj;
-  return 0;
+  return NULL;
 }
 
-//----- (8001BAB0) --------------------------------------------------------
+//----- (8001BAB0) -------------------------------------------------------- [OK!]
 int GoolFindNearestObject(gool_object *obj, gool_nearest_query *query) {
   gool_header *header;
   gool_state *states, *state;
@@ -499,16 +489,16 @@ int GoolFindNearestObject(gool_object *obj, gool_nearest_query *query) {
   maps = (gool_state_maps*)obj->global->items[3];
   state_idx = maps->event_map[query->event >> 8];
   if (state_idx == 0xFF) { /* null state index? */
-    if (query->event != GOOL_EVENT_HIT /* not a hit a event? */
-      || obj->process.invincibility_state == 2
-      || obj->process.invincibility_state == 3
-      || obj->process.invincibility_state == 4
-      || obj->process.status_c & 2) {
-      if ((query->event == GOOL_EVENT_HIT_INVINCIBLE && !(obj->process.state_flags & 0x800))
-        || query->event == GOOL_EVENT_WIN_BOSS) { /* hit when invincible or win boss? */
-        query->nearest_obj = obj; /* set as new nearest obj */
-        query->dist = dist; /* set as new min dist */
-      }
+    if ((query->event == GOOL_EVENT_HIT /* hit a event */
+      && obj->process.invincibility_state != 2
+      && obj->process.invincibility_state != 3
+      && obj->process.invincibility_state != 4
+      && !(obj->process.status_c & 2))
+      ||
+      ((query->event == GOOL_EVENT_HIT_INVINCIBLE && !(obj->process.state_flags & 0x800))
+      || query->event == GOOL_EVENT_WIN_BOSS)) {
+      query->nearest_obj = obj; /* set as new nearest obj */
+      query->dist = dist; /* set as new min dist */
     }
     return 0;
   }
@@ -530,10 +520,12 @@ int GoolFindNearestObject(gool_object *obj, gool_nearest_query *query) {
   }
   states = (gool_state*)obj->global->items[4];
   state = &states[state_idx];
-  if (obj->process.invincibility_state >= 2 && obj->process.invincibility_state <= 4)
+  if (obj->process.invincibility_state == 2
+    || obj->process.invincibility_state == 3
+    || obj->process.invincibility_state == 4) {
     flag = (obj->process.status_c | 0x1002) & state->flags;
-  else
-    flag = obj->process.status_c & state->flags;
+  }
+  else { flag = obj->process.status_c & state->flags; }
   if (!flag) { /* status_c has state flag set? */
     query->nearest_obj = obj; /* set as new nearest obj */
     query->dist = dist; /* set as new min dist */

@@ -17,7 +17,7 @@
 
 /* gool globals */
 typedef struct {
-  lid_t cur_lid_ro;
+  lid_t cur_lid_ro; // 0x8006188c
   uint32_t dword_80061890;
   int32_t screen_shake;
   int32_t fog_z;
