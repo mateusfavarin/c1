@@ -198,12 +198,12 @@ typedef struct {
   union {
     gool_links gool_links;
     struct _gool_object *links[8];
-  };
+  }; // 0x0
   union {
     gool_vectors vectors;
     vec vectors_v[6];
     ang vectors_a[6];
-  };
+  }; // 0x20
   uint32_t status_a;
   uint32_t status_b;
   uint32_t status_c;
@@ -231,7 +231,7 @@ typedef struct {
   zone_entity *entity;
   int32_t path_progress;
   uint32_t path_length;
-  uint32_t floor_y;
+  int32_t floor_y;
   uint32_t state_flags;
   int32_t speed;
   uint32_t invincibility_state;

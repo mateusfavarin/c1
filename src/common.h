@@ -115,6 +115,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_THELOSTCITY
+#define LID_BOOTLEVEL         LID_KOALAKONG
 
 #endif /* _COMMON_H_ */
