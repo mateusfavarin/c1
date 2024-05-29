@@ -925,7 +925,7 @@ static void ZoneQueryOctreeR(
   zone_query_result *results,
   int *result_count,
   int level) {
-  int16_t *children;
+  uint16_t *children;
   zone_query_result *result;
   rect subrect;
   int i, j, k, idx, flags, mask;

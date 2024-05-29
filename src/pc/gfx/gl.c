@@ -296,7 +296,13 @@ void GLAddPrim(void *prim, int idx) {
 
   ps = (prim_struct*)prim;
   if (!context.ot[idx]) { return; }
-  for (it=context.ot[idx];(next=PRIM_NEXT(it))&&next->type;it=next);
+
+  it = context.ot[idx];
+  next = PRIM_NEXT(it);
+  while (next && next->type) {
+    it = next;
+    next = PRIM_NEXT(it);
+  }
   PRIM_SETNEXT(it,ps);
   PRIM_SETNEXT(ps,next);
 }

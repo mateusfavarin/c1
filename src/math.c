@@ -132,7 +132,7 @@ static inline uint32_t _rand(uint32_t max, uint32_t *seed) {
   *seed = res;
   res /= 15;
   resb = (res + (((uint64_t)res*33) >> 32)) >> 1;
-  resc = abs(res - ((int32_t)((resb & 0x7C000000) << 1) - (resb >> 26))) % max;
+  resc = abs(((int32_t)(res)) - ((int32_t)(((resb & 0x7C000000) << 1) - (resb >> 26)))) % max;
   return resc;
 }
 

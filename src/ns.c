@@ -1366,7 +1366,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   char filename[0x100];
   int i, idx, page_count, hash;
   int physical_page_count, virtual_page_count;
-  int pgid, *offsets;
+  uint32_t *offsets;
 
   cur_lid = lid;
   next_lid = -1;
@@ -1391,7 +1391,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   nsd_size = sizeof(nsd) + sizeof(nsd_pte)*nsd->page_table_size + sizeof(nsd_ldat);
   /* convert pte bucket relative offsets to absolute pointers */
   buckets = nss->pte_buckets;
-  offsets = nss->nsd->ptb_offsets;
+  offsets = &nss->nsd->ptb_offsets[0];
   for (i=0;i<256;i++)
     buckets[i] = &nss->page_table[offsets[i]];
   nsf_filename = NSGetFilename(1, lid);
