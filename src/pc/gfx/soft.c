@@ -347,7 +347,8 @@ void SwTransformSvtx(
   poly3i *prim, *next;
   int32_t ndot;
   int32_t z_min, z_max, z_sum;
-  int i,ii,texid,z_idx,res;
+  uint32_t i;
+  int ii,texid,z_idx,res;
 
   SwCopyMat(lm, params->m_light.m);
   SwCopyMat(cm, params->m_color.m);
@@ -469,7 +470,8 @@ void SwTransformCvtx(
   int32_t ndot;
   int32_t z_min, z_max, z_sum;
   int32_t t1, t2, t3;
-  int i, ii, texid, z_idx, res;
+  uint32_t i;
+  int ii, texid, z_idx, res;
   int idx_adj;
 
   SwCopyMat(lm, params->m_light.m);

@@ -218,7 +218,7 @@ void ReflTypeInit(refl_type *type) {
    || !(type->flags & REFL_FLAGS_STATIC))
     return;
   if (type->flags & REFL_FLAGS_PRIM)
-    return; 
+    return;
   /* inheritance extension
      it a base type name exists then look it up
      then insert the type into the base type's subtypes list */
@@ -565,7 +565,7 @@ int ReflGetOffsetA(void *data, refl_field *field, int idx) {
         data_base = (uint8_t*)data + offset;
         offs_base = offset + ReflGetOffset(data_base, f);
         size = ReflGetSize(data_base, f);
-        offs_max = max(offs_base + size, offs_max);
+        offs_max = max(offs_base + (int)size, offs_max);
       }
       offset = offs_max;
     }
@@ -642,7 +642,7 @@ size_t ReflGetSizeA(void *data, refl_field *field, int idx) {
       data_base = (uint8_t*)data + offset;
       offs_base = offset + ReflGetOffset(data_base, f);
       size = ReflGetSize(data_base, f);
-      offs_max = max(offs_base + size, offs_max);
+      offs_max = max(offs_base + (int)size, offs_max);
     }
     size = offs_max - offset;
   }

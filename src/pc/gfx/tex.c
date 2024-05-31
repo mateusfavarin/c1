@@ -162,7 +162,8 @@ void TextureCopy(uint8_t *src, uint8_t *dst, dim2 *sdim, dim2 *ddim,
   pnt2 pnt, *clut_loc;
   dim2 dim;
   rect2 rect;
-  int i, idx, si, di, x, y;
+  int i, idx, si, di;
+  uint32_t x, y;
 
   src16 = (uint16_t*)src;
   dst32 = (uint32_t*)dst;
@@ -309,7 +310,8 @@ static int TextureNew(texinfo *texinfo, fvec (*uvs)[4]) {
   pnt2 clut;
   uint32_t hash;
   float page_width;
-  int i, idx, ppi, fw, texid;
+  int idx, ppi, fw, texid;
+  uint32_t i;
 
   ppi = (2 << (2 - texinfo->rgninfo.color_mode));
   page_width = (float)(ppi << 7);
@@ -351,16 +353,17 @@ static int TextureNew(texinfo *texinfo, fvec (*uvs)[4]) {
   table = cache.table[atlas->tpage_id];
   for (i=hash;i<hash+TEX_CACHE_BUCKETSIZE;i++) {
     entry = &table[i%0x8000];
-    if (!entry->valid) { break; }
+    if (!entry->valid) {
+      entry->valid = 1;
+      entry->hash = hash;
+      entry->texinfo = *texinfo;
+      entry->texid = texid;
+      for (i = 0; i < 4; i++)
+        entry->uvs[i] = (*uvs)[i];
+      return texid;
+    }
   }
-  if (i==hash+TEX_CACHE_BUCKETSIZE) { return -1; }
-  entry->valid = 1;
-  entry->hash = hash;
-  entry->texinfo = *texinfo;
-  entry->texid = texid;
-  for (i=0;i<4;i++)
-    entry->uvs[i] = (*uvs)[i];
-  return texid;
+  return -1;
 }
 
 /**

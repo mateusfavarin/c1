@@ -703,12 +703,12 @@ int TgeoOnLoad(entry *tgeo) {
   tgeo_header *header;
   tgeo_texinfo *info;
   uint8_t *info_p;
-  int i;
+  uint32_t i;
 
   header = (tgeo_header*)tgeo->items[0];
   info_p = (uint8_t*)header->texinfos;
   if (cur_lid != LID_TITLE && cur_lid != LID_INTRO) {
-    for (i=0;i<header->texinfo_count;i++) {
+    for (i = 0; i < header->texinfo_count; i++) {
       info = (tgeo_texinfo*)info_p;
       if (info->colinfo.type == 1 && (info->tpage & 1))
         info->tpage = (uint32_t)NSProbe(info->tpage); /* TODO: union? */
@@ -716,7 +716,7 @@ int TgeoOnLoad(entry *tgeo) {
     }
   }
   else {
-    for (i=0;i<header->texinfo_count;i++) {
+    for (i = 0; i < header->texinfo_count; i++) {
       info = (tgeo_texinfo*)info_p;
       if (info->colinfo.type == 1 && (info->tpage & 1))
         NSOpen(&info->tpage, 0, 1); /* TODO: union? */
@@ -1215,9 +1215,9 @@ void GfxLoadWorlds(zone_header *header) {
   wgeo_header *w_header;
   entry *wgeo,*tpag;
   vec trans;
-  int i, ii;
+  uint32_t i, ii;
 
-  for (i=0;i<header->world_count;i++) {
+  for (i = 0; i < header->world_count; i++) {
     world=&header->worlds[i];
     wgeo=NSLookup(&world->eid);
     w_header=(wgeo_header*)wgeo->items[0];
@@ -1238,7 +1238,7 @@ void GfxLoadWorlds(zone_header *header) {
     world->polygons=(wgeo_polygon*)wgeo->items[1];
     world->vertices=(wgeo_vertex*)wgeo->items[2];
     world->texinfos=w_header->texinfos;
-    for (ii=0;ii<w_header->tpag_count;ii++) {
+    for (ii = 0; ii < w_header->tpag_count; ii++) {
       tpag=NSLookup(&w_header->tpags[ii]);
     }
   }
@@ -1299,7 +1299,8 @@ void GfxTransformWorldsFog(void *ot) {
   wgeo_header *w_header;
   size_t size;
   void **prims_tail;
-  int i,far,shamt,val,is_backdrop;
+  int far,shamt,val,is_backdrop;
+  uint32_t i;
 
   if (!cur_poly_ids) { return; }
   header=(zone_header*)cur_zone->items[0];
@@ -1394,7 +1395,8 @@ void GfxTransformWorldsDark(void *ot) {
   size_t size;
   void **prims_tail;
   int32_t far;
-  int i,shamt;
+  int shamt;
+  uint32_t i;
 
   if (!cur_poly_ids->len) { return; }
   header=(zone_header*)cur_zone->items[0];
@@ -1414,7 +1416,7 @@ void GfxTransformWorldsDark(void *ot) {
   params.far_color2.b = far_color2.b*16;
   params.far_t2 = far_t2*16;
   /* note: psx impl passes these as arguments instead of putting them in the tag */
-  for (i=0;i<header->world_count;i++) {
+  for (i = 0; i < header->world_count; i++) {
     world=&params.worlds[i];
     world->tag=(shamt<<16)|far; /* tag is unioned with wgeo */
   }
@@ -1474,13 +1476,13 @@ void GfxAnimMapPaths(uint32_t flags_a, uint32_t flags_b) {
   wgeo_polygon *polys, *poly;
   poly_id_list *id_list;
   poly_id poly_id;
-  uint32_t mask;
-  int poly_idx, poly_idx2, bit_idx;
-  int i,ii,len;
+  uint32_t i, mask, poly_idx, poly_idx2, bit_idx;
+  int ii,len;
 
+  poly_idx2 = 0;
   header = (zone_header *)cur_zone->items[0];
   worlds = header->worlds;
-  for (i=0;i<header->world_count;i++) {
+  for (i = 0; i < header->world_count; i++) {
     wgeo = NSLookup(&worlds[i].eid);
     if (wgeo->item_count < 4) { continue; }
     w_header = (wgeo_header*)wgeo->items[0];

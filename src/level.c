@@ -113,15 +113,16 @@ int ZdatOnLoad(entry *zone) {
   zone_header *header;
   zone_path *path;
   zone_entity *entity;
-  int i, idx;
+  int idx;
+  uint32_t i;
 
   header = (zone_header*)zone->items[0];
-  for (i=0;i<header->path_count;i++) {
+  for (i = 0; i < header->path_count; i++) {
     idx = header->paths_idx + i;
     path = (zone_path*)zone->items[idx];
     path->parent_zone = zone;
   }
-  for (i=0;i<header->entity_count;i++) {
+  for (i = 0; i < header->entity_count; i++) {
     idx = header->paths_idx + header->path_count + i;
     entity = (zone_entity*)zone->items[idx];
     entity->parent_zone = zone;
@@ -148,15 +149,15 @@ void LevelSpawnObjects() {
   entry *neighbor;
   zone_header *header, *n_header;
   zone_entity *entity;
-  int i, ii, idx;
+  uint32_t i, ii, idx;
 
   if (!cur_zone) { return; }
   header = (zone_header*)cur_zone->items[0];
-  for (i=0;i<header->neighbor_count;i++) {
+  for (i = 0; i < header->neighbor_count; i++) {
     neighbor = NSLookup(&header->neighbors[i]);
     n_header = (zone_header*)neighbor->items[0];
     if (!(n_header->display_flags & 2)) { continue; }
-    for (ii=0;ii<n_header->entity_count;ii++) {
+    for (ii = 0; ii < n_header->entity_count; ii++) {
       idx = n_header->paths_idx + n_header->path_count + ii;
       entity = (zone_entity*)neighbor->items[idx];
       if (entity->group == 3)
@@ -169,15 +170,15 @@ void LevelSpawnObjects() {
 static inline void ZoneTerminateDifference(entry *zone) {
   entry *cur_neighbor, *neighbor;
   zone_header *cur_header, *header, *n_header;
-  int i, ii, found;
+  uint32_t i, ii, found;
 
   if (!cur_zone) { return; }
   cur_header = (zone_header*)cur_zone->items[0];
   header = (zone_header*)zone->items[0];
-  for (i=0;i<cur_header->neighbor_count;i++) {
+  for (i = 0; i < cur_header->neighbor_count; i++) {
     cur_neighbor = NSLookup(&cur_header->neighbors[i]);
     found = 0;
-    for (ii=0;ii<header->neighbor_count;ii++) {
+    for (ii = 0; ii < header->neighbor_count; ii++) {
       neighbor = NSLookup(&header->neighbors[ii]);
       if (neighbor == cur_neighbor) {
         found = 1;
@@ -220,7 +221,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
   poly_id_list *tmp;
   int path_len, pt_idx, cur_pt_idx;
   int delta_pt_idx, first_pt_idx, mid_pt_idx;
-  int i, idx, dir, change, flag;
+  int idx, dir, change, flag;
 
   if (!zone || !path) {
     ns.level_update_pending = 0;
@@ -253,7 +254,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
         first_pt_idx = path->length-1; /* apply deltas from last pt [to new pt] */
       }
     }
-    i = pt_idx - first_pt_idx;
+    int i = pt_idx - first_pt_idx;
     idx = first_pt_idx;
     while (i != 0) { /* apply deltas from first_pt_idx to new pt */
       swap(prev_poly_ids, next_poly_ids);
@@ -277,7 +278,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
         ZoneTerminateDifference(zone);
       }
       if (flags & 1) {
-        for (i = 0;i < arr_len(spawns); i++)
+        for (uint32_t i = 0;i < arr_len(spawns); i++)
           spawns[i] &= 0xFFFFFFF9;
       }
       cur_zone = zone;
@@ -288,15 +289,15 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
         loadlist = &cur_header->loadlist;
       NSZoneUnload(loadlist);
       loadlist = &header->loadlist;
-      for (i=0;i<loadlist->entry_count;i++)
+      for (int i = 0; i < loadlist->entry_count; i++)
         NSOpen(&loadlist->eids[i], 0, 1);
-      for (i=0;i<loadlist->page_count;i++) /* TODO: rename */
+      for (int i = 0; i < loadlist->page_count;i++) /* TODO: rename */
         NSPageOpen(loadlist->pgids[i], 0, 1, EID_NONE);
 #ifdef PSX
       if (flag)
         NSUpdate2();
 #endif
-      for (i=0;i<header->neighbor_count;i++) {
+      for (uint32_t i = 0; i < header->neighbor_count; i++) {
         neighbor = NSLookup(&header->neighbors[i]);
         n_header = (zone_header*)neighbor->items[0];
         if (!(n_header->display_flags & 1)) { /* bit 1 clear? */
@@ -439,7 +440,8 @@ void LevelInitMisc(int flag) {
 void LevelSaveState(gool_object *obj, level_state *state, int flag) {
   zone_header *header;
   zone_path *path;
-  int i, idx;
+  int idx;
+  uint32_t i;
 
   header = (zone_header*)cur_zone->items[0];
   if (header->gfx.flags & 0x2000) { return; } /* do not save state if restricted for zone */
@@ -457,7 +459,7 @@ void LevelSaveState(gool_object *obj, level_state *state, int flag) {
   state->zone = cur_zone->eid;
   state->progress = cur_progress;
   state->lid = ns.ldat->lid;
-  for (i=0;i<header->path_count;i++) { /* find cur path index */
+  for (i = 0; i < header->path_count; i++) { /* find cur path index */
     idx = header->paths_idx + i;
     path = (zone_path*)cur_zone->items[idx];
     if (path == cur_path) {
@@ -476,7 +478,8 @@ void LevelRestart(level_state *state) {
   zone_path *path;
   entry *zone, *neighbor;
   eid_t zone_eid;
-  int i, idx;
+  int idx;
+  uint32_t i;
   gool_object *collider;
 
   bonus_round = 0;
@@ -762,7 +765,7 @@ uint16_t ZoneReboundVector(vec *va, vec *vb) {
   entry *neighbor;
   rect _rect;
   uint16_t root, node;
-  int i;
+  uint32_t i;
 
   if (!vb->x && !vb->y && !vb->z) { return 0; }
   header = (zone_header*)cur_zone->items[0];
@@ -1055,7 +1058,7 @@ gool_objnode ZoneFindNearestObjectNode(gool_object *obj, vec *v) {
   rect _rect;
   vec va;
   uint16_t root;
-  int i, y_max;
+  int y_max;
 
   y_max = -999999999;
   va = *v;
@@ -1063,13 +1066,14 @@ gool_objnode ZoneFindNearestObjectNode(gool_object *obj, vec *v) {
   /* first find the nearest octree node to input vec
    amongst cur zone and neighbors, if any such node */
   while (1) {
-    for (i=0;i<header->neighbor_count;i++) {
+    uint32_t i;
+    for (i = 0; i < header->neighbor_count; i++) {
       neighbor = NSLookup(&header->neighbors[i]);
       z_rect = (zone_rect*)neighbor->items[1];
       if (TestPointInRect((rect*)z_rect, v))
         break;
     }
-    if (i==header->neighbor_count) {
+    if (i == header->neighbor_count) {
       res.node = 0;
       break;
     }
@@ -1084,7 +1088,7 @@ gool_objnode ZoneFindNearestObjectNode(gool_object *obj, vec *v) {
   /* find an object which collides with the input vec
      and which is stopped by some node */
   found_max = 0;
-  for (i=0;i<object_bound_count;i++) {
+  for (int i = 0; i < object_bound_count; i++) {
     bound = &object_bounds[i];
     if (!(bound->obj->process.status_b & 0x20000)) { continue; }
     if (bound->bound.p1.x - 20000 <= va.x && va.x <= bound->bound.p2.x + 20000 /* bound box padding! */
@@ -1123,7 +1127,7 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   vec va, vb;
   uint16_t root, node_val;
   uint32_t size;
-  int i, y_max, found;
+  int y_max, found;
 
   res.value = 0;
   if (!(obj->process.status_b & 0x4000000))
@@ -1133,13 +1137,14 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   /* first find the nearest octree node to input vec
      amongst cur zone and neighbors, if any such node */
   while (1) {
-    for (i=0;i<header->neighbor_count;i++) {
+    uint32_t i;
+    for (i = 0; i < header->neighbor_count; i++) {
       neighbor = NSLookup(&header->neighbors[i]);
       z_rect = (zone_rect*)neighbor->items[1];
       if (TestPointInRect((rect*)z_rect, v))
         break;
     }
-    if (i==header->neighbor_count) {
+    if (i == header->neighbor_count) {
       res.node = 0;
       break;
     }
@@ -1154,7 +1159,7 @@ gool_objnode ZoneFindNearestObjectNode2(gool_object *obj, vec *v) {
   /* find an object (other than obj) which collides with the input vec
      and which is stopped by some node */
   found = 0; found_max = 0;
-  for (i=0;i<object_bound_count;i++) {
+  for (int i = 0; i < object_bound_count; i++) {
     bound = &object_bounds[i];
     if (!((bound->obj->process.status_b & 0x40020000) == 0x20000)) { continue; }
     if (va.x >= bound->bound.p1.x - 35000 && va.x <= bound->bound.p2.x + 35000
@@ -1203,7 +1208,7 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   rect _rect;
   vec va, vb;
   uint16_t root, node_val;
-  int i, yz_max, found, subtype;
+  int yz_max, found, subtype;
 
   res.value = 0;
   if (!(obj->process.status_b & 0x4000000) || ((flags & 4) && !(obj->process.gool_links.parent->process.status_b & 0x4000000)))
@@ -1217,13 +1222,14 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   /* first find the nearest octree node to input vec
      amongst cur zone and neighbors, if any such node */
   while (1) {
-    for (i=0;i<header->neighbor_count;i++) {
+    uint32_t i;
+    for (i = 0; i < header->neighbor_count; i++) {
       neighbor = NSLookup(&header->neighbors[i]);
       z_rect = (zone_rect*)neighbor->items[1];
       if (TestPointInRect((rect*)z_rect, &va))
         break;
     }
-    if (i==header->neighbor_count) {
+    if (i == header->neighbor_count) {
       res.node = 0;
       break;
     }
@@ -1238,7 +1244,7 @@ gool_objnode ZoneFindNearestObjectNode3(gool_object *obj, vec *v, int flags, int
   /* find an object (other than obj) which collides with the input vec
      and which is stopped by some node */
   found = 0; found_max = 0;
-  for (i=0;i<object_bound_count;i++) {
+  for (int i = 0; i < object_bound_count; i++) {
     bound = &object_bounds[i];
     if (bound->obj == obj || bound->obj->process.node == 0xFFFF)
       continue;
@@ -1350,7 +1356,8 @@ int ZoneQueryOctrees(vec *v, gool_object *obj, zone_query *query) {
   zone_rect *z_rect;
   entry *neighbor;
   zone_query_results *results_tail;
-  int i, count;
+  int count;
+  uint32_t i;
 
   query->once = 1;
   query->result_count = 0;
@@ -1391,7 +1398,8 @@ int ZonePathProgressToLoc(zone_path *path, int progress, gool_vectors *cam) {
   gool_vectors cam_next;
   int32_t fractional;
   int pt_idx, idx_next, flag;
-  int i, neighbor_idx, n_path_idx;
+  int neighbor_idx, n_path_idx;
+  uint32_t i;
 
   zone = path->parent_zone;
   header = (zone_header*)zone->items[0];

@@ -597,8 +597,8 @@ void TitleLoadEntries(int state, int flag, int count) {
   uint8_t *clut;
   char eid_str[6];
   eid_t eid;
-  int i, ipal_idx, clut_idx, line_idx;
-  int end;
+  int i, ipal_idx, line_idx, end;
+  uint32_t clut_idx;
 
   /* load the mdat entry for this state */
   strcpy(eid_str, "0MapP");

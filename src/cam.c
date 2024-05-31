@@ -276,7 +276,8 @@ static void CamFollow(gool_object *obj, uint32_t flag) {
   int32_t seek_pan, seek_zoom, new_pan, new_zoom, total_zoom;
   int32_t delta_dist, dist_exit, dist_nearest;
   int32_t length;
-  int i, path_idx, icam, flags, progress_made, same_dir, n_end;
+  uint32_t i, icam;
+  int path_idx, flags, progress_made, same_dir, n_end;
 
   flags = 0; // for shorter paths (< 50) both flags should set
   path_idx = cur_progress >> 8;
@@ -482,7 +483,8 @@ int CamUpdate() {
   zone_neighbor_path neighbor_path;
   zone_path_point *point;
   int next_island_cam_state;
-  int i, cam_mode, skip, n_path_idx, pt_idx;
+  int cam_mode, skip, n_path_idx, pt_idx;
+  uint32_t i;
 
   if (!crash) { return 0; }
   if (cur_display_flags & GOOL_FLAG_SPIN_DEATH) {

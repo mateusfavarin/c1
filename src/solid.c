@@ -841,7 +841,8 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
   gool_header *collider_header;
   vec28 offs;
   int done;
-  int i,ox,oz,tx,tz;
+  uint32_t i;
+  int ox,oz,tx,tz;
 
   done = 0;
   while (!done) {
@@ -891,7 +892,7 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
     collider_header = (gool_header*)obj->process.gool_links.collider->global->items[0];
     if (collider_header->type == 0x22) /* collider is a box? */
       break; /* shouldn't expect to find any non-solid bits, so break */
-    for (i=0;i<32;i++) {
+    for (i = 0; i < 32; i++) {
       if (wall_bitmap[i] != 0xFFFFFFFF) { /* found a row with non-solid bit? */
         x += 16; z += 16; /* offset */
         done = 0; /* redo check at new location to ensure that rest of 32x32 points are tested */

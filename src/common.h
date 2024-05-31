@@ -55,7 +55,7 @@
   a09; a08; a07; a06; a05; a04; a03; a02; a01;
 
 /* misc */
-#define arr_len(a)    ((int)(sizeof(a)/sizeof(a[0])))
+#define arr_len(a)    ((sizeof(a)/sizeof(a[0])))
 #define min3(a,b,c)   min(min(a,b),c)
 #define min4(a,b,c,d) min(min3(a,b,c),d)
 #define max3(a,b,c)   max(max(a,b),c)
