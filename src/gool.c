@@ -863,7 +863,7 @@ void GoolZoneNeighborObjectsTerminate() {
   zone_header *header;
   gool_handle *handle;
   entry *neighbor;
-  int i;
+  uint32_t i;
 
   if (!cur_zone) { return; }
   header = (zone_header*)cur_zone->items[0];
@@ -1052,7 +1052,7 @@ int GoolObjectUpdate(gool_object *obj, int flag) {
   uint32_t status_b, category, flags;
   uint32_t top, timestamp, wait;
   int animate, display;
-  int elapsed_since;
+  uint32_t elapsed_since;
   int res;
 
   if (obj->handle.subtype != 3) { return SUCCESS; }
@@ -1184,7 +1184,8 @@ void GoolObjectTransform(gool_object *obj) {
   bound2 bound;
   mat16 *m_rot;
   gool_vectors *obj_vectors, *cam_vectors;
-  int i,frame_idx,status_b,flag,flag2;
+  uint32_t i;
+  int frame_idx, status_b, flag, flag2;
   int res,far,shrink,size,x,offs;
   int *src,*dst;
   void *ot, **prims_tail;
@@ -2664,12 +2665,12 @@ void GoolOpMisc(gool_object *obj, uint32_t instruction) {
     case 7: { /* terminate all objects in cur zone neighbors */
       entry *neighbor;
       zone_header *header;
-      int i, ii;
+      uint32_t i, ii;
       if (!cur_zone) { break; }
       header = (zone_header*)cur_zone->items[0];
-      for (i=0;i<header->neighbor_count;i++) {
+      for (i=0u;i<header->neighbor_count;i++) {
         neighbor = NSLookup(&header->neighbors[i]);
-        for (ii=0;ii<8;ii++)
+        for (ii=0u;ii<8u;ii++)
           GoolObjectHandleTraverseTreePostorder(
             (gool_object*)&handles[ii],
             (gool_ifnptr_t)GoolZoneObjectsTerminate,
@@ -3015,7 +3016,7 @@ static inline
 int GoolOpSendEvent(gool_object *obj, uint32_t instruction, uint32_t *flags, gool_object *recipient, uint32_t opcode) {
   uint32_t argv[64]; /* local stack variable (of GoolObjectInterpret) in orig impl. */
   uint32_t event, cond, argc, mode, *p_event;
-  int i;
+  uint32_t i;
   p_event = GoolTranslateInGop(obj, G_OPB(instruction));
   obj->process.status_a &= ~GOOL_FLAG_KEEP_EVENT_STACK; /* clear bit 18 */
   cond = G_TRANS_REGREF(obj, (instruction >> 12) & 0x3F);
@@ -3023,7 +3024,7 @@ int GoolOpSendEvent(gool_object *obj, uint32_t instruction, uint32_t *flags, goo
   mode = (instruction >> 21) & 0x7;
   if (p_event && cond && (recipient || opcode == 0x8F)) {
     for (i=0;i<argc;i++)
-      argv[i] = obj->process.sp[-argc+i];
+      argv[i] = obj->process.sp[i - argc];
     event = *p_event;
     if (opcode == 0x8F)
       GoolSendToColliders(obj, event, mode, argc, argv);

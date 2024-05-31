@@ -867,7 +867,7 @@ tree_node_t *tree_apply(tree_node_t *src, list_t *deltas) {
 
 /* tree strings; formatted view of tree used for debugging */
 typedef struct {
-  int w;
+  size_t w;
   list_t cells;
 } text_column;
 
@@ -887,7 +887,7 @@ void text_column_free(text_column *column) {
   free(column);
 }
 
-text_column *text_column_new(int w) {
+text_column *text_column_new(size_t w) {
   text_column *column;
 
   column = text_column_alloc();
@@ -938,7 +938,8 @@ void tree_str_r(tree_node_t *root, list_t *columns, text_column *pcol, int level
   tree_node_t *it;
   list_node_t *n;
   list_t l_columns;
-  int i, len, count;
+  int i, count;
+  size_t len;
 
   count = tree_child_count(root);
   list_init(&l_columns);
@@ -971,7 +972,7 @@ void tree_str_r(tree_node_t *root, list_t *columns, text_column *pcol, int level
 static void tree_str_c(tree_node_t *strs, list_t *columns) {
   text_column *column;
   text_cell *cell;
-  int len;
+  size_t len;
 
   list_init(columns);
   len = strlen(strs->data);

@@ -926,7 +926,7 @@ void ZoneColorsScaleByNode(int subtype, gool_colors *src, gool_colors *dst) {
 }
 
 //----- (80027F00) --------------------------------------------------------
-static inline void ZoneColorSeek(int16_t *src, int16_t *dst, int16_t step) {
+static inline void ZoneColorSeek(uint16_t *src, uint16_t *dst, uint16_t step) {
   int16_t delta;
 
   if (step) {
@@ -946,7 +946,8 @@ static inline void ZoneColorSeek(int16_t *src, int16_t *dst, int16_t step) {
 //----- (80027F50) --------------------------------------------------------
 void ZoneColorsScaleSeek(gool_colors *colors, gool_object *obj, int subtype, int flag) {
   gool_colors *src, dst;
-  int i, step;
+  uint16_t step;
+  int i;
 
   if (obj == crash && obj->process.state_flags & 0x20)
     subtype = 0x37;
@@ -960,9 +961,9 @@ void ZoneColorsScaleSeek(gool_colors *colors, gool_object *obj, int subtype, int
   ZoneColorSeek(&src->intensity.g, &dst.intensity.g, step);
   ZoneColorSeek(&src->intensity.b, &dst.intensity.b, step);
   for (i=0;i<3;i++) {
-    ZoneColorSeek(&src->light_mat.v[i].x, &dst.light_mat.v[i].x, step);
-    ZoneColorSeek(&src->light_mat.v[i].y, &dst.light_mat.v[i].y, step);
-    ZoneColorSeek(&src->light_mat.v[i].z, &dst.light_mat.v[i].z, step);
+    ZoneColorSeek(&src->light_mat.c[i].r, &dst.light_mat.c[i].r, step);
+    ZoneColorSeek(&src->light_mat.c[i].g, &dst.light_mat.c[i].g, step);
+    ZoneColorSeek(&src->light_mat.c[i].b, &dst.light_mat.c[i].b, step);
     ZoneColorSeek(&src->color_mat.c[i].r, &dst.color_mat.c[i].r, step);
     ZoneColorSeek(&src->color_mat.c[i].g, &dst.color_mat.c[i].g, step);
     ZoneColorSeek(&src->color_mat.c[i].b, &dst.color_mat.c[i].b, step);
