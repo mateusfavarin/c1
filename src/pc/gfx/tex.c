@@ -383,6 +383,7 @@ static int TextureLookup(texinfo *texinfo, fvec(*uvs)[4]) {
     if (!entry->valid) { return -1; }
     if (hash == entry->hash && texinfo->rgninfo.uv_idx == entry->texinfo.rgninfo.uv_idx) {
       for (i = 0; i < 4; i++) { (*uvs)[i] = entry->uvs[i]; }
+      return entry->texid;
     }
   }
   return -1;
