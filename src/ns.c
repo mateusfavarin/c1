@@ -229,7 +229,8 @@ static uint8_t *NSFileRead(char *filename, size_t *size) {
 int NSCountEntries(ns_struct *nss, int type) {
   nsd *nsd;
   nsd_pte *pte;
-  int i, count;
+  int count;
+  size_t i;
 
   nsd = nss->nsd;
   count = 0;
@@ -266,7 +267,8 @@ static void NSPageUpdateEntries(int idx) {
   entry *entry;
   eid_t eid;
   nsd_pte *pte, *bucket;
-  int i, type, hash;
+  int type, hash;
+  uint32_t i;
   tpage *tpg;
 
   ps = &ns.physical_pages[idx];
@@ -1235,7 +1237,8 @@ static inline void NSInitTexturePages(ns_struct *nss, uint32_t lid) {
   nsd_pte *pte;
   uint32_t info;
   int blx, bly, clutx, cluty, pagexy;
-  int i, idx, hash;
+  int i, hash;
+  size_t idx;
 
   for (i=0;i<16;i++) {
     ps = &texture_pages[i];
@@ -1280,7 +1283,7 @@ static inline void NSInitTexturePages(ns_struct *nss, uint32_t lid) {
 }
 
 //----- (800160F8) inline ------------------------------------------------- [OK!]
-static inline void NSInitAudioPages(ns_struct *nss, uint32_t lid) {
+static inline void NSInitAudioPages(ns_struct *nss) {
   page_struct *aps;
   nsd_pte *pte;
   eid_t eid;
@@ -1405,7 +1408,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
 
   printf("Inited and Allocated %d pages\n", physical_page_count);
   NSInitTexturePages(nss, lid);
-  NSInitAudioPages(nss, lid);
+  NSInitAudioPages(nss);
 
   /* call post-page init subsystem funcs */
   for (i=0;i<21;i++) {

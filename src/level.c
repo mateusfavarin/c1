@@ -277,7 +277,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
         ZoneTerminateDifference(zone);
       }
       if (flags & 1) {
-        for (i=0;i<sizeof(spawns)/sizeof(uint32_t);i++)
+        for (i = 0;i < arr_len(spawns); i++)
           spawns[i] &= 0xFFFFFFF9;
       }
       cur_zone = zone;
@@ -466,7 +466,7 @@ void LevelSaveState(gool_object *obj, level_state *state, int flag) {
     }
   }
   state->_box_count = box_count;
-  for (i=0;i<sizeof(spawns)/sizeof(uint32_t);i++)
+  for (i = 0; i < arr_len(spawns); i++)
     state->spawns[i] = spawns[i];
 }
 
@@ -502,13 +502,13 @@ void LevelRestart(level_state *state) {
   cur_zone = 0;
   params.screen_proj = screen_proj;
   if (first_spawn) {
-    for (i=0;i<sizeof(spawns)/sizeof(uint32_t);i++)
+    for (i = 0; i < arr_len(spawns); i++)
       spawns[i] = state->spawns[i];
     if (checkpoint_id != -1) {
       spawns[checkpoint_id >> 8] &= ~2;
       spawns[checkpoint_id >> 8] |= 8;
     }
-    for (i=0;i<sizeof(spawns)/sizeof(uint32_t);i++)
+    for (i = 0; i < arr_len(spawns); i++)
       spawns[i] &= ~1;
   }
   zone_eid = state->zone;

@@ -170,8 +170,8 @@ static inline int MidiGetVab(entry *midi) {
   inst_header *i_header;
   eid_t inst_eid;
   uint8_t *vab,*vh,*vb,*vd;
-  size_t vh_size, size;
-  int i, ii;
+  size_t vh_size, size, i;
+  int ii;
 
   vh_size = midi->items[2] - midi->items[1];
   size = vh_size;

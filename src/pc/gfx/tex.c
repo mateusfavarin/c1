@@ -370,23 +370,22 @@ static int TextureNew(texinfo *texinfo, fvec (*uvs)[4]) {
 */
 static int TextureLookup(texinfo *texinfo, fvec(*uvs)[4]) {
   tex_cache_entry *table, *entry;
-  uint32_t hash;
-  int i, idx;
+  uint32_t hash, i;
+  int idx;
 
   idx = TexturePageIdx((entry_ref*)&texinfo->tpage);
   if (idx == -1) { return -1; }
   hash = texinfo->rgninfo.color_mode<<12|texinfo->rgninfo.segment<<10
         |texinfo->rgninfo.offs_x<<5|texinfo->rgninfo.offs_y;
   table = cache.table[idx];
-  for (i=hash;i<hash+TEX_CACHE_BUCKETSIZE;i++) {
+  for (i = hash; i < hash + TEX_CACHE_BUCKETSIZE; i++) {
     entry = &table[i%0x8000];
     if (!entry->valid) { return -1; }
-    if (hash==entry->hash && texinfo->rgninfo.uv_idx==entry->texinfo.rgninfo.uv_idx) { break; }
+    if (hash == entry->hash && texinfo->rgninfo.uv_idx == entry->texinfo.rgninfo.uv_idx) {
+      for (i = 0; i < 4; i++) { (*uvs)[i] = entry->uvs[i]; }
+    }
   }
-  if (i==hash+TEX_CACHE_BUCKETSIZE) { return -1; }
-  for (i=0;i<4;i++)
-    (*uvs)[i] = entry->uvs[i];
-  return entry->texid;
+  return -1;
 }
 
 /**

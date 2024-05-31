@@ -55,7 +55,7 @@ size_t ADPCMToPCM16(uint8_t *adpcm, size_t size, uint8_t *pcm, int *loop) {
   start = pcm;
   s0 = 0; s1 = 0;
   if (loop) { *loop = -1; }
-  for (i=0;i<size/sizeof(VagLine);i++) {
+  for (i = 0 ;i < (int)(size/sizeof(VagLine)); i++) {
     Next(adpcm, VagLine, line);
     if ((line->flags & 4) && (i>1) && loop) {
       *loop = (int)(pcm - start);

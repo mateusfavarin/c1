@@ -851,7 +851,7 @@ int StopAtWalls(vec *trans, int x, int z, int *adj_x, int *adj_z, gool_object *o
       *adj_z = z;
       return ret+2;
     }
-    for (i=0;i<sizeof(sorted_points)/sizeof(vec28);i++) {
+    for (i = 0; i < arr_len(sorted_points); i++) {
       offs = sorted_points[i];
       ox = offs.x; oz = offs.y;
       if  (TestWall(tx=x+ox,tz=z+oz)
