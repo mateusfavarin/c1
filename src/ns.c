@@ -1188,13 +1188,11 @@ static inline nsd_pte *NSProbeSafe(eid_t eid) {
 
   hash = (eid >> 15) & 0xFF;
   pte = ns.pte_buckets[hash];
-  do {
-    if (pte - ns.page_table >= ns.nsd->page_table_size)
-      break;
-  } while ((pte++)->eid != eid);
-  if (pte - ns.page_table >= ns.nsd->page_table_size)
-    return (nsd_pte*)ERROR_INVALID_REF;
-  return --pte;
+  while (pte->eid != eid) {
+    if ((size_t)(pte - ns.page_table) >= ns.nsd->page_table_size) { return (nsd_pte*)ERROR_INVALID_REF; }
+    pte++;
+  };
+  return pte;
 }
 
 static inline entry *NSResolve(nsd_pte *pte) {
@@ -1281,16 +1279,15 @@ static inline void NSInitTexturePages(ns_struct *nss, uint32_t lid) {
   }
 }
 
-//----- (800160F8) inline -------------------------------------------------
+//----- (800160F8) inline ------------------------------------------------- [OK!]
 static inline void NSInitAudioPages(ns_struct *nss, uint32_t lid) {
   page_struct *aps;
   nsd_pte *pte;
   eid_t eid;
-  uint32_t addr;
-  int i, j, count, type;
+  int j, count, type;
 
   count=0;
-  for (i=0;i<nss->nsd->page_table_size;i++) {
+  for (size_t i=0;i<nss->nsd->page_table_size;i++) {
     pte = &nss->nsd->page_table[i];
     type = NSEIDType(pte);
     if (type == 14) { count++; }
@@ -1303,54 +1300,31 @@ static inline void NSInitAudioPages(ns_struct *nss, uint32_t lid) {
     ns.wavebank_page_count = limit(8-count, 2, 4);
     break;
   }
-  for (i=0;i<8;i++) {
+  for (int i = 0; i < 8; i++) {
     aps = &audio_pages[i];
     aps->idx = i;
     if (i < ns.wavebank_page_count) {
       aps->state = 1;
       aps->type = 3;
-      aps->addr = addr;
+      aps->addr = 0x2000 + (0x10000 * i);
     }
     else {
       aps->state = 1;
       aps->type = 4;
       aps->addr = 0x2000 + (ns.wavebank_page_count << 16) + 0xFF90*(i - ns.wavebank_page_count);
     }
-    addr += 0x10000;
   }
-  for (i=0;i<8;i++) {
+  for (int i = 0; i < 8; i++) {
     aps = &audio_pages[i];
     eid = insts[i];
     if (eid != EID_NONE && aps->type == 4) {
       pte = NSProbeSafe(eid);
       if (!ISERRORCODE(pte)) {
-
-#ifdef PSX
-        nss->page_map[pte->pgid >> 1] = aps;
-#endif
         aps->state = 20;
         aps->pgid = pte->pgid;
         aps->eid = eid;
-#ifdef PSX
-        pte->value = 0x80000002;
-#endif
-
-/*#else
-        page *page;
-        entry *entry;
-        page_struct *ps;
-        ps = ns.page_map[pte->pgid>>1];
-        page = ps->page;
-        entry = 0;
-        for (j=0;j<page->entry_count;j++) {
-          entry = page->entries[i];
-          if (pte->eid == entry->eid) { break; }
-        }
-        pte->entry = entry;
-#endif*/
       }
-      else
-        insts[i] = EID_NONE;
+      else { insts[i] = EID_NONE; }
     }
   }
 }
@@ -1435,8 +1409,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
 
   /* call post-page init subsystem funcs */
   for (i=0;i<21;i++) {
-    if (subsys[i].init2)
-      (*subsys[i].init2)();
+    if (subsys[i].init2) { (*subsys[i].init2)(); }
   }
 }
 
