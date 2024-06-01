@@ -358,8 +358,7 @@ static int TextureNew(texinfo *texinfo, fvec (*uvs)[4]) {
       entry->hash = hash;
       entry->texinfo = *texinfo;
       entry->texid = texid;
-      for (i = 0; i < 4; i++)
-        entry->uvs[i] = (*uvs)[i];
+      for (i = 0; i < 4; i++) { entry->uvs[i] = (*uvs)[i]; }
       return texid;
     }
   }

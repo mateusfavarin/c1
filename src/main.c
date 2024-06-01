@@ -119,7 +119,6 @@ void CoreLoop(lid_t lid) {
   void *ot;
   uint32_t arg;
   int bonus_return2;
-  int ticks_elapsed;
 
   LevelInitGlobals();
   NSInit(&ns, lid);
@@ -136,8 +135,7 @@ void CoreLoop(lid_t lid) {
           GoolSendEvent(0, pause_obj, 0xC00, 1, &arg); /* send resume/kill? event to pause screen object */
           pause_obj = 0;
           pause_status = -1;
-          ticks_elapsed = GetTicksElapsed();
-          ticks_elapsed = pause_stamp;
+          SetTicksElapsed(pause_stamp);
           context.draw_stamp = pause_draw_stamp;
         }
       }
