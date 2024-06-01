@@ -38,8 +38,9 @@
 
 ### Hog Wild
 
-- player dies after respawning at a checkpoint
 - crash skips the 'look back at camera and then jump on hog' animation sequence that typically begins hog levels
+- player angle isn't locked after a respawn from a checkpoint
+- some wumpas remain on screen
 
 ### Native Fortress
 
