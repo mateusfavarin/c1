@@ -830,14 +830,14 @@ int GoolObjectKill(gool_object *obj, int sig) {
 
 //----- (8001D11C) -------------------------------------------------------- [OK!]
 int GoolZoneObjectTerminate(gool_object *obj, entry *zone) {
-  entry * obj_zone;
+  entry * obj_zone_backup;
   if (obj->handle.type == 0 || obj->zone != zone
     || obj->process.status_b & 0x1000000 || obj->process.state_flags & 0x40000) {
     return SUCCESS;
   }
-  obj_zone = obj->zone;
+  obj_zone_backup = obj->zone;
   GoolSendEvent(0, obj, GOOL_EVENT_TERMINATE, 0, 0);
-  if (obj->zone == obj_zone || (int)obj_zone == -1)
+  if (obj->zone == obj_zone_backup || (int)obj_zone == -1)
     return GoolObjectKill(obj, 0);
   return SUCCESS;
 }
