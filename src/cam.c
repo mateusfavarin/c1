@@ -483,7 +483,7 @@ int CamUpdate() {
   zone_neighbor_path neighbor_path;
   zone_path_point *point;
   int next_island_cam_state;
-  int cam_mode, skip, n_path_idx, pt_idx;
+  int cam_mode, skip, n_path_idx, pt_idx, neighbor_index;
   uint32_t i;
 
   if (!crash) { return 0; }
@@ -567,16 +567,17 @@ int CamUpdate() {
            || (neighbor_path.goal & 3) == (next_island_cam_state & 3))))
             n_path_idx = i;
         }
+        neighbor_index = n_path_idx;
         if (n_path_idx == -1) {
-          for (i=0;i<path_s1->neighbor_path_count;i++) {
+          for (i = 0; i < path_s1->neighbor_path_count; i++) {
             neighbor_path = path_s1->neighbor_paths[i];
             if (!(neighbor_path.goal & 4)) {
+              neighbor_index = i;
               break;
             }
           }
-          n_path_idx = i;
         }
-        else { neighbor_path = path_s1->neighbor_paths[n_path_idx]; }
+        neighbor_path = path_s1->neighbor_paths[neighbor_index];
         zone_s1 = path_s1->parent_zone;
         path_s1 = ZoneGetNeighborPath(zone_s1, path_s1, n_path_idx);
         if (neighbor_path.goal & 1)
