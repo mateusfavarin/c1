@@ -837,8 +837,7 @@ int GoolZoneObjectTerminate(gool_object *obj, entry *zone) {
   }
   obj_zone_backup = obj->zone;
   GoolSendEvent(0, obj, GOOL_EVENT_TERMINATE, 0, 0);
-  if (obj->zone == obj_zone_backup || (int)obj_zone == -1)
-    return GoolObjectKill(obj, 0);
+  if (obj->zone == obj_zone_backup || (int)obj_zone == -1) { return GoolObjectKill(obj, 0); }
   return SUCCESS;
 }
 

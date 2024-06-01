@@ -542,10 +542,8 @@ int CamUpdate() {
       angle = 0x22;
     else {
       angle = GoolAngDiff(cam.rot.x, island_cam_rot_x);
-      if (abs(angle) < 0x17)
-        angle = 0;
-      else
-        angle = sign(angle);
+      if (abs(angle) < 0x17) { angle = 0; }
+      else { angle = sign(angle); }
     }
     path_s1 = cur_path;
     n_progress = cur_progress;
@@ -558,10 +556,8 @@ int CamUpdate() {
         point = &path->points[pt_idx];
         if (abs(GoolAngDiff(point->rot_y, abs(angle))) < 0x17) { break; }
       }
-      if (next_island_cam_state & 4)
-        n_progress = progress + 0x400;
-      else
-        n_progress = progress + 0x100;
+      if (next_island_cam_state & 4) { n_progress = progress + 0x400; }
+      else { n_progress = progress + 0x100; }
       n_path_idx = -1;
       if (n_progress >= (path_s1->length << 8)) {
         for (i=0;i<path_s1->neighbor_path_count;i++) {
@@ -580,6 +576,7 @@ int CamUpdate() {
           }
           n_path_idx = i;
         }
+        else { neighbor_path = path_s1->neighbor_paths[n_path_idx]; }
         zone_s1 = path_s1->parent_zone;
         path_s1 = ZoneGetNeighborPath(zone_s1, path_s1, n_path_idx);
         if (neighbor_path.goal & 1)
@@ -599,8 +596,7 @@ int CamUpdate() {
         break;
       }
     } while (path_s1 != cur_path || (n_progress >> 8) != (cur_progress >> 8));
-    if (island_cam_state == -1)
-      island_cam_state = next_island_cam_state;
+    if (island_cam_state == -1) { island_cam_state = next_island_cam_state; }
     if (path && (path != cur_path || progress != cur_progress)) {
       zone = path->parent_zone;
       LevelUpdate(zone, path, progress, 0);
