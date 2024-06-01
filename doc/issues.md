@@ -19,7 +19,6 @@
 
 - camera is incorrect
 - textures fail to load in some instances
-- Moving around the map can cause the game to softlock
 
 ### N. Sanity Beach
 
