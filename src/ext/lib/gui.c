@@ -446,6 +446,19 @@ static bool GetTooltipText(char *str, char *label, char *tooltip) {
   return has_tooltip;
 }
 
+static void SetClipboard(char *text)
+{
+  char buffer[64];
+
+  size_t len = strlen(text);
+  strcpy(buffer, text);
+  for (size_t i = len; i > 0; i--) { buffer[i] = buffer[i - 1]; }
+  buffer[0] = '0';
+  buffer[1] = 'x';
+  buffer[len] = '\0';
+  igSetClipboardText(buffer);
+}
+
 static void GuiWindow(gui_item *item) {
   gui_item *it;
   char *name;
@@ -598,7 +611,7 @@ ImGuiTreeNodeFlags node_flags =
 static void GuiNode(gui_item *item) {
   ImGuiTreeNodeFlags flags;
   gui_item *tree, *it;
-  int i, open;
+  int i, open, idx;
 
   flags = node_flags;
   tree = GuiNodeTree(item);
@@ -634,8 +647,15 @@ static void GuiNode(gui_item *item) {
     if (it->flags & GUI_FLAGS_NODE_CONTENT) { continue; }
     GuiItem(it);
   }
-  if (!(flags & ImGuiTreeNodeFlags_Leaf))
-    igTreePop();
+  if (!(flags & ImGuiTreeNodeFlags_Leaf)) { igTreePop(); }
+  if (!item->label) { return; }
+  idx = -1;
+  for (i = strlen(item->label->str); i >= 0; i--) {
+    if (item->label->str[i] == '\n') { idx = i + 1; break; }
+  }
+  if (idx != -1 && igIsItemClicked(ImGuiMouseButton_Right)) {
+    SetClipboard(&item->label->str[idx]);
+  }
 }
 
 static void GuiTree(gui_item *item) {
@@ -659,8 +679,7 @@ static void GuiTree(gui_item *item) {
     if (!tbl) { return; }
   }
   GuiNode(item);
-  if (tbl)
-    igEndTable();
+  if (tbl) { igEndTable(); }
 }
 
 static void GuiColor(gui_item *item) {
@@ -695,7 +714,7 @@ static void GuiGrid(gui_item *item) {
   gui_item *it;
   gui_grid *grid;
   int rc, cc, ri, ci;
-  int tbl;
+  int tbl, i, idx;
 
   grid = item->g;
   rc = grid->row_count;
@@ -720,11 +739,9 @@ static void GuiGrid(gui_item *item) {
       igTableNextRow(0, 0.0);
       for (ci=0;ci<cc;ci++) {
         igTableSetColumnIndex(ci);
-        if (item->flags & GUI_FLAGS_CELL_CW)
-          igBeginChild_ID((ImGuiID)((int)it+1), rgn, 0, 0);
+        if (item->flags & GUI_FLAGS_CELL_CW) { igBeginChild_ID((ImGuiID)((int)it + 1), rgn, 0, 0); }
         GuiItem(it);
-        if (item->flags & GUI_FLAGS_CELL_CW)
-          igEndChild();
+        if (item->flags & GUI_FLAGS_CELL_CW) { igEndChild(); }
         it=it->next;
       }
     }

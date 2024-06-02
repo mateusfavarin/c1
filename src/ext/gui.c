@@ -430,9 +430,15 @@ static gui_item *GuiMapObjField(refl_value *val, refl_path *path, void **mapped,
   node = GuiNodeNew(0,0);
   item->flags |= GUI_FLAGS_NODE_CONTENT;
   GuiAddChild(node, item);
-  strcpy(buff, val->field->name);
-  sprintf(buff, "%s\nsize: %d\n[%X]", buff, val->size, ((int)data) + val->offset);
-  if (label) { GuiAddLabel(node, buff); }
+  if (label) {
+    strcpy(buff, val->field->name);
+    sprintf(buff, "%s\nsize: %d\n[%X]", buff, val->size, ((int)data) + val->offset);
+  }
+  else {
+    sprintf(buff, "\nsize: %d\n[%X]", val->size, ((int)data) + val->offset);
+  }
+  GuiAddLabel(item, buff);
+  GuiAddLabel(node, buff);
   return node;
 }
 
