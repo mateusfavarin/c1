@@ -56,12 +56,14 @@ uint32_t SwPadRead(int idx) {
       held |= bits;
     }
   }
-  count = arr_len(joy_mappings);
-  for (i = 0; i < count; i++) {
-    code = joy_mappings[i].code;
-    if (SDL_JoystickGetButton(gGameController, code)) {
-      bits = joy_mappings[i].bits;
-      held |= bits;
+  if (gGameController) {
+    count = arr_len(joy_mappings);
+    for (i = 0; i < count; i++) {
+      code = joy_mappings[i].code;
+      if (SDL_JoystickGetButton(gGameController, code)) {
+        bits = joy_mappings[i].bits;
+        held |= bits;
+      }
     }
   }
   return (held << 16);
