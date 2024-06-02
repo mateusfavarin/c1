@@ -1,6 +1,7 @@
 #ifndef _PC_PAD_H_
 #define _PC_PAD_H_
 
+#include <SDL2/SDL_joystick.h>
 #include "common.h"
 #include "../pad.h"
 
@@ -21,6 +22,7 @@
 #define PAD_CROSS       0x40
 #define PAD_SQUARE      0x80
 
+extern SDL_Joystick* gGameController;
 uint32_t SwPadRead(int idx);
 
 #endif /* _PC_PAD_H_ */

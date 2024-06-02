@@ -17,6 +17,7 @@
 
 SDL_Window *window = 0;
 SDL_GLContext ogl_context;
+SDL_Joystick* gGameController = NULL;
 uint8_t keys[512] = { 0 };
 int32_t mousex, mousey;
 int mousel;
@@ -27,7 +28,8 @@ extern eid_t insts[8];
 extern page_struct texture_pages[16];
 
 void SDLInit() {
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+  if (SDL_NumJoysticks() > 0) { gGameController = SDL_JoystickOpen(0); }
   window = SDL_CreateWindow("c1",
     SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED,
@@ -45,6 +47,7 @@ void SDLKill() {
   ImGui_ImplSDL2_Shutdown();
 #endif
   SDL_GL_DeleteContext(ogl_context);
+  SDL_JoystickClose(gGameController);
   SDL_DestroyWindow(window);
   SDL_Quit();
 }
