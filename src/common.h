@@ -8,9 +8,9 @@
 #include <string.h>
 
 /* Compiler flags */
-//#define CFLAGS_DRAW_EXTENSIONS
-//#define CFLAGS_GUI
-//#define CFLAGS_GOOL_DEBUG
+#define CFLAGS_DRAW_EXTENSIONS
+#define CFLAGS_GUI
+#define CFLAGS_GOOL_DEBUG
 #define GOD_MODE
 
 /* codes */
@@ -117,6 +117,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_TITLE
+#define LID_BOOTLEVEL         LID_RIPPERROO
 
 #endif /* _COMMON_H_ */

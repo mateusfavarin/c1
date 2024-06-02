@@ -1107,10 +1107,10 @@ int GoolObjectUpdate(gool_object *obj, int flag) {
         GoolObjectBound(obj); /* calculate bound */
 #ifdef CFLAGS_GOOL_DEBUG
       if (dbg->flags & GOOL_FLAG_PAUSED_TRANS) {}
-      else if (obj->tp) {
+      else if (obj->process.tp) {
         if (!(dbg->flags & GOOL_FLAG_RESTORED_TRANS)) { /* not resuming from trans block? */
           GoolObjectPushFrame(obj, 0, 0xFFFF);
-          obj->pc = obj->tp;
+          obj->process.pc = obj->process.tp;
         }
         else
           dbg->flags &= ~GOOL_FLAG_RESTORED_TRANS;
@@ -2313,7 +2313,7 @@ int GoolObjectTryBreak(gool_object *obj, uint32_t opcode, uint32_t flags, int re
     }
   }
   if (!brk) {
-    offs = (uint32_t)(obj->pc-(uint32_t*)obj->external->items[1]);
+    offs = (uint32_t)(obj->process.pc-(uint32_t*)obj->external->items[1]);
     mask = 0x80000000 >> (offs % 32);
     idx = offs/32;
     if (dbg->breakpoints[idx] & mask) { brk=1; }
@@ -3723,14 +3723,13 @@ extern char *GoolDisassemble(uint32_t, uint32_t);
 void GoolObjectPrint(gool_object *obj, FILE *stream) {
   gool_header *header;
   uint8_t *stack;
-  uint32_t fp, sp, base_sp, offs;
-  int i;
+  uint32_t fp, sp, base_sp, offs, i;
 
   header = (gool_header*)obj->global->items[0];
   base_sp = header->init_sp*4;
   stack = ((uint8_t*)&obj->process) + base_sp;
-  fp = (uint32_t)obj->fp - (uint32_t)stack;
-  sp = (uint32_t)obj->sp - (uint32_t)stack;
+  fp = (uint32_t)obj->process.fp - (uint32_t)stack;
+  sp = (uint32_t)obj->process.sp - (uint32_t)stack;
   // fprintf(stream, "stack start: %x+60\n", base_sp);
   // fprintf(stream, "stack size: %x\n", sp);
   // fprintf(stream, "stack frame: %x | %x\n", base_sp+fp, base_sp+sp);
@@ -3748,8 +3747,6 @@ void GoolObjectPrint(gool_object *obj, FILE *stream) {
     if (offs == 15)
       fprintf(stream, "\n");
   }
-  if (offs != 15)
-    fprintf(stream, "\n");
   fprintf(stream, "\n");
 }
 
@@ -3759,7 +3756,7 @@ void GoolObjectPrintDebug(gool_object *obj, FILE *stream) {
 
   GoolObjectPrint(obj, stream);
   code = (uint32_t*)obj->external->items[1];
-  pcins = (uint32_t)obj->pc - (uint32_t)code;
+  pcins = (uint32_t)obj->process.pc - (uint32_t)code;
   pcs = max(pcins - ((GOOL_DEBUG_DISLEN/2)*4), 0);
   pcn = pcs + (GOOL_DEBUG_DISLEN*4);
   // fprintf(stream, "current code window:\n");
@@ -3784,8 +3781,8 @@ static void GoolObjectPreserveFrames(gool_object *obj) {
 
   dbg = GoolObjectDebug(obj);
   if (!dbg) { return; }
-  dbg->prev_pc = obj->pc;
-  fp = obj->fp; sp = obj->sp;
+  dbg->prev_pc = obj->process.pc;
+  fp = obj->process.fp; sp = obj->process.sp;
   frame_count = 0;
   do {
     flags = *fp;
@@ -3794,7 +3791,7 @@ static void GoolObjectPreserveFrames(gool_object *obj) {
     fp = (uint32_t*)((uint8_t*)&obj->process + rfp);
     ++frame_count;
   } while (flags != 0xFFFF);
-  fp = obj->fp; sp = obj->sp;
+  fp = obj->process.fp; sp = obj->process.sp;
   i=0;
   for (i=frame_count-1;i>=0;i--) {
     frame = &dbg->frames[i];
@@ -3817,9 +3814,9 @@ static void GoolObjectPreserveFrames(gool_object *obj) {
     sp = (uint32_t*)((uint8_t*)&obj->process + rsp);
   }
   dbg->frame_count = frame_count;
-  obj->pc = pc;
-  obj->fp = fp;
-  obj->sp = sp;
+  obj->process.pc = pc;
+  obj->process.fp = fp;
+  obj->process.sp = sp;
 }
 
 static void GoolObjectRestoreFrames(gool_object *obj) {
@@ -3835,11 +3832,11 @@ static void GoolObjectRestoreFrames(gool_object *obj) {
       GoolObjectPush(obj, frame->argv[j]);
     GoolObjectPushFrame(obj, frame->argc, frame->flags);
     if ((int)frame->pc != -1)
-      *(obj->fp+1) = (uint32_t)frame->pc;
+      *(obj->process.fp+1) = (uint32_t)frame->pc;
     for (j=0;j<frame->len;j++)
       GoolObjectPush(obj, frame->data[j]);
   }
-  obj->pc = dbg->prev_pc;
+  obj->process.pc = dbg->prev_pc;
 }
 
 static gool_debug *GoolObjectDebugAlloc() {
@@ -3874,8 +3871,8 @@ gool_debug *GoolObjectDebug(gool_object *obj) {
   int i;
 
   dbg = 0;
-  if (obj->entity) {
-    id = obj->pid_flags >> 8;
+  if (obj->process.entity) {
+    id = obj->process.pid_flags >> 8;
     dbg = debug_cache.by_id[id];
     if (!dbg) {
       dbg = debug_cache.by_id[id] = GoolObjectDebugAlloc();

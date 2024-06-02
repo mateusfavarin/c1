@@ -1009,9 +1009,9 @@ void SwTransformZoneQuery(zone_query *query, void *ot, void **prims_tail) {
       else { u_vert.y = v_nbound.p2.y; }
       if ((ii/4)%2) { u_vert.z = v_nbound.p1.z; }
       else { u_vert.z = v_nbound.p2.z; }
-      u_vert.x -= (cam_trans.x >> 8);
-      u_vert.y -= (cam_trans.y >> 8);
-      u_vert.z -= (cam_trans.z >> 8);
+      u_vert.x -= (cam.trans.x >> 8);
+      u_vert.y -= (cam.trans.y >> 8);
+      u_vert.z -= (cam.trans.z >> 8);
       SwRotTransPers(&u_vert, &r_verts[ii], &zero, &ms_cam_rot, &params.screen, params.screen_proj);
     }
     color.r = 127+((type&1)*(subtype+1)*2);
@@ -1026,8 +1026,8 @@ void SwTransformZoneQuery(zone_query *query, void *ot, void **prims_tail) {
       prim->texid=-1;
       prim->flags=3;
       next=((poly4i**)ot)[0x7FE];
-      prim->next=next;
-      prim->type=3;
+      prim->prim.next=next;
+      prim->prim.type=3;
       ((poly4i**)ot)[0x7FE]=prim;
       *prims_tail+=sizeof(poly4i);
     }
@@ -1073,8 +1073,8 @@ void SwDrawWallMap(uint32_t *wall_bitmap, void *ot, void **prims_tail) {
   prim->texid=wallmap_image;
   prim->flags=3;
   next=((poly4i**)ot)[0x7FE];
-  prim->next=next;
-  prim->type=2;
+  prim->prim.next=next;
+  prim->prim.type=2;
   ((poly4i**)ot)[0x7FE]=prim;
   *prims_tail+=sizeof(poly4i);
 }
@@ -1096,9 +1096,9 @@ void SwTransformObjectBounds(gool_bound *bounds, int count, void *ot, void **pri
       else { u_vert.y = bound->bound.p2.y >> 8; }
       if ((ii/4)%2) { u_vert.z = bound->bound.p1.z >> 8; }
       else { u_vert.z = bound->bound.p2.z >> 8; }
-      u_vert.x -= (cam_trans.x >> 8);
-      u_vert.y -= (cam_trans.y >> 8);
-      u_vert.z -= (cam_trans.z >> 8);
+      u_vert.x -= (cam.trans.x >> 8);
+      u_vert.y -= (cam.trans.y >> 8);
+      u_vert.z -= (cam.trans.z >> 8);
       SwRotTransPers(&u_vert, &r_verts[ii], &zero, &ms_cam_rot, &params.screen, params.screen_proj);
     }
     color.r = 255;
@@ -1113,8 +1113,8 @@ void SwTransformObjectBounds(gool_bound *bounds, int count, void *ot, void **pri
       prim->texid=-1;
       prim->flags=3;
       next=((poly4i**)ot)[0x7FE];
-      prim->next=next;
-      prim->type=3;
+      prim->prim.next=next;
+      prim->prim.type=3;
       ((poly4i**)ot)[0x7FE]=prim;
       *prims_tail+=sizeof(poly4i);
     }
