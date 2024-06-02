@@ -714,7 +714,7 @@ static void GuiGrid(gui_item *item) {
   gui_item *it;
   gui_grid *grid;
   int rc, cc, ri, ci;
-  int tbl, i, idx;
+  int tbl;
 
   grid = item->g;
   rc = grid->row_count;

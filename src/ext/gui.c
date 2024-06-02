@@ -181,7 +181,7 @@ static gui_item *GuiReflScalar(refl_value *val) {
 }
 
 static gui_item *GuiReflGroup(gui_item **children, int flags) {
-  gui_item *item, *it, *content, *label;
+  gui_item *item, *it, *content;
   int i, once;
 
   if (!children) { return (gui_item*)-1; }
@@ -381,7 +381,7 @@ static gui_item *GuiMapObjField(refl_value *val, refl_path *path, void **mapped,
   char buff[64];
   gui_item *node, *item, **children;
   refl_value pval;
-  char *name, *typename;
+  char *typename;
   int i, count, label;
 
   for (i=0;i<9;i++) { /* skip rejected fields */
@@ -588,7 +588,7 @@ static gui_item *GuiObjCodeView(void *obj) {
 /** specific views **/
 static gui_item* GuiObjView(void*);
 static void GuiObjSelect(gui_item *item) {
-  gui_item *root, *old, *new;
+  gui_item *old, *new;
   gui_tree *tree;
   gool_handle *handle;
 
@@ -613,7 +613,6 @@ static gui_item *GuiObjTreeView(void *obj) {
 static gui_item *GuiObjView(void *obj) {
   gui_item *view, *top, *bot;
   gui_item *grid;
-  char str[0x1000];
 
   view = GuiWindowNew("object view");
   grid = GuiGridNew(1, 0);
@@ -629,12 +628,9 @@ static gui_item *GuiObjView(void *obj) {
 }
 
 static gui_item *GuiDebugView() {
-  gui_item *root, *text;
+  gui_item *root;
   gui_item *grid;
   gui_item *tree_view, *obj_view;
-  gui_item *tmp;
-  refl_value val;
-  void *obj;
 
   root = GuiWindowNew("debug view");
   grid = GuiGridNew(0, 1);
