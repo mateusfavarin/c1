@@ -172,7 +172,6 @@ static inline void ZoneTerminateDifference(entry *zone) {
   zone_header *cur_header, *header, *n_header;
   uint32_t i, ii, found;
 
-  if (!cur_zone) { return; }
   cur_header = (zone_header*)cur_zone->items[0];
   header = (zone_header*)zone->items[0];
   for (i = 0; i < cur_header->neighbor_count; i++) {
@@ -190,7 +189,7 @@ static inline void ZoneTerminateDifference(entry *zone) {
     n_header = (zone_header*)cur_neighbor->items[0];
     if (n_header->display_flags & 1) {
       GoolZoneObjectsTerminate(cur_neighbor);
-      n_header->display_flags &= 0xFFFFFFFC; /* clear bits 1 & 2 */
+      n_header->display_flags &= ~4; /* clear bit 3 */
     }
   }
 }
@@ -269,8 +268,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
       flag = 1;
       item_pool1 = 0;
       cur_header = 0;
-      if (game_state == GAME_STATE_TITLE)
-        flag = (flags & 2);
+      if (game_state == GAME_STATE_TITLE) { flag = (flags & 2); }
       if (cur_zone) {
         obj_zone = zone; /* TODO: where else is this used. 'next_zone'? */
         flag = flags & 2;
@@ -306,10 +304,8 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
           boxes_y = 0x19000;
           n_header->display_flags |= 3; /* set bits 1 and 2 */
         }
-        if (flag)
-          n_header->display_flags |= 4; /* set bit 3 */
-        else
-          n_header->display_flags &= ~4; /* clear bit 3 */
+        if (flag) { n_header->display_flags |= 4; } /* set bit 3 */
+        else { n_header->display_flags &= ~5; } /* clear bit 3 and 1 */
       }
       LevelUpdateMisc(&header->gfx, flags);
     }
@@ -497,7 +493,7 @@ void LevelRestart(level_state *state) {
       n_header = (zone_header*)neighbor->items[0];
       if (n_header->display_flags & 1) {
         GoolZoneObjectsTerminate(neighbor);
-        n_header->display_flags &= 0xFFFFFFFC;
+        n_header->display_flags &= ~4;
       }
     }
     NSZoneUnload(&header->loadlist);

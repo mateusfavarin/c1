@@ -66,18 +66,16 @@ typedef struct {
 } zone_gfx;
 
 typedef struct {
-  uint32_t world_count;
-  zone_world worlds[8];
-  uint32_t paths_idx;
-  uint32_t path_count;
-  uint32_t entity_count;
-  uint32_t neighbor_count;
-  eid_t neighbors[8];
-  ns_loadlist loadlist;
-  uint32_t display_flags;
-  union {
-    zone_gfx gfx;
-  };
+  uint32_t world_count; // 0x0
+  zone_world worlds[8]; // 0x4
+  uint32_t paths_idx; // 0x204
+  uint32_t path_count; // 0x208
+  uint32_t entity_count; // 0x20C
+  uint32_t neighbor_count; // 0x210
+  eid_t neighbors[8]; // 0x214
+  ns_loadlist loadlist; // 0x234
+  uint32_t display_flags; // 0x2DC
+  zone_gfx gfx; // 0x2E0
 } zone_header;
 
 typedef struct {

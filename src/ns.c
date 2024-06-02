@@ -1143,6 +1143,8 @@ int NSCountAvailablePages2(void *list, int len) {
   int i, ii, count;
 
   ref = (entry_ref**)list;
+  count = 0;
+  cache_size = 0;
   for (i=0;i<len;i++) {
     if ((*ref)->is_eid)
       pte = (*ref)->pte = NSProbe((*ref)->eid);

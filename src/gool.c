@@ -1760,12 +1760,12 @@ void GoolObjectPhysics(gool_object *obj) {
 
 //----- (8001FB20) --------------------------------------------------------
 // unreferenced; exists as inline code in GoolTranslateGop
-static inline int32_t GoolSignShift(uint32_t value, int bitlen) {
-  return (int32_t)(value << (32 - bitlen)) >> (32 - bitlen);
+static inline int32_t GoolSignShift(int32_t value, int lshift, int rshift) {
+  return (value << lshift) >> rshift;
 }
 
 // does not exist separately
-static inline uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_const_buf *consts) {
+static uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_const_buf *consts) {
   gool_object *link;
   int32_t val;
   uint32_t *data;
@@ -1779,52 +1779,48 @@ static inline uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_co
       data = (uint32_t*)obj->external->items[2]; /* reg ref */
     return &data[idx];
   }
-  else if (!(gop & 0x400)) {
+  if (!(gop & 0x400)) {
     if (!(gop & 0x200)) { /* int ref */
-      val = GoolSignShift(gop & 0x1FF, 9) << 8;
+      val = GoolSignShift(gop, 23, 15);
       consts->idx = !consts->idx;
       consts->buf[consts->idx] = val;
       return &consts->buf[consts->idx];
     }
     else if (!(gop & 0x100)) { /* frac ref */
-      val = GoolSignShift(gop & 0xFF, 8) << 4;
+      val = GoolSignShift(gop, 24, 20);
       consts->idx = !consts->idx;
       consts->buf[consts->idx] = val;
       return &consts->buf[consts->idx];
     }
     else if (!(gop & 0x80)) { /* var ref */
-      idx = GoolSignShift(gop & 0x3F, 6);
+      idx = GoolSignShift(gop, 25, 25);
       return &obj->process.fp[idx];
     }
     else if (gop == 0xBE0) /* null ref */
       return (uint32_t*)0;
     else if (gop == 0xBF0) /* sp-double ref */
       return (uint32_t*)0xBF0;
-    else /* invalid ref */
-      return (uint32_t*)1;
+    /* invalid ref */
+    return (uint32_t*)1;
   }
-  else { /* pool ref */
-    link_idx = (gop >> 6) & 0x7;
-    reg_idx = gop & 0x3F;
-    link = obj->process.links[link_idx];
-    if (link)
-      return &link->regs[reg_idx];
-    else
-      return (uint32_t*)0;
-  }
+  /* pool ref */
+  link_idx = (gop >> 6) & 0x7;
+  reg_idx = gop & 0x3F;
+  link = obj->process.links[link_idx];
+  if (link) { return &link->regs[reg_idx]; }
+  return (uint32_t*)0;
 }
 
-//----- (8001FB34) --------------------------------------------------------
+//----- (8001FB34) -------------------------------------------------------- [OK!]
 static uint32_t* GoolTranslateInGop(gool_object *obj, uint32_t gop) {
   int idx;
-  if ((gop & 0xFFF) == 0xE1F) /* stack pop */
-    return --obj->process.sp;
-  else if ((gop & 0xE00) == 0xE00) { /* stack ref */
+  if ((gop & 0xE00) == 0xE00) { /* stack ref */
+    /* stack pop */
+    if ((gop & 0xFFF) == 0xE1F) { return --obj->process.sp; }
     idx = gop & 0x1FF;
     return &obj->regs[idx];
   }
-  else /* other ref */
-    return GoolTranslateGop(obj, gop, &in_consts);
+  return GoolTranslateGop(obj, gop, &in_consts);
 }
 
 //----- (8001FC4C) --------------------------------------------------------
@@ -3243,6 +3239,7 @@ static inline void GoolOpReactSolidSurfaces(gool_object *obj, uint32_t instructi
   }
 }
 
+//----- (80024040) --------------------------------------------------------
 int GoolSendEvent(gool_object *sender, gool_object *recipient, uint32_t event, int argc, uint32_t *argv) {
   entry *exec;
   gool_header *header;
@@ -3254,9 +3251,11 @@ int GoolSendEvent(gool_object *sender, gool_object *recipient, uint32_t event, i
   uint32_t *code, flags;
   int res, i;
 
-  if (sender)
-    sender->process.misc_flag = !!recipient;
-  if (!recipient) { return SUCCESS; }
+  if (!recipient) {
+    if (sender) { sender->process.misc_flag = 0; }
+    return SUCCESS;
+  }
+  if (sender) { sender->process.misc_flag = 1; }
   recipient->process.gool_links.interrupter = sender;
   res = ERROR_INVALID_STATERETURN; /* set default (for when no ESR) */
   if (recipient->process.ep) { /* recipient has event service routine? */
