@@ -1340,7 +1340,7 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   page *pagemem;
   nsd_pte *pte, **buckets;
   page_struct *ps;
-  size_t nsd_size, pagemem_size;
+  size_t pagemem_size;
   char *nsf_filename, *nsd_filename;
   char filename[0x100];
   int i, idx, page_count, hash;
@@ -1367,7 +1367,6 @@ void NSInit(ns_struct *nss, uint32_t lid) {
   nss->ldat = (nsd_ldat*)&nsd->page_table[nsd->page_table_size];
   /* display loading screen */
   TitleLoading(lid, nss->ldat->image_data, nsd);
-  nsd_size = sizeof(nsd) + sizeof(nsd_pte)*nsd->page_table_size + sizeof(nsd_ldat);
   /* convert pte bucket relative offsets to absolute pointers */
   buckets = nss->pte_buckets;
   offsets = &nss->nsd->ptb_offsets[0];

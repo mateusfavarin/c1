@@ -1187,7 +1187,7 @@ void GoolObjectTransform(gool_object *obj) {
   mat16 *m_rot;
   gool_vectors *obj_vectors, *cam_vectors;
   uint32_t i;
-  int frame_idx, status_b, flag, flag2;
+  int frame_idx, status_b, flag;
   int res,far,shrink,size,x,offs;
   int *src,*dst;
   void *ot, **prims_tail;
@@ -1226,7 +1226,6 @@ void GoolObjectTransform(gool_object *obj) {
     m_rot = status_b & 0x200000 ? &ms_cam_rot: &ms_rot;
     header = (zone_header*)cur_zone->items[0];
     far = header->gfx.visibility_depth >> 8;
-    flag2 = (status_b & 0x40000)?0:1;
     res = SwCalcSpriteRotMatrix(
       obj_vectors,
       cam_vectors,
@@ -1265,7 +1264,6 @@ void GoolObjectTransform(gool_object *obj) {
     m_rot = &ms_rot;
     header = (zone_header*)cur_zone->items[0];
     far = header->gfx.visibility_depth >> 8;
-    flag2 = (status_b & 0x40000)?0:1;
     res = SwCalcSpriteRotMatrix(
       obj_vectors,
       cam_vectors,
@@ -2646,8 +2644,7 @@ void GoolOpMisc(gool_object *obj, uint32_t instruction) {
       break;
     }
     case 3:
-      *(ptr); /* unused */
-      break;
+      break; /* unused */
     case 4: { /* set object zone */
       gool_object *dst_obj;
       dst_obj = (gool_object*)(*ptr);

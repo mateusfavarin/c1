@@ -293,9 +293,7 @@ int SwCalcSpriteRotMatrix(
     trans.y = (obj_vectors->trans.y - cam_vectors->trans.y) >> 8;
     trans.z = (obj_vectors->trans.z - cam_vectors->trans.z) >> 8;
     SwRot(&trans, &params->trans, m_rot);
-    //if (trans.z <= depth
-    // || min(12000,max_depth?max_depth:12000) < trans.z)
-    //  return 0;
+    if (trans.z <= max_depth || 12000 < trans.z) { return 0; }
     rot.y = ((int32_t)(cam_vectors->rot.y << 21)) >> 21;
     rot.x = ((int32_t)(cam_vectors->rot.x << 21)) >> 21;
     rot.z = ((int32_t)(cam_vectors->rot.z << 20)) >> 20;
