@@ -123,6 +123,10 @@ void CoreLoop(lid_t lid) {
   LevelInitGlobals();
   NSInit(&ns, lid);
   CoreObjectsCreate();
+#ifdef GOD_MODE
+  levels_unlocked = 99;
+  item_pool2 = (1 << 10) | (1 << 20);
+#endif // GOD_MODE
   do {
     lid = ns.ldat->lid;
     is_pause_lid = lid != LID_TITLE && lid != LID_LEVELEND && lid != LID_INTRO;

@@ -345,7 +345,11 @@ void LevelInitGlobals() {
   title_state = 7;
   sfx_vol = 255;
   mus_vol = 255;
+#ifdef GOD_MODE
+  init_life_count = (999 << 8);
+#else
   init_life_count = (4 << 8);
+#endif // GOD_MODE
   dword_800618E0 = 0;
   dword_8006190C = 0;
   mono = 0;
@@ -371,9 +375,11 @@ void LevelResetGlobals(int flag) {
   cortex_count = 0;
   brio_count = 0;
   tawna_count = 0;
+#ifndef GOD_MODE
   levels_unlocked = 1;
   item_pool1 = 0;
   item_pool2 = 0;
+#endif // GOD_MODE
   is_first_zone = 1;
   cur_map_level = 99;
   level_count = 1;

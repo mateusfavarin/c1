@@ -11,6 +11,7 @@
 //#define CFLAGS_DRAW_EXTENSIONS
 //#define CFLAGS_GUI
 //#define CFLAGS_GOOL_DEBUG
+#define GOD_MODE
 
 /* codes */
 #define SUCCESS                   -255
