@@ -426,6 +426,26 @@ static void GuiTreeSync(gui_item *item) {
 
 const ImVec2 def_size = { 0, 0 };
 
+static bool GetTooltipText(char *str, char *label, char *tooltip) {
+  int i, ii;
+  bool has_tooltip;
+
+  i = 0;
+  ii = 0;
+  has_tooltip = 0;
+  for (;; str++) {
+    if (!has_tooltip && *str == '\n') {
+      has_tooltip = 1;
+      label[i] = '\0';
+      continue;
+    }
+    if (has_tooltip) { tooltip[ii++] = *str; }
+    else { label[i++] = *str; }
+    if (*str == '\0') { break; }
+  }
+  return has_tooltip;
+}
+
 static void GuiWindow(gui_item *item) {
   gui_item *it;
   char *name;
@@ -481,20 +501,23 @@ static void GuiTextUpdate(gui_text *text) {
 }
 
 static void GuiText(gui_item *item) {
-  char *label;
+  char label[64], tooltip[64];
+  bool has_tooltip = false;
 
   GuiTextUpdate(item->t);
-  label = item->label ? item->label->str : "";
-  if (item->flags & GUI_FLAGS_READONLY) {
-    if (!label)
-      igText(item->t->str);
-    else
-      igLabelText(label, item->t->str);
+  label[0] = '\0';
+  if (item->label) {
+    has_tooltip = GetTooltipText(item->label->str, label, tooltip);
   }
-  else if (!(item->flags & GUI_FLAGS_MULTILINE))
-    igInputText(label, item->t->str, item->t->maxlen, 0, 0, 0);
-  else
-    igInputTextMultiline(label, item->t->str, item->t->maxlen, def_size, 0, 0, 0);
+  if (item->flags & GUI_FLAGS_READONLY) {
+    if (!label[0]) { igText(item->t->str); }
+    else { igLabelText(label, item->t->str); }
+  }
+  else if (!(item->flags & GUI_FLAGS_MULTILINE)) { igInputText(label, item->t->str, item->t->maxlen, ImGuiInputTextFlags_EnterReturnsTrue, 0, 0); }
+  else { igInputTextMultiline(label, item->t->str, item->t->maxlen, def_size, ImGuiInputTextFlags_EnterReturnsTrue, 0, 0); }
+  if (has_tooltip && igIsItemHovered(ImGuiHoveredFlags_None)) {
+    igSetTooltip(tooltip);
+  }
 }
 
 static void GuiButton(gui_item *item) {
@@ -509,13 +532,16 @@ static void GuiButton(gui_item *item) {
 static void GuiScalar(gui_item *item) {
   ImGuiDataType data_type;
   gui_scalar *scalar;
-  void *p_data, *p_step, *p_min, *p_max;
-  char *label, *fmt;
+  void *p_data, *p_min, *p_max;
+  char *fmt, label[64], tooltip[64];
+  bool has_tooltip = false;
 
   scalar = item->s;
-  label = item->label ? item->label->str : "";
+  label[0] = '\0';
+  if (item->label) {
+    has_tooltip = GetTooltipText(item->label->str, label, tooltip);
+  }
   p_data = scalar->data;
-  p_step = &scalar->step;
   fmt = scalar->ptype->fmt;
   p_min = (void*)&scalar->vmin;
   p_max = (void*)&scalar->vmax;
@@ -524,34 +550,38 @@ static void GuiScalar(gui_item *item) {
     p_max = (void*)&scalar->ptype->vmax;
   }
   data_type = GuiIgType(scalar->ptype);
-  if (scalar->type == 0) /* input */
-    igInputScalar(label, data_type, p_data, p_step, 0, fmt, 0);
-  else if (scalar->type == 1) /* drag */
-    igDragScalar(label, data_type, p_data, 1.0, p_min, p_max, fmt, 0);
-  else if (scalar->type == 2) /* slider */
-    igSliderScalar(label, data_type, p_data, p_min, p_max,  fmt, 0);
+  if (scalar->type == 0) { igInputScalar(label, data_type, p_data, 0, 0, fmt, ImGuiInputTextFlags_EnterReturnsTrue); }
+  else if (scalar->type == 1) { igDragScalar(label, data_type, p_data, 1.0, p_min, p_max, fmt, ImGuiInputTextFlags_EnterReturnsTrue); }
+  else if (scalar->type == 2) { igSliderScalar(label, data_type, p_data, p_min, p_max, fmt, ImGuiInputTextFlags_EnterReturnsTrue); }
+  if (has_tooltip && igIsItemHovered(ImGuiHoveredFlags_None)) {
+    igSetTooltip(tooltip);
+  }
 }
 
 static void GuiList(gui_item *item) {
   gui_list *list;
   gui_item *it;
-  char *label;
+  char label[64], tooltip[64];
+  bool has_tooltip = false;
   int res;
 
   list = item->l;
-  label = item->label ? item->label->str : 0;
+  label[0] = '\0';
+  if (item->label) {
+    has_tooltip = GetTooltipText(item->label->str, label, tooltip);
+  }
   res = 0;
   if (list->type == 0) /* list box */
     res = igBeginListBox(label, def_size);
   else if (list->type == 1) /* combo box */
     res = igBeginCombo(label, 0, 0);
-  for (it=item->child;it;it=it->next)
-    GuiItem(it);
+  for (it = item->child; it; it = it->next) { GuiItem(it); }
   if (!res) { return; }
-  if (list->type == 0)
-    igEndListBox();
-  else if (list->type == 1)
-    igEndCombo();
+  if (list->type == 0) { igEndListBox(); }
+  else if (list->type == 1) { igEndCombo(); }
+  if (has_tooltip && igIsItemHovered(ImGuiHoveredFlags_None)) {
+    igSetTooltip(tooltip);
+  }
 }
 
 ImGuiTableFlags table_flags =
@@ -635,23 +665,27 @@ static void GuiTree(gui_item *item) {
 
 static void GuiColor(gui_item *item) {
   gui_color *color;
-  char *label;
+  char label[64], tooltip[64];
+  bool has_tooltip = false;
   int i;
 
   color = item->c;
-  label = item->label ? item->label->str : "";
-  if (color->unparse)
-    color->unparse(color->data, color->value);
+  label[0] = '\0';
+  if (item->label) {
+    has_tooltip = GetTooltipText(item->label->str, label, tooltip);
+  }
+  if (color->unparse) { color->unparse(color->data, color->value); }
   else {
-    for (i=0;i<3;i++)
-      color->value[i] = ((float*)color->data)[i];
+    for (i = 0; i < 3; i++) { color->value[i] = ((float*)color->data)[i]; }
   }
   igColorEdit3(label, color->value, 0);
-  if (color->parse)
-    color->parse(color->value, color->data);
+  if (color->parse) { color->parse(color->value, color->data); }
   else {
     for (i=0;i<3;i++)
       ((float*)color->data)[i] = color->value[i];
+  }
+  if (has_tooltip && igIsItemHovered(ImGuiHoveredFlags_None)) {
+    igSetTooltip(tooltip);
   }
 }
 
