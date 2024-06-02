@@ -114,7 +114,7 @@ typedef struct _refl_typelist {
 } refl_typelist;
 
 typedef int (*refl_visit_t)(refl_value*, refl_path *path, int leaf);
-typedef void* (*refl_map_t)(refl_value*, refl_path *path, void** mapped);
+typedef void* (*refl_map_t)(refl_value*, refl_path *path, void** mapped, void *data);
 
 extern void ReflInit(refl_type **types); /* remaining init for statically initialized types and fields */
 /* type and field metadata */

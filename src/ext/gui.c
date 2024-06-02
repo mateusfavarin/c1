@@ -366,7 +366,6 @@ static gui_item *GuiReflBound(gui_item **children) {
 }
 
 static gui_item *GuiReflObjPtr(refl_value *val) {
-  gool_object *obj;
   gui_item *item;
 
   item = GuiTextNew(0, 0);
@@ -376,9 +375,10 @@ static gui_item *GuiReflObjPtr(refl_value *val) {
   return item;
 }
 
-static gui_item *GuiMapObjField(refl_value *val, refl_path *path, void **mapped) {
+static gui_item *GuiMapObjField(refl_value *val, refl_path *path, void **mapped, void *data) {
   const char *rnames[9] = { "data", "regs", "memory",
     "colors_i", "vectors_v", "vectors_a", "l", "c", "a" };
+  char buff[64];
   gui_item *node, *item, **children;
   refl_value pval;
   char *name, *typename;
@@ -424,15 +424,15 @@ static gui_item *GuiMapObjField(refl_value *val, refl_path *path, void **mapped)
     item = GuiReflBound(children);
   else {
     node = GuiReflNode(children);
-    if (label)
-      GuiAddLabel(node, val->field->name);
+    if (label) { GuiAddLabel(node, val->field->name); }
     return node;
   }
   node = GuiNodeNew(0,0);
   item->flags |= GUI_FLAGS_NODE_CONTENT;
   GuiAddChild(node, item);
-  if (label)
-    GuiAddLabel(node, val->field->name);
+  strcpy(buff, val->field->name);
+  sprintf(buff, "%s\n[%X]", buff, ((int)data) + val->offset);
+  if (label) { GuiAddLabel(node, buff); }
   return node;
 }
 

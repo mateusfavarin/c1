@@ -186,7 +186,6 @@ gui_item *GuiGroupNew() {
 
 gui_item *GuiTextNew(char *str, char *label) {
   gui_item *item;
-  int len;
 
   item = GuiItemNew();
   item->type = text;
@@ -541,6 +540,7 @@ static void GuiList(gui_item *item) {
 
   list = item->l;
   label = item->label ? item->label->str : 0;
+  res = 0;
   if (list->type == 0) /* list box */
     res = igBeginListBox(label, def_size);
   else if (list->type == 1) /* combo box */

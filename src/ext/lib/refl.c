@@ -1014,7 +1014,7 @@ static void ReflPathPop(refl_path *path) {
 }
 
 typedef int (*refl_visit_t)(refl_value*, refl_path *path, int leaf);
-typedef void* (*refl_map_t)(refl_value*, refl_path *path, void **mapped);
+typedef void* (*refl_map_t)(refl_value*, refl_path *path, void **mapped, void *data);
 
 #define REFL_CONTEXT \
 void *data; \
@@ -1082,7 +1082,7 @@ static void *ReflTraverseC(refl_context *context) {
   context->value = value;
   context->leaf = leaf; /* restore old leaf flag */
   if (map) /* map callback? */
-    mapres = (*map)(&value, path, mapped); /* pass value,path,mapped children */
+    mapres = (*map)(&value, path, mapped, data); /* pass value,path,mapped children */
   if (!leaf && free_mapped) { /* non-leaf and non-array? */
     free(mapped); /* free the array of mapped children (but not the children themselves) */
     context->mapped = 0;

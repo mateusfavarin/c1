@@ -27,6 +27,7 @@ typedef enum {
   node = 8,
   color = 9,
   grid = 10,
+  tooltip = 11,
 } gui_type;
 
 typedef union {
