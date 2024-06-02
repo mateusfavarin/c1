@@ -99,12 +99,12 @@ static int GuiUnparseObjPtr(void *data, char *str) {
     id = entity->id;
     type = entity->type;
     eid_str = NSEIDToString(((entry*)ns.ldat->exec_map[type])->eid);
-    sprintf(str, "%i (%s)", id, eid_str);
+    sprintf(str, "%i (%s) [%X]", id, eid_str, (int)obj);
   }
   else if ((exec = obj->external) || (exec = obj->global)) {
     eid_str = NSEIDToString(exec->eid);
     subtype = obj->process.subtype;
-    sprintf(str, "%s (subtype %i)", eid_str, subtype);
+    sprintf(str, "%s (subtype %i) [%X]", eid_str, subtype, (int)obj);
   }
   else {
     sprintf(str, "unknown @%08x", (uint32_t)obj);
