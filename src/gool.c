@@ -1998,6 +1998,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
   dbg = GoolObjectDebug(obj);
   if (dbg && ((dbg->flags & GOOL_FLAGS_PAUSED)==GOOL_FLAGS_PAUSED)) { return SUCCESS; } /* paused */
 #endif
+  recipient = NULL;
   while (1) {
 #ifdef CFLAGS_GOOL_DEBUG
     if (dbg) { dbg->obj_prev = *obj; }
@@ -2237,11 +2238,11 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
       GoolOpJumpAndLink(obj,instruction,&flags);
       break;
     case 0x87:
-    case 0x90: {
+    case 0x90:
       uint32_t idx;
       idx = (instruction >> 21) & 0x7;
       recipient = obj->process.links[idx];
-    } /* fall through!!! */
+      /* fall through!!! */
     case 0x8F:
       res = GoolOpSendEvent(obj,instruction,&flags,recipient,opcode);
       break;
@@ -2784,7 +2785,9 @@ int GoolOpControlFlow(gool_object *obj, uint32_t instruction, uint32_t *flags, g
   else if (op_type == 1) { /* state change */
     state_idx = instruction & 0x3FFF;
     state = (gool_state*)obj->global->items[4] + state_idx;
-    if (obj->process.invincibility_state >= 2 && obj->process.invincibility_state <= 4)
+    if (obj->process.invincibility_state == 2 ||
+        obj->process.invincibility_state == 3 ||
+        obj->process.invincibility_state == 4)
       test = (obj->process.status_c | 0x1002) & state->flags;
     else
       test = obj->process.status_c & state->flags;
@@ -3028,8 +3031,7 @@ int GoolOpSendEvent(gool_object *obj, uint32_t instruction, uint32_t *flags, goo
     else if (opcode == 0x90)
       GoolSendToColliders2(obj, recipient, event, mode, argc, argv);
   }
-  else
-    obj->process.misc_flag = 0;
+  else { obj->process.misc_flag = 0; }
   if (obj->process.status_a & GOOL_FLAG_KEEP_EVENT_STACK) { /* if object has since changed state (as a result of the event) */
     if (*flags & GOOL_FLAG_SUSPEND_ON_RETLNK)
       return SUCCESS;

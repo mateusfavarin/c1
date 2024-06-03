@@ -40,9 +40,9 @@ typedef struct {
   int cur_map_level;
   uint32_t dword_800618E0;
   uint32_t dword_800618E4;
-  uint32_t dowrd_800618E8;
-  int life_count;
-  uint32_t health;
+  uint32_t dword_800618E8;
+  int life_count; // 0x800618EC
+  uint32_t health; // 0x800618F0
   int fruit_count;
   int cortex_count;
   int brio_count;
@@ -139,8 +139,8 @@ extern gool_globals globals;
 #define saved_title_state globals.saved_title_state
 #define cur_map_level globals.cur_map_level
 #define dword_800618E0 globals.dword_800618E0
-#define life_count globals.life_count
-#define health globals.health
+#define life_count globals.life_count // 0x800618EC
+#define health globals.health // 0x800618F0
 #define fruit_count globals.fruit_count
 #define cortex_count globals.cortex_count
 #define brio_count globals.brio_count
