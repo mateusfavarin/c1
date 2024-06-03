@@ -117,6 +117,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_CORTEXPOWER
+#define LID_BOOTLEVEL         LID_HOGWILD
 
 #endif /* _COMMON_H_ */

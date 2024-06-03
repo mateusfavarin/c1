@@ -1758,8 +1758,8 @@ void GoolObjectPhysics(gool_object *obj) {
 
 //----- (8001FB20) --------------------------------------------------------
 // unreferenced; exists as inline code in GoolTranslateGop
-static inline int32_t GoolSignShift(int32_t value, int lshift, int rshift) {
-  return (value << lshift) >> rshift;
+static inline int32_t GoolSignShift(uint32_t value, int bitlen) {
+  return (int32_t)(value << (32 - bitlen)) >> (32 - bitlen);
 }
 
 // does not exist separately
@@ -1779,19 +1779,19 @@ static uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_const_buf
   }
   if (!(gop & 0x400)) {
     if (!(gop & 0x200)) { /* int ref */
-      val = GoolSignShift(gop, 23, 15);
+      val = GoolSignShift(gop & 0x1FF, 9) << 8;
       consts->idx = !consts->idx;
       consts->buf[consts->idx] = val;
       return &consts->buf[consts->idx];
     }
     else if (!(gop & 0x100)) { /* frac ref */
-      val = GoolSignShift(gop, 24, 20);
+      val = GoolSignShift(gop & 0xFF, 8) << 4;
       consts->idx = !consts->idx;
       consts->buf[consts->idx] = val;
       return &consts->buf[consts->idx];
     }
     else if (!(gop & 0x80)) { /* var ref */
-      idx = GoolSignShift(gop, 25, 25);
+      idx = GoolSignShift(gop & 0x3F, 6);
       return &obj->process.fp[idx];
     }
     else if (gop == 0xBE0) /* null ref */

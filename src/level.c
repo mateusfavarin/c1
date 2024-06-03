@@ -305,7 +305,7 @@ void LevelUpdate(entry *zone, zone_path *path, int32_t progress, uint32_t flags)
           n_header->display_flags |= 3; /* set bits 1 and 2 */
         }
         if (flag) { n_header->display_flags |= 4; } /* set bit 3 */
-        else { n_header->display_flags &= ~5; } /* clear bit 3 and 1 */
+        else { n_header->display_flags &= ~4; } /* clear bit 3 and 1 */
       }
       LevelUpdateMisc(&header->gfx, flags);
     }
