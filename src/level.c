@@ -189,7 +189,7 @@ static inline void ZoneTerminateDifference(entry *zone) {
     n_header = (zone_header*)cur_neighbor->items[0];
     if (n_header->display_flags & 1) {
       GoolZoneObjectsTerminate(cur_neighbor);
-      n_header->display_flags &= ~4; /* clear bit 3 */
+      n_header->display_flags &= ~3; /* clear bit 2 and 1 */
     }
   }
 }
@@ -499,7 +499,7 @@ void LevelRestart(level_state *state) {
       n_header = (zone_header*)neighbor->items[0];
       if (n_header->display_flags & 1) {
         GoolZoneObjectsTerminate(neighbor);
-        n_header->display_flags &= ~4;
+        n_header->display_flags &= ~3;
       }
     }
     NSZoneUnload(&header->loadlist);
