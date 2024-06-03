@@ -9,10 +9,10 @@ typedef struct {
 } sw_pad_mapping;
 
 const sw_pad_mapping pad_mappings[] = {
-  { .code = SDLK_SPACE,      .bits = PAD_SELECT   },
-  { .code = SDLK_1,          .bits = PAD_L3       },
-  { .code = SDLK_3,          .bits = PAD_R3       },
-  { .code = SDLK_RETURN,     .bits = PAD_START    },
+  { .code = SDLK_o,          .bits = PAD_SELECT   },
+  { .code = SDLK_k,          .bits = PAD_L3       },
+  { .code = SDLK_l,          .bits = PAD_R3       },
+  { .code = SDLK_p,          .bits = PAD_START    },
   { .code = SDLK_UP+0x80,    .bits = PAD_UP       },
   { .code = SDLK_RIGHT+0x80, .bits = PAD_RIGHT    },
   { .code = SDLK_DOWN+0x80,  .bits = PAD_DOWN     },

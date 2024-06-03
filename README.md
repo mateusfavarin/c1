@@ -51,7 +51,9 @@ The game is hardcoded to boot into level `25` (aka. title sequence/main menu scr
 
 ## Controls ##
 
-- X - <kbd>Z</kbd>
+SDL controller is supported but it's hardcoded for PS4 buttons. Keyboard is supported with the following bindings:
+
+- cross - <kbd>Z</kbd>
 - square - <kbd>X</kbd>
 - circle - <kbd>C</kbd>
 - triangle - <kbd>V</kbd>
@@ -59,12 +61,14 @@ The game is hardcoded to boot into level `25` (aka. title sequence/main menu scr
 - R1 - <kbd>S</kbd>
 - L2 - <kbd>Q</kbd>
 - R2 - <kbd>W</kbd>
+- L3 - <kbd>K</kbd>
+- R3 - <kbd>L</kbd>
+- start - <kbd>O</kbd>
+- select - <kbd>P</kbd>
 - d-pad up - <kbd>&#8593;</kbd>
 - d-pad down - <kbd>&#8595;</kbd>
 - d-pad left - <kbd>&#8592;</kbd>
 - d-pad right - <kbd>&#8594;</kbd>
-- start - <kbd>Enter</kbd>
-- select - <kbd>Space</kbd>
 - toggle in-game GUI - <kbd>Esc</kbd>
 - toggle in-game GUI keyboard focus - <kbd>Tab</kbd>
 
