@@ -4,13 +4,11 @@
 
 - colors are slightly different from psx (map differently?)
 - a few sfx are very loud and distorted (ex. warp sound, also when entering a bonus round)
-- in some instances, game transitions occur too early (ex. game immediately jumps to win level screen when player lands on a warp platform, without playing either of crash's 'win level' animation sequences; some death sequences are cut short)
 - main death sequence camera behavior is incorrect
 - title sequence background images become too bright in some instances
 - it is sometimes (but rarely) possible to jump in mid-air when beside walls
 - demo mode does not function correctly
 - attempting to enter any title state other than the map from the main menu ultimately results in the game entering an infinite loop and/or crashing
-- compiling with optimization flags causes the game to behave differently (aside from performance improvements)
 - tree change tracking implementation is broken
 
 ## Per-level
@@ -18,7 +16,7 @@
 ### Map
 
 - camera is incorrect
-- textures fail to load in some instances
+- textures fail to load when constantly exiting the game and starting a new one
 
 ### N. Sanity Beach
 
@@ -38,7 +36,6 @@
 
 ### Hog Wild
 
-- crash skips the 'look back at camera and then jump on hog' animation sequence that typically begins hog levels
 - player angle isn't locked after a respawn from a checkpoint
 - some wumpas remain on screen
 
@@ -107,10 +104,12 @@
 ### N. Brio
 
 - N. Brio never transitions from his initial state
+- Brio's enemies disappear when jumping - potentially the same problem in Roo?
 
 ### The Lab
 
-- game crashes when dying in certain zones
+- game crashes when dying in certain zones:
+    * dying in the hole (first yellow enemy room) crashes the game
 
 ### The Great Hall
 
