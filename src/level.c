@@ -570,6 +570,15 @@ static inline int TestPointInRect(rect *r, vec *v) {
        && v->z <= (r->loc.z + (int32_t)r->dim.d) << 8);
 }
 
+static inline int TestPointInRect2(rect *r, vec *v) {
+  return (v->x >= r->loc.x
+    && v->y >= r->loc.y
+    && v->z >= r->loc.z
+    && v->x <= (r->loc.x + (int32_t)r->dim.w)
+    && v->y <= (r->loc.y + (int32_t)r->dim.h)
+    && v->z <= (r->loc.z + (int32_t)r->dim.d));
+}
+
 /*
 int sub_80026ADC(unk_struct *s, vec *v) {
   rect *r;
@@ -663,26 +672,27 @@ uint16_t ZoneFindNode(zone_rect *zone_rect, uint16_t root, rect _rect, vec *va, 
     /* point of intersection is now in -opposite- direction of B from A */
     /* get pt of intersection of N and the ray R2=(A-B)+Bt */
     /* find corner of N nearest to the pt */
-    corner.x = _rect.loc.x + (int32_t)(vb->x<0?_rect.dim.w:0);
-    corner.y = _rect.loc.y + (int32_t)(vb->y<0?_rect.dim.h:0);
-    corner.z = _rect.loc.z + (int32_t)(vb->z<0?_rect.dim.d:0);
+    corner.x = _rect.loc.x + (int32_t)(vb->x < 0 ? _rect.dim.w : 0);
+    corner.y = _rect.loc.y + (int32_t)(vb->y < 0 ? _rect.dim.h : 0);
+    corner.z = _rect.loc.z + (int32_t)(vb->z < 0 ? _rect.dim.d : 0);
     /* plug the ray eq into the plane eqs for nearest 3 faces of N */
     /* and solve for the *furthest* t (nearest in opposite direction) */
     /* i.e. C=(A-B)+Bt => tn=(Cn-(An-Bn))/Bn => t=max(ti) */
     t = -0x80000000; /* INT_MIN */
+    i = 0;
     if (vb->x) {
-      tx = ((corner.x-(va->x-vb->x))<<8)/vb->x;
-      if (tx>t) { t = tx; i = 0; }
+      tx = ((corner.x - (va->x - vb->x)) << 8) / vb->x;
+      if (tx > t) { t = tx; i = 0; }
     }
     if (vb->z) {
-      tz = ((corner.z-(va->z-vb->z))<<8)/vb->z;
+      tz = ((corner.z - (va->z - vb->z)) << 8) / vb->z;
       if (tz>t || abs(vb->x) < abs(vb->z)) { t = tz; i = 2; }
     }
     if (vb->y) {
-      ty = ((corner.y-(va->y-vb->y))<<8)/vb->y;
-      if (ty>t
+      ty = ((corner.y - (va->y - vb->y))<<8) / vb->y;
+      if (ty > t
        || (i==0 && abs(vb->x) < abs(vb->y))
-       || (i==2 && abs(vb->z) < abs(vb->y))) { t = ty; i = 1; }
+       || (i==2 && abs(vb->z) < abs(vb->y))) { i = 1; }
     }
     /* project A to the nearest face
       x
@@ -716,11 +726,11 @@ uint16_t ZoneFindNode(zone_rect *zone_rect, uint16_t root, rect _rect, vec *va, 
     for (i=0;i<((level<tree->max_depth_x)?2:1);i++) {
       for (j=0;j<((level<tree->max_depth_y)?2:1);j++) {
         for (k=0;k<((level<tree->max_depth_z)?2:1);k++) {
-          child_rect.loc.x = _rect.loc.x + (int32_t)(i?child_rect.dim.w:0);
-          child_rect.loc.y = _rect.loc.y + (int32_t)(j?child_rect.dim.h:0);
-          child_rect.loc.z = _rect.loc.z + (int32_t)(k?child_rect.dim.d:0);
+          child_rect.loc.x = _rect.loc.x + (int32_t)(i ? child_rect.dim.w : 0);
+          child_rect.loc.y = _rect.loc.y + (int32_t)(j ? child_rect.dim.h : 0);
+          child_rect.loc.z = _rect.loc.z + (int32_t)(k ? child_rect.dim.d : 0);
           child_node = child_nodes[idx++];
-          if (TestPointInRect(&child_rect, va)) {
+          if (TestPointInRect2(&child_rect, va)) {
             res = ZoneFindNode(zone_rect, child_node, child_rect, va, vb, level+1);
             if (res) { return res; }
           }
@@ -786,8 +796,7 @@ uint16_t ZoneReboundVector(vec *va, vec *vb) {
     _rect.w<<=8;_rect.h<<=8;_rect.d<<=8;
     root = z_rect->octree.root;
     node = ZoneFindNode(z_rect, root, _rect, va, vb, 0);
-    if (node)
-      return node;
+    if (node) { return node; }
   }
 }
 

@@ -204,24 +204,24 @@ typedef struct {
     vec vectors_v[6];
     ang vectors_a[6];
   }; // 0x20
-  uint32_t status_a;
-  uint32_t status_b;
-  uint32_t status_c;
-  uint32_t subtype;
-  uint32_t pid_flags;
-  uint32_t *sp;
-  uint32_t *pc;
-  uint32_t *fp;
-  uint32_t *tp;
-  uint32_t *ep;
-  uint32_t *once_p;
+  uint32_t status_a; // 0x68
+  uint32_t status_b; // 0x6C
+  uint32_t status_c; // 0x70
+  uint32_t subtype; // 0x74
+  uint32_t pid_flags; // 0x78
+  uint32_t *sp; // 0x7C
+  uint32_t *pc; // 0x80
+  uint32_t *fp; // 0x84
+  uint32_t *tp; // 0x88
+  uint32_t *ep; // 0x8C
+  uint32_t *once_p; // 0x90
   union {
     uint32_t misc_flag;
     struct _gool_object *misc_child;
     uint32_t misc_node;
     entry *misc_entry;
     uint32_t misc_memcard;
-  };
+  }; // 0x94
   uint32_t ack;
   uint32_t anim_stamp;
   uint32_t state_stamp;

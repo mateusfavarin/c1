@@ -3217,8 +3217,8 @@ static inline void GoolOpReactSolidSurfaces(gool_object *obj, uint32_t instructi
   case 3:
   case 4:
   case 5:
-    flag1 = 0; flag2 = 0;
-    if (sop == 3 || sop == 4) { flag1 = 1; }
+    flag1 = 1; flag2 = 0;
+    if (sop == 5 || sop == 4) { flag1 = 0; }
     if (sop == 3 || sop == 5) { flag2 = 1; }
     trans3 = obj->process.vectors.trans;
     zone = obj->zone ? obj->zone : cur_zone;
@@ -3227,7 +3227,7 @@ static inline void GoolOpReactSolidSurfaces(gool_object *obj, uint32_t instructi
       flags = flag2 ? 6 : 2;  /* flags identify the quadrant to test */
     else
       flags = flag2 ? 5 : 1;
-    ZoneFindNearestObjectNode3(obj, &trans3, flags, !flag1);
+    ZoneFindNearestObjectNode3(obj, &trans3, flags, flag1);
     if (G_OPB(instruction) != 0xBE0)
       *v_out1 = trans4; /* unused? orig impl seems to store garbage if vec_out1 is used */
     *v_out2 = trans3;

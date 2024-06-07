@@ -82,8 +82,6 @@
 
 ### Pinstripe
 
-- gun bullets do not do any damage to Crash
-
 ### The High Road
 
 ### Slippery Climb
