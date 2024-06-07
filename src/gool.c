@@ -205,7 +205,7 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
   uint32_t status_a, status_b;
   vec *trans, *zone_loc, loc_next, dist_obj, dot, dir;
   zone_entity_path_point *path_pt, *next_pt; // $a0
-  uint32_t dist_xz;
+  int32_t dist_xz;
   int32_t x, z, proj, proj_part;
 
   zone_loc = NULL;
@@ -257,13 +257,13 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
     dist_xz = sqrt((dir.x>>8)*(dir.x>>8)+((dir.z>>8)*(dir.z>>8)));
     if (dist_xz == 0) { return CODE_ERROR; }
     /* compute A */
-    dist_obj.x = trans->x-loc->x;
-    dist_obj.z = trans->z-loc->z;
+    dist_obj.x = trans->x - loc->x;
+    dist_obj.z = trans->z - loc->z;
     /* compute the components which contribute to the sum of A . B */
     dot.x = (dist_obj.x>>4)*(dir.x>>4);
     dot.z = (dist_obj.z>>4)*(dir.z>>4);
     /* compute the scalar projection: (A . B) / ||B||^2 */
-    proj = (dot.x+dot.z)/((int32_t)dist_xz*(int32_t)dist_xz);
+    proj = (dot.x+dot.z)/(dist_xz*dist_xz);
     if (proj >= 0x100) { /* too far of a corresponding change in progress? */
       idx_next = idx+1;
       if (idx < path_length-1)
@@ -273,16 +273,14 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
        [compute the vector projection in the order:
        ((A . B) / ||B||) x (B / ||B||)
        to avoid precision errors] */
-    proj_part = ((dot.x + dot.z)/(int32_t)dist_xz);
-    x = abs((((proj_part>>4)*(dir.x>>4))/(int32_t)dist_xz) - dist_obj.x);
-    z = abs((((proj_part>>4)*(dir.z>>4))/(int32_t)dist_xz) - dist_obj.z);
+    proj_part = ((dot.x + dot.z)/dist_xz);
+    x = abs((((proj_part>>4)*(dir.x>>4))/dist_xz) - dist_obj.x);
+    z = abs((((proj_part>>4)*(dir.z>>4))/dist_xz) - dist_obj.z);
     /* do a sort of manhattan distance calc
        is this moment of inertia? */
-    if (z<x)
-      obj->process.vectors.misc_c.y = x + z/2;
-    else
-      obj->process.vectors.misc_c.y = z + x/2;
-    if (obj->process.vectors.misc_c.y > obj->process._154 || proj >= 0x100 || idx == 0) {
+    if (z < x) { obj->process.vectors.misc_c.y = x + z / 2; }
+    else { obj->process.vectors.misc_c.y = z + x / 2; }
+    if (obj->process.vectors.misc_c.y > obj->process._154 || proj >= 0x100 || (proj < 0 && idx == 0)) {
       obj->process.status_a |= 0x200;
     }
     if (dir.z*(trans->x>>8)-dir.x*(trans->z>>8)
@@ -290,15 +288,16 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
       obj->process.vectors.misc_c.y = -obj->process.vectors.misc_c.y;
   }
   status_a = obj->process.status_a;
-  if (obj->process.path_progress >= 0 && idx < entity->path_length-1)
+  if (obj->process.path_progress >= 0 && idx < entity->path_length - 1) {
     obj->process.status_a &= ~GOOL_FLAG_TOWARD_GOAL;
-  else
-    obj->process.status_a |= GOOL_FLAG_TOWARD_GOAL;
+  }
+  else { obj->process.status_a |= GOOL_FLAG_TOWARD_GOAL; }
+
   if ((status_a & GOOL_FLAG_TOWARD_GOAL) == (obj->process.status_a & GOOL_FLAG_TOWARD_GOAL)
-   || (obj->process.status_a & GOOL_FLAG_CHANGE_PATH_DIR))
+    || (obj->process.status_a & GOOL_FLAG_CHANGE_PATH_DIR)) {
     obj->process.status_a &= ~GOOL_FLAG_CHANGE_PATH_DIR;
-  else
-    obj->process.status_a |= GOOL_FLAG_CHANGE_PATH_DIR;
+  }
+  else { obj->process.status_a |= GOOL_FLAG_CHANGE_PATH_DIR; }
   status_a = obj->process.status_a;
   status_b = obj->process.status_b;
   if (status_b & GOOL_FLAG_TRACK_PATH_SIGN) { /* moving downward */
@@ -322,9 +321,9 @@ int GoolObjectOrientOnPath(gool_object *obj, int progress, vec *loc) {
     }
   }
   /* use fractional part of progress to interpolate between current and next point */
-  loc->x += (dir.x*fractional)>>8;
-  loc->y += (dir.y*fractional)>>8;
-  loc->z += (dir.z*fractional)>>8;
+  loc->x += ((dir.x*fractional)>>8);
+  loc->y += ((dir.y*fractional)>>8);
+  loc->z += ((dir.z*fractional)>>8);
   return path_length;
 }
 
@@ -1676,10 +1675,11 @@ static inline int32_t GoolObjectControlDir(gool_object *obj, int scale) {
 
 //----- (8001F30C) --------------------------------------------------------
 void GoolObjectPhysics(gool_object *obj) {
-  vec trans, velocity;
+  vec velocity;
   uint32_t status_a, status_b;
   int32_t scale, speed, speed_scale, tgt_ang_xz, lim;
 
+  vec trans = {.x = 0, .y = 0, .z = 0};
   status_a = obj->process.status_a;
   status_b = obj->process.status_b;
   scale = min(context.ticks_per_frame, 0x66);
@@ -2017,11 +2017,11 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
       break;
     case 2:
       G_TRANS_GOPS(obj,instruction,r,l);
-      GoolObjectPush(obj,l*r);
+      GoolObjectPush(obj,((int32_t)l)*((int32_t)r));
       break;
     case 3:
       G_TRANS_GOPS(obj,instruction,r,l);
-      GoolObjectPush(obj,l/r);
+      GoolObjectPush(obj, ((int32_t)l)/((int32_t)r));
       break;
     case 4:
       G_TRANS_GOPS(obj,instruction,a,b);

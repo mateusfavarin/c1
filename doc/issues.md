@@ -45,8 +45,6 @@
 
 ### Ripper Roo
 
-- Ripper Roo only makes a single jump before they disappear and restart their path
-
 ### The Lost City
 
 - game crashes when attempting to kill lizards
@@ -66,8 +64,6 @@
 - same crashes as The Lost City, when attempting to kill lizards (note: RWaOC; corrupted animation eid?)
 
 ### Koala Kong
-
-- boulders launched by Koala Kong do not appear or are not thrown in the destined direction
 
 ### Heavy Machinery
 
@@ -101,8 +97,7 @@
 
 ### N. Brio
 
-- N. Brio never transitions from his initial state
-- Brio's enemies disappear when jumping - potentially the same problem in Roo?
+- Game crashes while attempting to kill Brio's jumpy enemies
 
 ### The Lab
 
@@ -112,9 +107,6 @@
 ### The Great Hall
 
 ### N. Cortex
-
-- some particles shot by Cortex are not visible?
-- only some of the particles shot by Cortex damage Crash
 
 ### Stormy Ascent
 
