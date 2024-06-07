@@ -979,6 +979,7 @@ int GoolObjectChangeState(gool_object *obj, uint32_t state, int argc, uint32_t *
     obj->process.tp = &code[state_desc->pc_trans];
   else
     obj->process.tp = 0;
+  obj->process.once_p = 0;
   header = (gool_header*)exec->items[0];
   obj->process.fp = (uint32_t*)&obj->process;
   obj->process.sp = (uint32_t*)&obj->process + header->init_sp;

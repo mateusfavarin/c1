@@ -36,7 +36,6 @@
 
 ### Hog Wild
 
-- player angle isn't locked after a respawn from a checkpoint
 - some wumpas remain on screen
 
 ### Native Fortress
