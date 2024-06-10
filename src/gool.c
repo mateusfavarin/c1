@@ -1806,24 +1806,6 @@ static uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_const_buf
   return (uint32_t*)0;
 }
 
-/* PSX doesn't crash when accessing 0x00000000, and NTSC-U RuiOC gool
-   ends up accessing nullptr in its state 13 tpc. */
-#ifdef GOOL_IGNORE_NULLPTR_IN_GOP_ACCESS
-static uint32_t nullptr_fix = 0x00000003;
-static uint32_t* GoolTranslateInGopNullptr(gool_object *obj, uint32_t gop) {
-  uint32_t* res;
-  int idx;
-  if ((gop & 0xE00) == 0xE00) { /* stack ref */
-    /* stack pop */
-    if ((gop & 0xFFF) == 0xE1F) { return --obj->process.sp; }
-    idx = gop & 0x1FF;
-    return &obj->regs[idx];
-  }
-  res = GoolTranslateGop(obj, gop, &in_consts);
-  return res ? res : &nullptr_fix;
-}
-#endif
-
 //----- (8001FB34) -------------------------------------------------------- [OK!]
 static uint32_t* GoolTranslateInGop(gool_object *obj, uint32_t gop) {
   int idx;
@@ -1835,6 +1817,17 @@ static uint32_t* GoolTranslateInGop(gool_object *obj, uint32_t gop) {
   }
   return GoolTranslateGop(obj, gop, &in_consts);
 }
+
+/* PSX doesn't crash when accessing 0x00000000, and NTSC-U RuiOC gool
+   ends up accessing nullptr in its state 13 tpc. */
+#ifdef GOOL_IGNORE_NULLPTR_IN_GOP_ACCESS
+static uint32_t nullptr_fix = 0x00000003;
+static uint32_t* GoolTranslateInGopNullptr(gool_object *obj, uint32_t gop) {
+  uint32_t* res;
+  res = GoolTranslateInGop(obj, gop);
+  return res ? res : &nullptr_fix;
+}
+#endif
 
 //----- (8001FC4C) --------------------------------------------------------
 static uint32_t* GoolTranslateOutGop(gool_object *obj, uint32_t gop) {
