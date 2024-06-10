@@ -328,8 +328,7 @@ static int StopAtFloor(gool_object *obj, vec *trans, vec *next_trans, zone_query
 
   floor_offset = 0;
   GoolCalcBound(&test_bound_event, next_trans, &query->collider_bound);
-  if (!query->once
-    || !TestBoundInBound(&query->collider_bound, &query->nodes_bound))
+  if (!query->once || !TestBoundInBound(&query->collider_bound, &query->nodes_bound))
     ZoneQueryOctrees(next_trans, obj, query);
   delta_y = trans->y - next_trans->y;
   test_y = (delta_y > 0 ? trans->y : next_trans->y) + land_offset;

@@ -8,6 +8,7 @@
 #include <string.h>
 
 /* Compiler flags */
+#define GOOL_IGNORE_NULLPTR_IN_GOP_ACCESS // PSX default
 #define CFLAGS_DRAW_EXTENSIONS
 #define CFLAGS_GUI
 #define CFLAGS_GOOL_DEBUG
@@ -117,6 +118,6 @@
 #define LID_GAMEWIN           0x39
 
 /* compilation settings */
-#define LID_BOOTLEVEL         LID_HOGWILD
+#define LID_BOOTLEVEL         LID_THELOSTCITY
 
 #endif /* _COMMON_H_ */

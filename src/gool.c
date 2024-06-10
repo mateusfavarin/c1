@@ -716,7 +716,7 @@ int GoolObjectInit(gool_object *obj, int exec, int subtype, int argc, uint32_t *
   gool_state_maps *maps;
   entry *global;
   eid_t *p_eid;
-  int idx, idx_states, state, res; // ?, ?, $a1
+  int idx_states, state, res; // ?, ?, $a1
 
   parent = obj->process.gool_links.parent;
   obj->process.node = 0xFFFF;
@@ -772,7 +772,6 @@ int GoolObjectInit(gool_object *obj, int exec, int subtype, int argc, uint32_t *
   obj->process.gool_links.collider = 0;
   obj->process.gool_links.creator = 0;
   obj->process.gool_links.interrupter = 0;
-  global = obj->global;
   obj->process.subtype = subtype;
   obj->process.anim_seq = 0;
   obj->process.once_p = 0;
@@ -985,8 +984,7 @@ int GoolObjectChangeState(gool_object *obj, uint32_t state, int argc, uint32_t *
   obj->process.sp = (uint32_t*)&obj->process + header->init_sp;
   obj->process.status_a |= GOOL_FLAG_FIRST_FRAME | GOOL_FLAG_KEEP_EVENT_STACK;
   obj->process.state_flags = state_desc->flags;
-  for (i=0;i<argc;i++)
-    GoolObjectPush(obj, argv[i]);
+  for (i = 0; i < argc; i++) { GoolObjectPush(obj, argv[i]); }
   GoolObjectPushFrame(obj, argc, 0xFFFF);
   if (once_p) { /* is there a once block? */
     GoolObjectPushFrame(obj, 0, 0xFFFF);
@@ -1032,11 +1030,9 @@ static int GoolObjectPopFrame(gool_object *obj, uint32_t *flags) {
 
   obj->process.sp = obj->process.fp + 2;
   range = GoolObjectPeek(obj);
-  rsp=range&0xFFFF;rfp=range>>16;
-  if (!rfp) /* initial stack frame? */
-    return ERROR_INVALID_RETURN; /* return error */
-  // GoolObjectPop(obj); /* pop range */
-  // obj->sp = obj->fp + ;
+  rfp = range >> 16;
+  if (!rfp) { return ERROR_INVALID_RETURN; } /* initial stack frame? */
+  rsp = range & 0xFFFF;
   obj->process.pc = (uint32_t*)GoolObjectPop(obj); /* pop and restore pc to its previous location */
   if (flags) { /* out var passed for flags? */
     flags_prev = GoolObjectPop(obj);
@@ -1810,6 +1806,24 @@ static uint32_t* GoolTranslateGop(gool_object *obj, uint32_t gop, gool_const_buf
   return (uint32_t*)0;
 }
 
+/* PSX doesn't crash when accessing 0x00000000, and NTSC-U RuiOC gool
+   ends up accessing nullptr in its state 13 tpc. */
+#ifdef GOOL_IGNORE_NULLPTR_IN_GOP_ACCESS
+static uint32_t nullptr_fix = 0x00000003;
+static uint32_t* GoolTranslateInGopNullptr(gool_object *obj, uint32_t gop) {
+  uint32_t* res;
+  int idx;
+  if ((gop & 0xE00) == 0xE00) { /* stack ref */
+    /* stack pop */
+    if ((gop & 0xFFF) == 0xE1F) { return --obj->process.sp; }
+    idx = gop & 0x1FF;
+    return &obj->regs[idx];
+  }
+  res = GoolTranslateGop(obj, gop, &in_consts);
+  return res ? res : &nullptr_fix;
+}
+#endif
+
 //----- (8001FB34) -------------------------------------------------------- [OK!]
 static uint32_t* GoolTranslateInGop(gool_object *obj, uint32_t gop) {
   int idx;
@@ -1940,10 +1954,17 @@ static inline void GoolOpReactSolidSurfaces(gool_object*,uint32_t);
 #define G_OPB(ins) ((ins      ) & 0xFFF)
 #define G_OP(ins) G_OPB(ins)
 
+#ifdef GOOL_IGNORE_NULLPTR_IN_GOP_ACCESS
+#define G_TRANS_GOPA(obj,ins,a) \
+a = *(GoolTranslateInGopNullptr(obj,G_OPA(ins)))
+#define G_TRANS_GOPB(obj,ins,b) \
+b = *(GoolTranslateInGopNullptr(obj,G_OPB(ins)))
+#else
 #define G_TRANS_GOPA(obj,ins,a) \
 a = *(GoolTranslateInGop(obj,G_OPA(ins)))
 #define G_TRANS_GOPB(obj,ins,b) \
 b = *(GoolTranslateInGop(obj,G_OPB(ins)))
+#endif
 #define G_TRANS_GOPA_IN(obj,ins,a) \
 a = GoolTranslateInGop(obj,G_OPA(ins))
 #define G_TRANS_GOPB_IN(obj,ins,b) \
@@ -2017,12 +2038,12 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
       GoolObjectPush(obj,l-r);
       break;
     case 2:
-      G_TRANS_GOPS(obj,instruction,r,l);
-      GoolObjectPush(obj,((int32_t)l)*((int32_t)r));
+      G_TRANS_GOPS(obj,instruction,sr,sl);
+      GoolObjectPush(obj,sl*sr);
       break;
     case 3:
-      G_TRANS_GOPS(obj,instruction,r,l);
-      GoolObjectPush(obj, ((int32_t)l)/((int32_t)r));
+      G_TRANS_GOPS(obj,instruction,sr,sl);
+      GoolObjectPush(obj, sl/sr);
       break;
     case 4:
       G_TRANS_GOPS(obj,instruction,a,b);
@@ -2062,8 +2083,8 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
       GoolObjectPush(obj,sl<=sr);
       break;
     case 0xD:
-      G_TRANS_GOPS(obj,instruction,r,l);
-      GoolObjectPush(obj,((int32_t)l)%((int32_t)r));
+      G_TRANS_GOPS(obj,instruction,sr,sl);
+      GoolObjectPush(obj,sl%sr);
       break;
     case 0xE:
       G_TRANS_GOPS(obj,instruction,a,b);
@@ -2091,7 +2112,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
     case 0x12:
       G_TRANS_GOPA(obj,instruction,a);
       G_TRANS_GOPB_OUT(obj,instruction,dst);
-      *(dst) = !a;
+      if (dst) { *(dst) = !a; }
       break;
     case 0x13:
       GoolOp13unnamed(obj,instruction);
@@ -2099,7 +2120,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
     case 0x14:
       G_TRANS_GOPA_IN(obj,instruction,src);
       G_TRANS_GOPB_OUT(obj,instruction,dst);
-      *(dst) = (uint32_t)src;
+      if (dst) { *(dst) = (uint32_t)src; }
       break;
     case 0x15: /* signed = arithmetic shift */
       G_TRANS_GOPS(obj,instruction,sr,sl);
@@ -2142,7 +2163,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
     case 0x19:
       G_TRANS_GOPA(obj,instruction,sa);
       G_TRANS_GOPB_OUT(obj,instruction,dst);
-      *(dst) = sa < 0 ? -sa : sa;
+      if (dst) { *(dst) = sa < 0 ? -sa : sa; }
       break;
     case 0x1A: {
       uint32_t res;
@@ -2220,7 +2241,7 @@ int GoolObjectInterpret(gool_object *obj, uint32_t flags, gool_state_ref *transi
       G_TRANS_GOPA(obj,instruction,a);
       G_TRANS_GOPB_OUT(obj,instruction,dst);
       anim_data = obj->global->items[5];
-      *(dst) = (uint32_t)&anim_data[a>>6];
+      if (dst) { *(dst) = (uint32_t)&anim_data[a >> 6]; }
       break;
     }
     case 0x82:
@@ -3069,15 +3090,19 @@ int GoolOpReturnStateTransition(gool_object *obj,
     *flags |= GOOL_FLAG_RETURN_EVENT;
     transition->guard = (opcode == 0x89);
     if (ret_type == 1) {
-      res = GoolObjectPopFrame(obj, flags);
-      if (ISSUCCESSCODE(res))
+      res = GoolObjectPopFrame(obj, 0);
+      if (ISSUCCESSCODE(res)) {
         transition->state = (instruction & 0x3FFF);
+        return SUCCESS;
+      }
       return res;
     }
     else if (ret_type == 2) {
-      res = GoolObjectPopFrame(obj, flags);
-      if (ISSUCCESSCODE(res))
+      res = GoolObjectPopFrame(obj, 0);
+      if (ISSUCCESSCODE(res)) {
         transition->state = 0xFF;
+        return SUCCESS;
+      }
       return res;
     }
   }

@@ -50,8 +50,6 @@
 
 ### Temple Ruins
 
-- approaching bats causes game to crash
-
 ### Road To Nowhere
 
 ### Boulder Dash
@@ -72,9 +70,6 @@
 
 ### Toxic Waste
 
-- solid ceiling is not detected
-- game crashes when dying in certain zones
-
 ### Pinstripe
 
 ### The High Road
@@ -89,24 +84,14 @@
 
 ### Jaws of Darkness
 
-- spider or shadow rotation angle is incorrect
-- rotating pegs rotate way too fast
-
 ### Castle Machinery
 
 ### N. Brio
 
-- Game crashes while attempting to kill Brio's jumpy enemies
-
 ### The Lab
-
-- game crashes when dying in certain zones:
-    * dying in the hole (first yellow enemy room) crashes the game
 
 ### The Great Hall
 
 ### N. Cortex
 
 ### Stormy Ascent
-
-- potion vials thrown by lab asses are not visible

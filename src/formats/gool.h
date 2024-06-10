@@ -6,12 +6,12 @@
 #include "ns.h"
 
 typedef struct {
-  uint32_t type;
-  uint32_t category;
-  uint32_t unk_0x8;
-  uint32_t init_sp;
-  uint32_t subtype_map_idx;
-  uint32_t unk_0x14;
+  uint32_t type; // 0x0
+  uint32_t category; // 0x4
+  uint32_t unk_0x8; // 0x8
+  uint32_t init_sp; // 0xC
+  uint32_t subtype_map_idx; // 0x10
+  uint32_t unk_0x14; // 0x14
 } gool_header;
 
 typedef union {
